@@ -1,0 +1,4 @@
+Shapely
+beautifulsoup4
+lxml
+pyproj
