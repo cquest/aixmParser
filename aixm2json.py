@@ -67,11 +67,11 @@ def substring(geom, start_dist, end_dist, normalized=False):
     return LineString(vertex_list)
 
 
-def geo2coordinates(o, latitude=None, longitude=None):
+def geo2coordinates(o, latitude=None, longitude=None, recurse=True):
     if latitude:
         s = latitude
     else:
-        s = o.geolat.string
+        s = o.find('geolat', recursive=recurse).string
     lat = int(s[0:2])+int(s[2:4])/60+float(s[4:-1])/3600
     if s[-1] == 'S':
         lat = -lat
@@ -79,7 +79,7 @@ def geo2coordinates(o, latitude=None, longitude=None):
     if longitude:
         s = longitude
     else:
-        s = o.geolong.string
+        s = o.find('geolong', recursive=recurse).string
     lon = int(s[0:3])+int(s[3:5])/60+float(s[5:-1])/3600
     if s[-1] == 'W':
         lon = -lon
@@ -248,19 +248,17 @@ def abd2json(o):
         avx_list = o.find_all('avx')
         for avx_cur in range(0,len(avx_list)):
             avx = avx_list[avx_cur]
-            if avx.dmeuidcen:
-                avx.dmeuidcen.clear()
             codetype = avx.codetype.string
             if codetype in ['GRC', 'RHL']:
                 # great-circle segment
                 g.append(geo2coordinates(avx))
             elif codetype in ['CCA', 'CWA']:
                 # arcs
-                start = geo2coordinates(avx)
+                start = geo2coordinates(avx, recurse=False)
                 if avx_cur+1 == len(avx_list):
                     stop = g[0]
                 else:
-                    stop = geo2coordinates(avx_list[avx_cur+1])
+                    stop = geo2coordinates(avx_list[avx_cur+1], recurse=False)
                 center = geo2coordinates(avx,
                                          latitude=o.geolatarc.string,
                                          longitude=o.geolongarc.string)
