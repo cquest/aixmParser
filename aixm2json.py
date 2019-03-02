@@ -296,8 +296,8 @@ def abd2json(o):
                 else:
                     stop = geo2coordinates(avx_list[avx_cur+1], recurse=False)
                 center = geo2coordinates(avx,
-                                         latitude=o.geolatarc.string,
-                                         longitude=o.geolongarc.string)
+                                         latitude=avx.geolatarc.string,
+                                         longitude=avx.geolongarc.string)
                 g.append(start)
                 radius = float(avx.valradiusarc.string)
                 if avx.uomradiusarc.string == 'NM':
