@@ -217,12 +217,12 @@ def xy2angle(x,y):
 
 def make_circle(lon, lat, radius, srs):
     g = []
-    center_x, center_y = transform(pWGS, pLocal, lon, lat)
     step = pi*2/120 if radius > 100 else pi*2/8
+    center_x, center_y = transform(pWGS, srs, lon, lat)
     for a in frange(0, pi*2, step):
         x = center_x + math.cos(a) * radius
         y = center_y + math.sin(a) * radius
-        lon, lat = transform(pLocal, pWGS, x, y)
+        lon, lat = transform(srs, pWGS, x, y)
         g.append([round(lon,6), round(lat,6)])
     return g
 
@@ -275,7 +275,7 @@ def abd2json(o):
         radius = float(o.valradius.string)
         if o.uomradius.string == 'NM':
             radius = radius * nm
-        g = make_circle(lon_c, lat_c, radius, pLocal)
+        g = make_circle(lon_c, lat_c, radius, Proj(proj='ortho', lat_0=lat_c, lon_0=lon_c))
         geom = {"type": "Polygon", "coordinates": [g]}
 
         prop = addfield(prop, getfield(o.valradius, 'radius'))
@@ -303,9 +303,10 @@ def abd2json(o):
                 if avx.uomradiusarc.string == 'NM':
                     radius = radius * nm
                 # convert to local meters
-                start_x, start_y = transform(pWGS, pLocal, start[0], start[1])
-                stop_x, stop_y = transform(pWGS, pLocal, stop[0], stop[1])
-                center_x, center_y = transform(pWGS, pLocal, center[0], center[1])
+                srs = Proj(proj='ortho', lat_0=center[1], lon_0=center[0])
+                start_x, start_y = transform(pWGS, srs, start[0], start[1])
+                stop_x, stop_y = transform(pWGS, srs, stop[0], stop[1])
+                center_x, center_y = transform(pWGS, srs, center[0], center[1])
                 # start / stop angles
                 start_angle = xy2angle(start_x-center_x, start_y-center_y)
                 stop_angle = xy2angle(stop_x-center_x, stop_y-center_y)
@@ -317,7 +318,7 @@ def abd2json(o):
                 for a in frange(start_angle, stop_angle, step):
                     x = center_x + math.cos(a) * radius
                     y = center_y + math.sin(a) * radius
-                    lon, lat = transform(pLocal, pWGS, x, y)
+                    lon, lat = transform(srs, pWGS, x, y)
                     g.append([lon, lat])
             elif codetype == 'FNT':
                 # geographic borders
@@ -340,7 +341,8 @@ def abd2json(o):
             print(o.prettify())
             geom = None
         elif len(g) == 1:
-            geom = {"type": "Polygon", "coordinates": make_circle(g[0][0], g[0][1], 100,  pLocal)}
+            srs = Proj(proj='ortho', lat_0=g[0][1], lon_0=g[0][0])
+            geom = {"type": "Polygon", "coordinates": make_circle(g[0][0], g[0][1], 100, srs)}
         else:
             g.append(g[0])
             geom = {"type": "Polygon", "coordinates": [g]}
