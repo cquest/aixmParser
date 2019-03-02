@@ -310,6 +310,10 @@ def abd2json(o):
                 start_angle = xy2angle(start_x-center_x, start_y-center_y)
                 stop_angle = xy2angle(stop_x-center_x, stop_y-center_y)
                 step = -0.025 if codetype == 'CWA' else 0.025
+                if codetype == 'CWA' and stop_angle > start_angle:
+                    stop_angle = stop_angle - 2*pi
+                if codetype == 'CCA' and stop_angle < start_angle:
+                    start_angle = start_angle - 2*pi
                 for a in frange(start_angle, stop_angle, step):
                     x = center_x + math.cos(a) * radius
                     y = center_y + math.sin(a) * radius
