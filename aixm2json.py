@@ -344,43 +344,6 @@ def abd2json(o):
         else:
             g.append(g[0])
             geom = {"type": "Polygon", "coordinates": [g]}
-
-    # properties
-    prop.update({"uid": o.abduid['mid']})
-    if o.aseuid:
-        prop = addfield(prop, getfield(o.aseuid, 'codetype'))
-        prop = addfield(prop, getfield(o.aseuid, 'codeid'))
-
-    if o.aseuid["mid"] in ase:
-        a = ase[o.aseuid["mid"]]
-        prop = addfield(prop, getfield(a, 'txtname', 'name'))
-        prop = addfield(prop, getfield(a, 'codeclass', 'class'))
-        prop = addfield(prop, getfield(a, 'codedistverupper', 'upper_type'))
-        prop = addfield(prop, getfield(a, 'valdistverupper', 'upper_value'))
-        prop = addfield(prop, getfield(a, 'uomdistverupper', 'upper_unit'))
-        prop = addfield(prop, getfield(a, 'codedistverlower', 'lower_type'))
-        prop = addfield(prop, getfield(a, 'valdistverlower', 'lower_value'))
-        prop = addfield(prop, getfield(a, 'uomdistverlower', 'lower_unit'))
-        prop = addfield(prop, getfield(a, 'txtrmk', 'remark'))
-        # approximate altitudes in meters
-        up = None
-        if a.uomdistverupper.string == 'FL':
-            up = float(a.valdistverupper.string) * ft * 100
-        elif a.uomdistverupper.string == 'FT':
-            up = float(a.valdistverupper.string) * ft
-        elif a.uomdistverupper.string == 'M':
-            up = float(a.valdistverupper.string)
-        if up is not None:
-            prop.update({"upper_m": int(up)})
-        low = None
-        if a.uomdistverlower.string == 'FL':
-            low = float(a.valdistverlower.string) * ft * 100
-        elif a.uomdistverlower.string == 'FT':
-            low = float(a.valdistverlower.string) * ft
-        elif a.uomdistverlower.string == 'M':
-            low = float(a.valdistverlower.string)
-        if low is not None:
-            prop.update({"lower_m": int(low)})
         
     return {"type": "Feature", "geometry": geom, "properties": prop}
 
