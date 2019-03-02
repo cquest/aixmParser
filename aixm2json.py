@@ -330,8 +330,6 @@ def abd2json(o):
                 start_d = fnt.project(Point(start[0], start[1]), normalized=True)
                 stop_d = fnt.project(Point(stop[0], stop[1]), normalized=True)
                 geom = substring(fnt, start_d, stop_d, normalized=True)
-                if o.abduid['mid'] == "1568788":
-                    print(start, stop, geom)
                 for c in geom.coords:
                     lon, lat = c
                     g.append([lon, lat])
