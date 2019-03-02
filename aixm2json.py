@@ -346,7 +346,7 @@ def abd2json(o):
             geom = None
         elif len(g) == 1:
             srs = Proj(proj='ortho', lat_0=g[0][1], lon_0=g[0][0])
-            geom = {"type": "Polygon", "coordinates": make_circle(g[0][0], g[0][1], 100, srs)}
+            geom = {"type": "Polygon", "coordinates": [make_circle(g[0][0], g[0][1], 100, srs)]}
         else:
             g.append(g[0])
             geom = {"type": "Polygon", "coordinates": [g]}
