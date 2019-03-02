@@ -205,14 +205,17 @@ def frange(start, stop, step):
 
 def xy2angle(x,y):
     if x == 0:
-        angle = pi/2
+        if y>0:
+            angle = pi/2
+        else:
+            angle = -pi/2
     else:
         angle = math.atan(y/x)
     if x<0:
         angle = angle + pi
     elif y<0:
-        angle = angle + 2 * pi
-    return angle
+        angle = (angle + 2 * pi)
+    return angle % (2*pi)
 
 
 def make_circle(lon, lat, radius, srs):
