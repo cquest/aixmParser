@@ -278,6 +278,8 @@ def abd2json(o):
         radius = float(o.valradius.string)
         if o.uomradius.string == 'NM':
             radius = radius * nm
+        if o.uomradius.string == 'KM':
+            radius = radius * 1000
         g = make_circle(lon_c, lat_c, radius, Proj(proj='ortho', lat_0=lat_c, lon_0=lon_c))
         geom = {"type": "Polygon", "coordinates": [g]}
 
