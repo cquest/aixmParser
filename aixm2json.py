@@ -501,7 +501,7 @@ for o in aixm.find_all('ahp'):
     out.append(ahp2json(o))
 
 with open('aerodromes.geojson','w') as output:
-    output.write(json.dumps({"type":"FeatureCollection", "features": out}))
+    output.write(json.dumps({"type":"FeatureCollection", "features": out}, sort_keys=True, ensure_ascii=False))
 
 print("extract obs - obstacles")
 out = []
@@ -509,7 +509,7 @@ for o in aixm.find_all('obs'):
     out.append(obs2json(o))
 
 with open('obstacles.geojson','w') as output:
-    output.write(json.dumps({"type":"FeatureCollection", "features": out}))
+    output.write(json.dumps({"type":"FeatureCollection", "features": out}, sort_keys=True, ensure_ascii=False))
 
 print("extract rcp - runway centers")
 out = []
@@ -517,7 +517,7 @@ for o in aixm.find_all('rcp'):
     out.append(rcp2json(o))
 
 with open('runway_center.geojson','w') as output:
-    output.write(json.dumps({"type":"FeatureCollection", "features": out}))
+    output.write(json.dumps({"type":"FeatureCollection", "features": out}, sort_keys=True, ensure_ascii=False))
 
 print("extract ase - airspace")
 ase = dict()
@@ -532,7 +532,7 @@ for o in aixm.find_all('gbr'):
     out.append(j)
     gbr[o.gbruid['mid']] = LineString(l)
 with open('border.geojson','w') as output:
-    output.write(json.dumps({"type":"FeatureCollection", "features": out}))
+    output.write(json.dumps({"type":"FeatureCollection", "features": out}, sort_keys=True, ensure_ascii=False))
 
 print("extract abd - airspace boundaries")
 out = []
@@ -540,7 +540,7 @@ for o in aixm.find_all('abd'):
     out.append(abd2json(o))
 
 with open('airspace.geojson','w') as output:
-    output.write(json.dumps({"type":"FeatureCollection", "features": out}))
+    output.write(json.dumps({"type":"FeatureCollection", "features": out}, sort_keys=True, ensure_ascii=False))
 
 print("extract uni - control towers")
 out = []
@@ -550,7 +550,7 @@ for o in aixm.find_all('uni'):
         out.append(twr)
 
 with open('tower.geojson','w') as output:
-    output.write(json.dumps({"type":"FeatureCollection", "features": out}))
+    output.write(json.dumps({"type":"FeatureCollection", "features": out}, sort_keys=True, ensure_ascii=False))
 
 print("extract gsd - gate stands")
 out = []
@@ -558,6 +558,6 @@ for o in aixm.find_all('gsd'):
     out.append(gsd2json(o))
 
 with open('gate_stand.geojson','w') as output:
-    output.write(json.dumps({"type":"FeatureCollection", "features": out}))
+    output.write(json.dumps({"type":"FeatureCollection", "features": out}, sort_keys=True, ensure_ascii=False))
 
 print("done")
