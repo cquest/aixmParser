@@ -304,23 +304,22 @@ def abd2json(o):
                                          latitude=avx.geolatarc.string,
                                          longitude=avx.geolongarc.string)
                 g.append(start)
-                radius = float(avx.valradiusarc.string)
-                if avx.uomradiusarc.string == 'NM':
-                    radius = radius * nm
                 # convert to local meters
                 srs = Proj(proj='ortho', lat_0=center[1], lon_0=center[0])
                 start_x, start_y = transform(pWGS, srs, start[0], start[1])
                 stop_x, stop_y = transform(pWGS, srs, stop[0], stop[1])
                 center_x, center_y = transform(pWGS, srs, center[0], center[1])
+                # recompute radius from center/start coordinates in local projection
+                radius = math.sqrt(start_x**2+start_y**2)
                 # start / stop angles
-                start_angle = xy2angle(start_x-center_x, start_y-center_y)
-                stop_angle = xy2angle(stop_x-center_x, stop_y-center_y)
+                start_angle = round(xy2angle(start_x-center_x, start_y-center_y),6)
+                stop_angle = round(xy2angle(stop_x-center_x, stop_y-center_y),6)
                 step = -0.025 if codetype == 'CWA' else 0.025
                 if codetype == 'CWA' and stop_angle > start_angle:
                     stop_angle = stop_angle - 2*pi
                 if codetype == 'CCA' and stop_angle < start_angle:
                     start_angle = start_angle - 2*pi
-                for a in frange(start_angle, stop_angle, step):
+                for a in frange(start_angle+step/2, stop_angle-step/2, step):
                     x = center_x + math.cos(a) * radius
                     y = center_y + math.sin(a) * radius
                     lon, lat = transform(srs, pWGS, x, y)
