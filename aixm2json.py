@@ -72,7 +72,7 @@ def geo2coordinates(o, latitude=None, longitude=None, recurse=True):
         s = latitude
     else:
         s = o.find('geolat', recursive=recurse).string
-    lat = int(s[0:2])+int(s[2:4])/60+float(s[4:-1])/3600
+    lat = int(s[0:2])+float(s[2:4])/60+float(s[4:-1])/3600
     if s[-1] == 'S':
         lat = -lat
 
@@ -80,7 +80,7 @@ def geo2coordinates(o, latitude=None, longitude=None, recurse=True):
         s = longitude
     else:
         s = o.find('geolong', recursive=recurse).string
-    lon = int(s[0:3])+int(s[3:5])/60+float(s[5:-1])/3600
+    lon = int(s[0:3])+float(s[3:5])/60+float(s[5:-1])/3600
     if s[-1] == 'W':
         lon = -lon
     return([lon, lat])
