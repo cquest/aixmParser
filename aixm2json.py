@@ -347,13 +347,17 @@ def abd2json(o):
                     stop = g[0]
                 else:
                     stop = geo2coordinates(avx_list[avx_cur+1])
-                fnt = gbr[avx.gbruid["mid"]]
-                start_d = fnt.project(Point(start[0], start[1]), normalized=True)
-                stop_d = fnt.project(Point(stop[0], stop[1]), normalized=True)
-                geom = substring(fnt, start_d, stop_d, normalized=True)
-                for c in geom.coords:
-                    lon, lat = c
-                    g.append([lon, lat])
+                if avx.gbruid["mid"] in gbr:
+                    fnt = gbr[avx.gbruid["mid"]]
+                    start_d = fnt.project(Point(start[0], start[1]), normalized=True)
+                    stop_d = fnt.project(Point(stop[0], stop[1]), normalized=True)
+                    geom = substring(fnt, start_d, stop_d, normalized=True)
+                    for c in geom.coords:
+                        lon, lat = c
+                        g.append([lon, lat])
+                else:
+                    print('!!! missing GBR', avx.gbruid["mid"])
+                    g.append(start)
             else:
                 g.append(geo2coordinates(avx))
 
