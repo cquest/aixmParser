@@ -250,24 +250,26 @@ def abd2json(o):
         prop = addfield(prop, getfield(a, 'uomdistverlower', 'lower_unit'))
         prop = addfield(prop, getfield(a, 'txtrmk', 'remark'))
         # approximate altitudes in meters
-        up = None
-        if a.uomdistverupper.string == 'FL':
-            up = float(a.valdistverupper.string) * ft * 100
-        elif a.uomdistverupper.string == 'FT':
-            up = float(a.valdistverupper.string) * ft
-        elif a.uomdistverupper.string == 'M':
-            up = float(a.valdistverupper.string)
-        if up is not None:
-            prop.update({"upper_m": int(up)})
-        low = None
-        if a.uomdistverlower.string == 'FL':
-            low = float(a.valdistverlower.string) * ft * 100
-        elif a.uomdistverlower.string == 'FT':
-            low = float(a.valdistverlower.string) * ft
-        elif a.uomdistverlower.string == 'M':
-            low = float(a.valdistverlower.string)
-        if low is not None:
-            prop.update({"lower_m": int(low)})
+        if a.uomdistverupper is not None:
+            up = None
+            if a.uomdistverupper.string == 'FL':
+                up = float(a.valdistverupper.string) * ft * 100
+            elif a.uomdistverupper.string == 'FT':
+                up = float(a.valdistverupper.string) * ft
+            elif a.uomdistverupper.string == 'M':
+                up = float(a.valdistverupper.string)
+            if up is not None:
+                prop.update({"upper_m": int(up)})
+        if a.uomdistverlower is not None:
+            low = None
+            if a.uomdistverlower.string == 'FL':
+                low = float(a.valdistverlower.string) * ft * 100
+            elif a.uomdistverlower.string == 'FT':
+                low = float(a.valdistverlower.string) * ft
+            elif a.uomdistverlower.string == 'M':
+                low = float(a.valdistverlower.string)
+            if low is not None:
+                prop.update({"lower_m": int(low)})
 
     # geometry
     g = []
