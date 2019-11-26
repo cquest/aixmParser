@@ -443,7 +443,7 @@ def gbr2json(o):
 
 def tower2json(o):
     "Control towers"
-    if o.codetype.string == 'TWR':
+    if o.codetype.string == 'TWR' and o.find('geolat'):
         # geometry
         geom = { "type":"Point", "coordinates": geo2coordinates(o) }
 
@@ -452,6 +452,8 @@ def tower2json(o):
         prop = addfield(prop, getfield(o.uniuid, 'txtname', 'name'))
 
         return {"type": "Feature", "geometry": geom, "properties": prop}
+    else:
+        print("!!! missing TWR coordinates", o)
 
     # <Uni>
     #     <UniUid mid="1524684">
