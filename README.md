@@ -18,9 +18,12 @@ pip install -r requirements.txt
 
 # Utilisation
 
-./aixm2json.py nom_de_fichier_xml.xml
+./src/aixmParser.py <nom_de_fichier_xml>.xml
+(Exp: ./src/aixmParser.py ./test-data/AIXM4.5_SIA-FR_sample.xml)
 
-Le script produira plusieurs fichiers au format geojson:
+Le script produira les fichiers dans le dossier ./out/
+
+Les fichiers générées sont au format geojson:
 - aerodromes.geojson
 - airspace.geojson
 - border.geojson
