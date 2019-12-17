@@ -1,12 +1,8 @@
 #!/usr/bin/env python3
 
-import sys
-import json
 import math
 
 from shapely.geometry import LineString, Point
-from shapely.ops import split, nearest_points, snap
-from bs4 import BeautifulSoup
 from pyproj import Proj, transform
 
 
@@ -72,7 +68,7 @@ def geo2coordinates(o, latitude=None, longitude=None, recurse=True):
         s = latitude
     else:
         s = o.find('geolat', recursive=recurse).string
-
+        
     lat = s[:-1]
     if len(lat)==2 or lat[2]=='.': # DD[.dddd]
         lat = float(lat)
@@ -87,7 +83,7 @@ def geo2coordinates(o, latitude=None, longitude=None, recurse=True):
         s = longitude
     else:
         s = o.find('geolong', recursive=recurse).string
-
+        
     lon = s[:-1]
     if len(lon) == 3 or lon[3] == '.':
         lon = float(lon)
@@ -105,6 +101,7 @@ def getfield(o, inputname, outputname=None):
         outputname = inputname
     
     value = o.find(inputname.lower(), recursive=False)
+    
     if value:
         return {outputname: value.string.replace('#','\n')}
     else:
@@ -125,13 +122,13 @@ def ahp2json(ahp):
 
     # properties
     prop = dict()
-    prop = addfield(prop, getfield(ahp, 'txtname', 'name'))
-    prop = addfield(prop, getfield(ahp, 'codetype'))
-    prop = addfield(prop, getfield(ahp, 'codeicao'))
-    prop = addfield(prop, getfield(ahp, 'codeiata'))
-    prop = addfield(prop, getfield(ahp, 'valelev','elevation'))
-    prop = addfield(prop, getfield(ahp, 'uomdistver','vertical_unit'))
-    prop = addfield(prop, getfield(ahp, 'txtdescrrefpt', 'description'))
+    prop = addfield(prop, getfield(ahp, 'txtName', 'name'))
+    prop = addfield(prop, getfield(ahp, 'codeType'))
+    prop = addfield(prop, getfield(ahp, 'codeIcao'))
+    prop = addfield(prop, getfield(ahp, 'codeIata'))
+    prop = addfield(prop, getfield(ahp, 'valElev','elevation'))
+    prop = addfield(prop, getfield(ahp, 'uomDistVer','vertical_unit'))
+    prop = addfield(prop, getfield(ahp, 'txtDescrRefPt', 'description'))
 
     return {"type": "Feature", "geometry": geom, "properties": prop}
 
@@ -243,7 +240,8 @@ def make_circle(lon, lat, radius, srs):
         g.append([round(lon,6), round(lat,6)])
     return g
 
-def abd2json(o):
+
+def abd2json(o,ase,gbr):
     "Airspace Border"
     # properties
     prop = dict()
@@ -263,6 +261,7 @@ def abd2json(o):
         prop = addfield(prop, getfield(a, 'valdistverlower', 'lower_value'))
         prop = addfield(prop, getfield(a, 'uomdistverlower', 'lower_unit'))
         prop = addfield(prop, getfield(a, 'txtrmk', 'remark'))
+       
         # approximate altitudes in meters
         if a.uomdistverupper is not None:
             up = None
@@ -347,6 +346,7 @@ def abd2json(o):
                     stop = g[0]
                 else:
                     stop = geo2coordinates(avx_list[avx_cur+1])
+                    
                 if avx.gbruid["mid"] in gbr:
                     fnt = gbr[avx.gbruid["mid"]]
                     start_d = fnt.project(Point(start[0], start[1]), normalized=True)
@@ -468,7 +468,7 @@ def tower2json(o):
         return {"type": "Feature", "geometry": geom, "properties": prop}
     else:
         print("!!! missing TWR coordinates", o)
-
+        
     # <Uni>
     #     <UniUid mid="1524684">
     #         <txtName>LFBR MURET</txtName>
@@ -485,7 +485,8 @@ def tower2json(o):
     #     <geoLong>0011549.30E</geoLong>
     #     <codeDatum>WGE</codeDatum>
     # </Uni>
- 
+
+
 def gsd2json(o):
     "Gate stands"
     # geometry
@@ -520,73 +521,3 @@ pWGS = Proj(init='epsg:4326')
 nm = 1852   # Nautic Mile to meters
 ft = 0.3048 # foot in meter
 pi = 3.1415926
-
-print("parsing xml")
-aixm = BeautifulSoup(open(sys.argv[1]), 'lxml')
-
-print("extract ahp - aerodromes/heliports")
-out = []
-for o in aixm.find_all('ahp'):
-    out.append(ahp2json(o))
-
-with open('aerodromes.geojson','w') as output:
-    output.write(json.dumps({"type":"FeatureCollection", "features": out}, sort_keys=True, ensure_ascii=False))
-
-print("extract obs - obstacles")
-out = []
-for o in aixm.find_all('obs'):
-    out.append(obs2json(o))
-
-with open('obstacles.geojson','w') as output:
-    output.write(json.dumps({"type":"FeatureCollection", "features": out}, sort_keys=True, ensure_ascii=False))
-
-print("extract rcp - runway centers")
-out = []
-for o in aixm.find_all('rcp'):
-    out.append(rcp2json(o))
-
-with open('runway_center.geojson','w') as output:
-    output.write(json.dumps({"type":"FeatureCollection", "features": out}, sort_keys=True, ensure_ascii=False))
-
-print("extract ase - airspace")
-ase = dict()
-for o in aixm.find_all('ase'):
-    ase[o.aseuid['mid']] = o
-
-print("extract gbr - geographic borders")
-gbr = dict()
-out = []
-for o in aixm.find_all('gbr'):
-    j,l = gbr2json(o)
-    out.append(j)
-    gbr[o.gbruid['mid']] = LineString(l)
-with open('border.geojson','w') as output:
-    output.write(json.dumps({"type":"FeatureCollection", "features": out}, sort_keys=True, ensure_ascii=False))
-
-print("extract abd - airspace boundaries")
-out = []
-for o in aixm.find_all('abd'):
-    out.append(abd2json(o))
-
-with open('airspace.geojson','w') as output:
-    output.write(json.dumps({"type":"FeatureCollection", "features": out}, sort_keys=True, ensure_ascii=False))
-
-print("extract uni - control towers")
-out = []
-for o in aixm.find_all('uni'):
-    twr = tower2json(o)
-    if twr:
-        out.append(twr)
-
-with open('tower.geojson','w') as output:
-    output.write(json.dumps({"type":"FeatureCollection", "features": out}, sort_keys=True, ensure_ascii=False))
-
-print("extract gsd - gate stands")
-out = []
-for o in aixm.find_all('gsd'):
-    out.append(gsd2json(o))
-
-with open('gate_stand.geojson','w') as output:
-    output.write(json.dumps({"type":"FeatureCollection", "features": out}, sort_keys=True, ensure_ascii=False))
-
-print("done")
