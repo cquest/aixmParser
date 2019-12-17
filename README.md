@@ -1,4 +1,4 @@
-# aixm2json
+# aixmParser
 
 Script d'extraction de données à partir de fichiers XML au standard AIXM 4.5.
 
