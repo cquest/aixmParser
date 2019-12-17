@@ -17,7 +17,7 @@ pip install -r requirements.txt
 ```
 
 # Utilisation
-cd root-project
+
 ./src/aixmParser.py <nom_de_fichier_xml>.xml
 
 Exp: ./src/aixmParser.py ./test-data/AIXM4.5_SIA-FR_sample.xml
