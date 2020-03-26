@@ -17768,4 +17768,162 @@ Safety officer 93ème RAM : 06 73 90 50 33</txtRmk>
 		<geoLong>0030944.82E</geoLong>
 		<codeDatum>WGE</codeDatum>
 	</Uni>
+    <Uni>
+        <UniUid mid="1524610">
+            <txtName>LFSN NANCY</txtName>
+        </UniUid>
+        <OrgUid mid="1520800">
+            <txtName>FRANCE</txtName>
+        </OrgUid>
+        <AhpUid mid="1520954">
+            <codeId>LFSN</codeId>
+        </AhpUid>
+        <codeType>FIC</codeType>
+        <codeClass>OTHER</codeClass>
+        <geoLat>484131.51N</geoLat>
+        <geoLong>0061333.78E</geoLong>
+        <codeDatum>WGE</codeDatum>
+    </Uni>
+    <Uni>
+        <UniUid mid="1524612">
+            <txtName>LFLE CHALLES</txtName>
+        </UniUid>
+        <OrgUid mid="1520800">
+            <txtName>FRANCE</txtName>
+        </OrgUid>
+        <AhpUid mid="1521658">
+            <codeId>LFLE</codeId>
+        </AhpUid>
+        <codeType>OTHER</codeType>
+        <codeClass>OTHER</codeClass>
+        <geoLat>453338.00N</geoLat>
+        <geoLong>0055833.00E</geoLong>
+        <codeDatum>WGE</codeDatum>
+    </Uni>	
+	<Obs>
+		<ObsUid mid="1577198">
+			<geoLat>462948.12N</geoLat>
+			<geoLong>0004632.00W</geoLong>
+		</ObsUid>
+		<txtName>85006</txtName>
+		<txtDescrType>Pylône</txtDescrType>
+		<codeGroup>N</codeGroup>
+		<codeLgt>N</codeLgt>
+		<codeDatum>U</codeDatum>
+		<valElev>469</valElev>
+		<valHgt>207</valHgt>
+		<uomDistVer>FT</uomDistVer>
+	</Obs>
+	<Obs>
+		<ObsUid mid="1577950">
+			<geoLat>482936.00N</geoLat>
+			<geoLong>0015526.00W</geoLong>
+		</ObsUid>
+		<txtName>22033</txtName>
+		<txtDescrType>Pylône</txtDescrType>
+		<codeGroup>N</codeGroup>
+		<codeLgt>N</codeLgt>
+		<codeDatum>U</codeDatum>
+		<valElev>318</valElev>
+		<valHgt>167</valHgt>
+		<uomDistVer>FT</uomDistVer>
+	</Obs>
+	<Rcp>
+		<RcpUid mid="1531773">
+			<RwyUid mid="1528023">
+				<AhpUid mid="1520980">
+					<codeId>LFMO</codeId>
+				</AhpUid>
+				<txtDesig>14/32</txtDesig>
+			</RwyUid>
+			<geoLat>440856.03N</geoLat>
+			<geoLong>0045135.09E</geoLong>
+		</RcpUid>
+		<codeDatum>WGE</codeDatum>
+		<valElev>195</valElev>
+		<uomDistVer>FT</uomDistVer>
+	</Rcp>
+	<Rcp>
+		<RcpUid mid="1531777">
+			<RwyUid mid="1528023">
+				<AhpUid mid="1520980">
+					<codeId>LFMO</codeId>
+				</AhpUid>
+				<txtDesig>14/32</txtDesig>
+			</RwyUid>
+			<geoLat>440752.81N</geoLat>
+			<geoLong>0045238.48E</geoLong>
+		</RcpUid>
+		<codeDatum>WGE</codeDatum>
+		<valElev>187</valElev>
+		<uomDistVer>FT</uomDistVer>
+	</Rcp>
+	<Gsd>
+		<GsdUid mid="1583030">
+			<ApnUid mid="1574150">
+				<AhpUid mid="1521162">
+					<codeId>LFOK</codeId>
+				</AhpUid>
+				<txtName>LFOK-APRON</txtName>
+			</ApnUid>
+			<txtDesig>1</txtDesig>
+		</GsdUid>
+		<codeType>OTHER</codeType>
+		<geoLat>484645.28N</geoLat>
+		<geoLong>0041132.58E</geoLong>
+		<codeDatum>WGE</codeDatum>
+	</Gsd>
+	<Gsd>
+		<GsdUid mid="1583062">
+			<ApnUid mid="1574150">
+				<AhpUid mid="1521162">
+					<codeId>LFOK</codeId>
+				</AhpUid>
+				<txtName>LFOK-APRON</txtName>
+			</ApnUid>
+			<txtDesig>5</txtDesig>
+		</GsdUid>
+		<codeType>OTHER</codeType>
+		<geoLat>484643.80N</geoLat>
+		<geoLong>0041140.48E</geoLong>
+		<codeDatum>WGE</codeDatum>
+	</Gsd>
+    <Ahp>
+        <AhpUid mid="1522384">
+            <codeId>LFH241</codeId>
+        </AhpUid>
+        <OrgUid mid="1520800">
+            <txtName>FRANCE</txtName>
+        </OrgUid>
+        <txtName>POISSY CENTRE HOSPITALIER.</txtName>
+        <codeType>HP</codeType>
+        <geoLat>485501.00N</geoLat>
+        <geoLong>0020124.00E</geoLong>
+        <codeDatum>U</codeDatum>
+        <valElev>233</valElev>
+        <uomDistVer>FT</uomDistVer>
+        <Aht>
+            <codeWorkHr>OTHER</codeWorkHr>
+            <txtRmkWorkHr>NIL</txtRmkWorkHr>
+        </Aht>
+    </Ahp>
+    <Ahp>
+        <AhpUid mid="1521346">
+            <codeId>LFEX</codeId>
+        </AhpUid>
+        <OrgUid mid="1520800">
+            <txtName>FRANCE</txtName>
+        </OrgUid>
+        <txtName>NANCY AZELOT</txtName>
+        <codeIcao>LFEX</codeIcao>
+        <codeType>AD</codeType>
+        <geoLat>483531.00N</geoLat>
+        <geoLong>0061423.00E</geoLong>
+        <codeDatum>WGE</codeDatum>
+        <valElev>958</valElev>
+        <valGeoidUndulation>155</valGeoidUndulation>
+        <uomDistVer>FT</uomDistVer>
+        <valMagVar>0.62</valMagVar>
+        <dateMagVar>2010</dateMagVar>
+    </Ahp>	
 </AIXM-Snapshot>
