@@ -1,6 +1,12 @@
 # aixmParser
+
+**EN COURS DE DEVELOPPEMENT !!!**  
+*ATTENTION: Seules les données d'origine doivent être utilisées pour la navigation aérienne.*  
+--> Les Pull-Request et Issues sont les bienvenues :)  
+
 Programme d'extraction et de formatage des données issues du standard AIXM (Aeronautical Information Exchange Modele)  
 Les fichiers actuellements générées sont les suivants:  
+
 	a/ Catalogue de zones aériennes, disponible sous deux formats:  
 		- airspacesCatalog.json  
 		- airspacesCatalog.csv  
@@ -31,10 +37,6 @@ Les fichiers actuellements générées sont les suivants:
 	GeoJSON (Geographic JSON) est un format ouvert d'encodage d'ensemble de données géospatiales simples utilisant la norme JSON (JavaScript Object Notation)  
 	Ce format issu du projet OpenStreetMap est compatible avec le système : https://www.google.fr/maps  
 	Les données au format GeoJSON sont visualisables par des outils tels que : http://geojson.tools/   ou   http://geojson.io/  
-
-**EN COURS DE DEVELOPPEMENT !!!**
-*ATTENTION: Seules les données d'origine doivent être utilisées pour la navigation aérienne.*
-Les Pull-Request et Issues sont les bienvenues :)
 
 ## Installation
 ```
@@ -84,4 +86,3 @@ With:
   Resources  
      GeoJSON test format: http://geojson.tools/  -or-  http://geojson.io  
      OpenAir test format: http://xcglobe.com/cloudapi/browser  -or-  http://cunimb.net/openair2map.php  
-     
