@@ -1,0 +1,504 @@
+2020-03-25 19:29:41,267 aixmParser v2.3.0 INFO Logger started - [bpaTools.Logger.Logger]aixmParser v2.3.0
+2020-03-25 19:29:41,267 aixmParser v2.3.0 INFO /!\ IFR mode for specific Upper vues of aeronautic maps (only IFR areas)
+2020-03-25 19:29:41,267 aixmParser v2.3.0 INFO /!\ VFR mode for specific Lower vues of aeronautic maps (only VFR areas, without IFR areas)
+2020-03-25 19:29:41,267 aixmParser v2.3.0 INFO /!\ FreeFlight mode for specific Paragliding/Hanggliding maps
+2020-03-25 19:29:41,267 aixmParser v2.3.0 INFO Reading source file: ../tst/aixm4.5_SIA-FR_2019-12-05.xml
+2020-03-25 19:30:02,276 aixmParser v2.3.0 INFO Indexing Adg - Airspaces Groups
+2020-03-25 19:30:06,546 aixmParser v2.3.0 INFO Indexing Sae - Airspaces Services
+2020-03-25 19:30:07,577 aixmParser v2.3.0 INFO Indexing Uni - Organizations
+2020-03-25 19:30:10,264 aixmParser v2.3.0 INFO Indexing Abd - Airspaces Borders
+2020-03-25 19:30:11,178 aixmParser v2.3.0 INFO Loading Ase - Airspaces Catalog
+2020-03-25 19:30:12,225 aixmParser v2.3.0 INFO except-JF: id=1561227 NameV=[D] TMA SAINT-YAN 1.3 (LFLN1.3)
+2020-03-25 19:30:12,272 aixmParser v2.3.0 INFO except-JF: id=1562535 NameV=[D] CTA TOULOUSE 2 (CTA46752)
+2020-03-25 19:30:12,272 aixmParser v2.3.0 INFO except-JF: id=1562529 NameV=[D] CTA TOULOUSE 3 (CTA46753)
+2020-03-25 19:30:12,272 aixmParser v2.3.0 INFO except-JF: id=1562527 NameV=[D] CTA TOULOUSE 4 (CTA46754)
+2020-03-25 19:30:12,272 aixmParser v2.3.0 INFO except-JF: id=1562533 NameV=[D] CTA TOULOUSE 5 (CTA46755)
+2020-03-25 19:30:12,334 aixmParser v2.3.0 INFO except-JF: id=1561233 NameV=[E] TMA SAINT-YAN 1.1 (LFLN1.1)
+2020-03-25 19:30:12,334 aixmParser v2.3.0 INFO except-JF: id=1561229 NameV=[D] TMA SAINT-YAN 1.2 (LFLN1.2)
+2020-03-25 19:30:12,334 aixmParser v2.3.0 INFO except-JF: id=1561347 NameV=[E] TMA SAINT-YAN 2 (LFLN2)
+2020-03-25 19:30:12,334 aixmParser v2.3.0 INFO except-JF: id=1563039 NameV=[D] TMA ORLEANS 4 (LFOJ4)
+2020-03-25 19:30:12,350 aixmParser v2.3.0 INFO except-JF: id=1562539 NameV=[D] CTA TOULOUSE 1 (CTA46751)
+2020-03-25 19:30:12,881 aixmParser v2.3.0 INFO except-JF: id=1562671 NameV=[D-OTHER] 312 (LF312)
+2020-03-25 19:30:12,896 aixmParser v2.3.0 INFO except-JF: id=1561409 NameV=[D-OTHER] 254 (LF254)
+2020-03-25 19:30:13,162 aixmParser v2.3.0 INFO except-JF: id=1566595 NameV=[D-OTHER] 8190 (LF8190)
+2020-03-25 19:30:13,162 aixmParser v2.3.0 INFO except-JF: id=1565465 NameV=[D-OTHER] 8380 (LF8380)
+2020-03-25 19:30:13,178 aixmParser v2.3.0 INFO except-JF: id=1564909 NameV=[D-OTHER] 8250 (LF8250)
+2020-03-25 19:30:13,349 aixmParser v2.3.0 INFO except-JF: id=1563917 NameV=[D-OTHER] 6215 (LF6215)
+2020-03-25 19:30:13,412 aixmParser v2.3.0 INFO except-JF: id=1563729 NameV=[D-OTHER] 6852 (LF6852)
+2020-03-25 19:30:13,740 aixmParser v2.3.0 INFO except-JF: id=1562333 NameV=[D] 237 (LFD237)
+2020-03-25 19:30:13,740 aixmParser v2.3.0 INFO except-JF: id=1565649 NameV=[D] 244 (LFD244)
+2020-03-25 19:30:13,756 aixmParser v2.3.0 INFO except-JF: id=1562551 NameV=[D] 59 (LFD59)
+2020-03-25 19:30:13,756 aixmParser v2.3.0 INFO except-JF: id=1562261 NameV=[D] 178 (LFD178)
+2020-03-25 19:30:13,771 aixmParser v2.3.0 INFO except-JF: id=1562325 NameV=[R] 110 B (LFR110B)
+2020-03-25 19:30:13,802 aixmParser v2.3.0 INFO except-JF: id=1565651 NameV=[R] 243 (LFR243)
+2020-03-25 19:30:13,881 aixmParser v2.3.0 INFO except-JF: id=13555471 NameV=[D-OTHER] 6396 (LFV6396AFP)
+2020-03-25 19:30:13,927 aixmParser v2.3.0 INFO except-SD: id=13579904 NameV=[D] TMA NANTES 1.2 (LFRS1.2)
+2020-03-25 19:30:14,099 aixmParser v2.3.0 INFO except-JF: id=1562779 NameV=[E] TMA NANCY 2 (LFSO2)
+2020-03-25 19:30:14,115 aixmParser v2.3.0 INFO except-JF: id=1563721 NameV=[D] TMA NANCY 1.3 (LFSO1.3)
+2020-03-25 19:30:14,224 aixmParser v2.3.0 INFO except-JF: id=1606075 NameV=[R] 107 (LFR107)
+2020-03-25 19:30:14,240 aixmParser v2.3.0 INFO except-JF: id=1561351 NameV=[D] TMA SAINT-YAN 1 (LFLN1)
+2020-03-25 19:30:14,240 aixmParser v2.3.0 INFO except-JF: id=17782569 NameV=[D] TMA SAINT-YAN 1.4 (LFLN1.4)
+2020-03-25 19:30:14,318 aixmParser v2.3.0 INFO except-JF: id=1564775 NameV=[D-OTHER] 9113 (LFV9113MOD)
+2020-03-25 19:30:14,459 aixmParser v2.3.0 INFO except-JF: id=20295607 NameV=[D-OTHER] 8080-1 (LFV80801M)
+2020-03-25 19:30:14,490 aixmParser v2.3.0 INFO except-JF: id=20295613 NameV=[D-OTHER] 8080-2 (LFV80802M)
+2020-03-25 19:30:14,568 aixmParser v2.3.0 INFO except-JF: id=21232491 NameV=[D-OTHER] 8092 (LFV8092MOD)
+2020-03-25 19:30:14,630 aixmParser v2.3.0 INFO except-JF: id=21232929 NameV=[D] 273 (LFD273)
+2020-03-25 19:30:14,849 aixmParser v2.3.0 INFO except-JF: id=23089728 NameV=[D-OTHER] 9754 (FMV9754MOD)
+2020-03-25 19:30:15,036 aixmParser v2.3.0 INFO except-JF: id=1561079 NameV=[D-OTHER] 6006 (LFV6006AFP)
+2020-03-25 19:30:15,036 aixmParser v2.3.0 INFO except-JF: id=1563805 NameV=[D-OTHER] 6000 (LFV6000AFP)
+2020-03-25 19:30:15,083 aixmParser v2.3.0 INFO except-JF: id=25090447 NameV=[R] 333 (LFR333)
+2020-03-25 19:30:15,365 aixmParser v2.3.0 INFO except-JF: id=27270845 NameV=[D-OTHER] 8131 (LFV8131MOD)
+2020-03-25 19:30:15,411 aixmParser v2.3.0 INFO except-JF: id=1563897 NameV=[D-OTHER] 6352 (LF6352)
+2020-03-25 19:30:15,411 aixmParser v2.3.0 INFO except-D: id=1564295 NameV=[D-OTHER] 6362 (LFV6362AFP)
+2020-03-25 19:30:15,443 aixmParser v2.3.0 INFO except-JF: id=1564213 NameV=[D-OTHER] 6457 (LF6457)
+2020-03-25 19:30:15,458 aixmParser v2.3.0 INFO except-JF: id=1563641 NameV=[D-OTHER] 6495 (LFV6495AFP)
+2020-03-25 19:30:15,583 aixmParser v2.3.0 INFO except-JF: id=1561927 NameV=[R] 167 A (LFR167A)
+2020-03-25 19:30:15,583 aixmParser v2.3.0 INFO except-JF: id=1561921 NameV=[R] 167 B (LFR167B)
+2020-03-25 19:30:15,599 aixmParser v2.3.0 INFO except-JF: id=26372276 NameV=[R] 207 (LFR207)
+2020-03-25 19:30:15,599 aixmParser v2.3.0 INFO except-SDJF: id=1564621 NameV=[R] 208 (LFR208)
+2020-03-25 19:30:15,630 aixmParser v2.3.0 INFO except-JF: id=1564637 NameV=[R] 209 (LFR209)
+2020-03-25 19:30:15,630 aixmParser v2.3.0 INFO except-JF: id=1564645 NameV=[R] 210 (LFR210)
+2020-03-25 19:30:15,646 aixmParser v2.3.0 INFO except-JF: id=1565371 NameV=[R] 229 B (LFR229B)
+2020-03-25 19:30:15,646 aixmParser v2.3.0 INFO except-JF: id=1565259 NameV=[R] 230 (LFR230)
+2020-03-25 19:30:15,646 aixmParser v2.3.0 INFO except-JF: id=1566597 NameV=[R] 5 A1 (LFR5A1)
+2020-03-25 19:30:15,646 aixmParser v2.3.0 INFO except-DJF: id=1562579 NameV=[R] 233 (LFR233)
+2020-03-25 19:30:15,646 aixmParser v2.3.0 INFO except-JF: id=25090868 NameV=[D] 122 A (LFD122A)
+2020-03-25 19:30:15,646 aixmParser v2.3.0 INFO except-JF: id=25090881 NameV=[D] 122 B (LFD122B)
+2020-03-25 19:30:15,661 aixmParser v2.3.0 INFO except-JF: id=1566601 NameV=[R] 5 A2 (LFR5A2)
+2020-03-25 19:30:15,661 aixmParser v2.3.0 INFO except-JF: id=1566599 NameV=[R] 5 B1 (LFR5B1)
+2020-03-25 19:30:15,693 aixmParser v2.3.0 INFO except-JF: id=23814243 NameV=[D] 192 E (LFD192E)
+2020-03-25 19:30:15,693 aixmParser v2.3.0 INFO except-JF: id=1563115 NameV=[D] 192 S (LFD192S)
+2020-03-25 19:30:15,693 aixmParser v2.3.0 INFO except-JF: id=1563141 NameV=[D] 192 W (LFD192W)
+2020-03-25 19:30:15,693 aixmParser v2.3.0 INFO except-JF: id=17781541 NameV=[D] 216 (LFD216)
+2020-03-25 19:30:15,708 aixmParser v2.3.0 INFO except-SDJF: id=1564641 NameV=[R] 6 D (LFR6D)
+2020-03-25 19:30:15,708 aixmParser v2.3.0 INFO except-SDJF: id=1564647 NameV=[R] 6 E (LFR6E)
+2020-03-25 19:30:15,708 aixmParser v2.3.0 INFO except-JF: id=1563487 NameV=[R] 7 A (LFR7A)
+2020-03-25 19:30:15,708 aixmParser v2.3.0 INFO except-JF: id=1563479 NameV=[R] 7 B (LFR7B)
+2020-03-25 19:30:15,708 aixmParser v2.3.0 INFO except-JF: id=1562817 NameV=[R] 10 (LFR10)
+2020-03-25 19:30:15,724 aixmParser v2.3.0 INFO except-JF: id=1566309 NameV=[R] 26 (LFR26)
+2020-03-25 19:30:15,724 aixmParser v2.3.0 INFO except-JF: id=1566285 NameV=[R] 27 (LFR27)
+2020-03-25 19:30:15,724 aixmParser v2.3.0 INFO except-JF: id=1563139 NameV=[R] 139 (LFR139)
+2020-03-25 19:30:15,739 aixmParser v2.3.0 INFO except-JF: id=1563157 NameV=[R] 142 (LFR142)
+2020-03-25 19:30:15,739 aixmParser v2.3.0 INFO except-JF: id=1563153 NameV=[R] 143 (LFR143)
+2020-03-25 19:30:15,739 aixmParser v2.3.0 INFO except-JF: id=1563149 NameV=[R] 144 (LFR144)
+2020-03-25 19:30:15,755 aixmParser v2.3.0 INFO except-JF: id=10834036 NameV=[R] 49 H3 (LFR49H3)
+2020-03-25 19:30:15,755 aixmParser v2.3.0 INFO except-JF: id=1563547 NameV=[R] 49 S (LFR49S)
+2020-03-25 19:30:15,755 aixmParser v2.3.0 INFO except-DJF: id=1565785 NameV=[R] 50 (LFR50)
+2020-03-25 19:30:15,771 aixmParser v2.3.0 INFO except-JF: id=1565631 NameV=[R] 45 NS (LFR45NS)
+2020-03-25 19:30:15,771 aixmParser v2.3.0 INFO except-JF: id=1563887 NameV=[R] 45 S1 (LFR45S1)
+2020-03-25 19:30:15,771 aixmParser v2.3.0 INFO except-JF: id=1563875 NameV=[R] 45 S2 (LFR45S2)
+2020-03-25 19:30:15,771 aixmParser v2.3.0 INFO except-JF: id=1563879 NameV=[R] 45 S3 (LFR45S3)
+2020-03-25 19:30:15,771 aixmParser v2.3.0 INFO except-JF: id=1563145 NameV=[R] 145 (LFR145)
+2020-03-25 19:30:15,771 aixmParser v2.3.0 INFO except-JF: id=1563037 NameV=[R] 146 A (LFR146A)
+2020-03-25 19:30:15,771 aixmParser v2.3.0 INFO except-JF: id=1566441 NameV=[R] 146 B (LFR146B)
+2020-03-25 19:30:15,786 aixmParser v2.3.0 INFO except-JF: id=1563041 NameV=[R] 147 (LFR147)
+2020-03-25 19:30:15,786 aixmParser v2.3.0 INFO except-JF: id=1563599 NameV=[R] 13 A1 (LFR13A1)
+2020-03-25 19:30:15,786 aixmParser v2.3.0 INFO except-JF: id=21326114 NameV=[R] 13 A2 (LFR13A2)
+2020-03-25 19:30:15,786 aixmParser v2.3.0 INFO except-JF: id=21326125 NameV=[R] 13 B1 (LFR13B1)
+2020-03-25 19:30:15,786 aixmParser v2.3.0 INFO except-JF: id=21326136 NameV=[R] 13 B2 (LFR13B2)
+2020-03-25 19:30:15,786 aixmParser v2.3.0 INFO except-DJF: id=1606159 NameV=[R] 102 (LFR102)
+2020-03-25 19:30:15,802 aixmParser v2.3.0 INFO except-JF: id=1563013 NameV=[R] 164 A2 (LFR164A2)
+2020-03-25 19:30:15,802 aixmParser v2.3.0 INFO except-JF: id=1563899 NameV=[R] 45 S4 (LFR45S4)
+2020-03-25 19:30:15,802 aixmParser v2.3.0 INFO except-JF: id=1563903 NameV=[R] 45 S5 (LFR45S5)
+2020-03-25 19:30:15,802 aixmParser v2.3.0 INFO except-JF: id=1606203 NameV=[R] 45 S6.1 (LFR45S6.1)
+2020-03-25 19:30:15,818 aixmParser v2.3.0 INFO except-JF: id=1606205 NameV=[R] 45 S6.2 (LFR45S6.2)
+2020-03-25 19:30:15,818 aixmParser v2.3.0 INFO except-JF: id=1563049 NameV=[R] 149 A (LFR149A)
+2020-03-25 19:30:15,818 aixmParser v2.3.0 INFO except-JF: id=1563053 NameV=[R] 149 B (LFR149B)
+2020-03-25 19:30:15,818 aixmParser v2.3.0 INFO except-JF: id=1564543 NameV=[R] 149 D (LFR149D)
+2020-03-25 19:30:15,818 aixmParser v2.3.0 INFO except-JF: id=1564545 NameV=[R] 149 E (LFR149E)
+2020-03-25 19:30:15,818 aixmParser v2.3.0 INFO except-JF: id=1563061 NameV=[R] 150 A (LFR150A)
+2020-03-25 19:30:15,818 aixmParser v2.3.0 INFO except-JF: id=1563135 NameV=[R] 14 (LFR14)
+2020-03-25 19:30:15,833 aixmParser v2.3.0 INFO except-JF: id=1563025 NameV=[R] 164 B (LFR164B)
+2020-03-25 19:30:15,833 aixmParser v2.3.0 INFO except-JF: id=1561259 NameV=[R] 164 C (LFR164C)
+2020-03-25 19:30:15,833 aixmParser v2.3.0 INFO except-JF: id=1563021 NameV=[R] 165 (LFR165)
+2020-03-25 19:30:15,833 aixmParser v2.3.0 INFO except-JF: id=1563033 NameV=[R] 166 A (LFR166A)
+2020-03-25 19:30:15,833 aixmParser v2.3.0 INFO except-JF: id=1563029 NameV=[R] 166 B (LFR166B)
+2020-03-25 19:30:15,833 aixmParser v2.3.0 INFO except-JF: id=1563895 NameV=[R] 45 S7 (LFR45S7)
+2020-03-25 19:30:15,849 aixmParser v2.3.0 INFO except-JF: id=1563525 NameV=[R] 56 (LFR56)
+2020-03-25 19:30:15,849 aixmParser v2.3.0 INFO except-JF: id=1563065 NameV=[R] 150 B (LFR150B)
+2020-03-25 19:30:15,849 aixmParser v2.3.0 INFO except-JF: id=1563069 NameV=[R] 150 C1 (LFR150C1)
+2020-03-25 19:30:15,849 aixmParser v2.3.0 INFO except-JF: id=1563073 NameV=[R] 150 C2 (LFR150C2)
+2020-03-25 19:30:15,849 aixmParser v2.3.0 INFO except-JF: id=1563081 NameV=[R] 150 D2 (LFR150D2)
+2020-03-25 19:30:15,849 aixmParser v2.3.0 INFO except-JF: id=1563087 NameV=[R] 152 (LFR152)
+2020-03-25 19:30:15,864 aixmParser v2.3.0 INFO except-JF: id=1563401 NameV=[R] 166 C (LFR166C)
+2020-03-25 19:30:15,864 aixmParser v2.3.0 INFO except-JF: id=1563397 NameV=[R] 168 (LFR168)
+2020-03-25 19:30:15,864 aixmParser v2.3.0 INFO except-SDJF: id=1562427 NameV=[R] 169 (LFR169)
+2020-03-25 19:30:15,864 aixmParser v2.3.0 INFO except-SDJF: id=1610732 NameV=[R] 171 (LFR171)
+2020-03-25 19:30:15,864 aixmParser v2.3.0 INFO except-SDJF: id=1610734 NameV=[R] 174 (LFR174)
+2020-03-25 19:30:15,864 aixmParser v2.3.0 INFO except-JF: id=26372691 NameV=[R] 172 (LFR172)
+2020-03-25 19:30:15,880 aixmParser v2.3.0 INFO except-JF: id=1563523 NameV=[R] 57 (LFR57)
+2020-03-25 19:30:15,880 aixmParser v2.3.0 INFO except-JF: id=1563507 NameV=[R] 61 (LFR61)
+2020-03-25 19:30:15,880 aixmParser v2.3.0 INFO except-JF: id=1563565 NameV=[R] 66 B (LFR66B)
+2020-03-25 19:30:15,880 aixmParser v2.3.0 INFO except-JF: id=1563569 NameV=[R] 66 C (LFR66C)
+2020-03-25 19:30:15,880 aixmParser v2.3.0 INFO except-JF: id=1563573 NameV=[R] 66 D (LFR66D)
+2020-03-25 19:30:15,896 aixmParser v2.3.0 INFO except-JF: id=1566297 NameV=[R] 24 (LFR24)
+2020-03-25 19:30:15,896 aixmParser v2.3.0 INFO except-JF: id=1613170 NameV=[R] 185 (LFR185)
+2020-03-25 19:30:15,896 aixmParser v2.3.0 INFO except-DJF: id=1610754 NameV=[R] 190 B (LFR190B)
+2020-03-25 19:30:15,911 aixmParser v2.3.0 INFO except-DJF: id=1610756 NameV=[R] 190 C (LFR190C)
+2020-03-25 19:30:15,911 aixmParser v2.3.0 INFO except-JF: id=1563389 NameV=[R] 191 A (LFR191A)
+2020-03-25 19:30:15,911 aixmParser v2.3.0 INFO except-JF: id=1565367 NameV=[R] 228 B (LFR228B)
+2020-03-25 19:30:15,911 aixmParser v2.3.0 INFO except-JF: id=21232801 NameV=[R] 108 K (LFR108K)
+2020-03-25 19:30:15,927 aixmParser v2.3.0 INFO except-JF: id=12172355 NameV=[R] 2 (SOR2)
+2020-03-25 19:30:15,943 aixmParser v2.3.0 INFO except-JF: id=1565373 NameV=[R] 229 A (LFR229A)
+2020-03-25 19:30:15,943 aixmParser v2.3.0 INFO except-JF: id=11047929 NameV=[R] 234 B (LFR234B)
+2020-03-25 19:30:15,943 aixmParser v2.3.0 INFO except-JF: id=7122779 NameV=[R] 235 (LFR235)
+2020-03-25 19:30:15,958 aixmParser v2.3.0 INFO except-JF: id=1562999 NameV=[R] 162 (LFR162)
+2020-03-25 19:30:15,958 aixmParser v2.3.0 INFO except-JF: id=1563009 NameV=[R] 163 A (LFR163A)
+2020-03-25 19:30:15,958 aixmParser v2.3.0 INFO except-JF: id=1563005 NameV=[R] 163 B (LFR163B)
+2020-03-25 19:30:15,958 aixmParser v2.3.0 INFO except-SDJF: id=25090693 NameV=[R] 332 A (LFR332A)
+2020-03-25 19:30:15,974 aixmParser v2.3.0 INFO except-JF: id=1563465 NameV=[R] 66 A1 (LFR66A1)
+2020-03-25 19:30:15,974 aixmParser v2.3.0 INFO except-JF: id=20201919 NameV=[R] 268 (LFR268)
+2020-03-25 19:30:15,989 aixmParser v2.3.0 INFO except-JF: id=1613214 NameV=[R] 163 C (LFR163C)
+2020-03-25 19:30:15,989 aixmParser v2.3.0 INFO except-JF: id=1563017 NameV=[R] 164 A1 (LFR164A1)
+2020-03-25 19:30:15,989 aixmParser v2.3.0 INFO except-JF: id=1562519 NameV=[R] 201 B 2 (LFR201B2)
+2020-03-25 19:30:15,989 aixmParser v2.3.0 INFO except-JF: id=1565451 NameV=[R] 202 B (LFR202B)
+2020-03-25 19:30:15,989 aixmParser v2.3.0 INFO except-JF: id=21206831 NameV=[D] 19 (LFD19)
+2020-03-25 19:30:15,989 aixmParser v2.3.0 INFO except-JF: id=1613226 NameV=[R] 93 (LFR93)
+2020-03-25 19:30:16,005 aixmParser v2.3.0 INFO except-JF: id=1565859 NameV=[R] 94 A (LFR94A)
+2020-03-25 19:30:16,005 aixmParser v2.3.0 INFO except-JF: id=13555777 NameV=[R] 94 B (LFR94B)
+2020-03-25 19:30:16,005 aixmParser v2.3.0 INFO except-JF: id=1609857 NameV=[R] 9 H3 (LFR9H3)
+2020-03-25 19:30:16,005 aixmParser v2.3.0 INFO except-JF: id=1564439 NameV=[R] 203 A (LFR203A)
+2020-03-25 19:30:16,005 aixmParser v2.3.0 INFO except-JF: id=26372360 NameV=[R] 286 (LFR286)
+2020-03-25 19:30:16,005 aixmParser v2.3.0 INFO except-DJF: id=1613148 NameV=[R] 506 A (LFR506A)
+2020-03-25 19:30:16,021 aixmParser v2.3.0 INFO except-DJF: id=1613150 NameV=[R] 506 B (LFR506B)
+2020-03-25 19:30:16,036 aixmParser v2.3.0 INFO except-DJF: id=1564901 NameV=[D] 12 (NT12)
+2020-03-25 19:30:16,036 aixmParser v2.3.0 INFO except-JF: id=1564437 NameV=[R] 203 B (LFR203B)
+2020-03-25 19:30:16,036 aixmParser v2.3.0 INFO except-JF: id=1564443 NameV=[R] 203 C (LFR203C)
+2020-03-25 19:30:16,036 aixmParser v2.3.0 INFO except-JF: id=1564609 NameV=[R] 206 (LFR206)
+2020-03-25 19:30:16,052 aixmParser v2.3.0 INFO except-JF: id=1564607 NameV=[R] 589 A (LFR589A)
+2020-03-25 19:30:16,052 aixmParser v2.3.0 INFO except-JF: id=1564525 NameV=[R] 589 B (LFR589B)
+2020-03-25 19:30:16,052 aixmParser v2.3.0 INFO except-JF: id=1563539 NameV=[R] 590 A (LFR590A)
+2020-03-25 19:30:16,052 aixmParser v2.3.0 INFO except-JF: id=1563535 NameV=[R] 590 B (LFR590B)
+2020-03-25 19:30:16,067 aixmParser v2.3.0 INFO except-JF: id=1562269 NameV=[D] 236 (LFD236)
+2020-03-25 19:30:16,067 aixmParser v2.3.0 INFO except-JF: id=1613178 NameV=[D] 253 (LFD253)
+2020-03-25 19:30:16,067 aixmParser v2.3.0 INFO except-DJF: id=1606191 NameV=[D] 526 A (LFD526A)
+2020-03-25 19:30:16,067 aixmParser v2.3.0 INFO except-JF: id=1563427 NameV=[R] 9 B (LFR9B)
+2020-03-25 19:30:16,067 aixmParser v2.3.0 INFO except-JF: id=1609853 NameV=[R] 9 H1 (LFR9H1)
+2020-03-25 19:30:16,067 aixmParser v2.3.0 INFO except-JF: id=1609855 NameV=[R] 9 H2 (LFR9H2)
+2020-03-25 19:30:16,083 aixmParser v2.3.0 INFO except-JF: id=1564503 NameV=[R] 223 (LFR223)
+2020-03-25 19:30:16,083 aixmParser v2.3.0 INFO except-JF: id=1563533 NameV=[R] 591 (LFR591)
+2020-03-25 19:30:16,083 aixmParser v2.3.0 INFO except-JF: id=1563529 NameV=[R] 592 (LFR592)
+2020-03-25 19:30:16,083 aixmParser v2.3.0 INFO except-JF: id=1564535 NameV=[R] 593 A (LFR593A)
+2020-03-25 19:30:16,099 aixmParser v2.3.0 INFO except-JF: id=1564537 NameV=[R] 593 B (LFR593B)
+2020-03-25 19:30:16,099 aixmParser v2.3.0 INFO except-JF: id=1564583 NameV=[R] 46 A (LFR46A)
+2020-03-25 19:30:16,099 aixmParser v2.3.0 INFO except-JF: id=1564585 NameV=[R] 46 B (LFR46B)
+2020-03-25 19:30:16,099 aixmParser v2.3.0 INFO except-JF: id=1564595 NameV=[R] 46 C (LFR46C)
+2020-03-25 19:30:16,099 aixmParser v2.3.0 INFO except-JF: id=1564597 NameV=[R] 46 D (LFR46D)
+2020-03-25 19:30:16,099 aixmParser v2.3.0 INFO except-JF: id=1564591 NameV=[R] 46 E1 (LFR46E1)
+2020-03-25 19:30:16,099 aixmParser v2.3.0 INFO except-JF: id=1565647 NameV=[D] 568 A (LFD568A)
+2020-03-25 19:30:16,114 aixmParser v2.3.0 INFO except-JF: id=1565645 NameV=[D] 568 B (LFD568B)
+2020-03-25 19:30:16,114 aixmParser v2.3.0 INFO except-JF: id=25090611 NameV=[R] 334 (LFR334)
+2020-03-25 19:30:16,130 aixmParser v2.3.0 INFO except-JF: id=1564593 NameV=[R] 46 E2 (LFR46E2)
+2020-03-25 19:30:16,130 aixmParser v2.3.0 INFO except-JF: id=1564603 NameV=[R] 46 F1 (LFR46F1)
+2020-03-25 19:30:16,130 aixmParser v2.3.0 INFO except-JF: id=1564605 NameV=[R] 46 F2 (LFR46F2)
+2020-03-25 19:30:16,130 aixmParser v2.3.0 INFO except-JF: id=1564599 NameV=[R] 46 F3 (LFR46F3)
+2020-03-25 19:30:16,130 aixmParser v2.3.0 INFO except-JF: id=1564601 NameV=[R] 46 G (LFR46G)
+2020-03-25 19:30:16,130 aixmParser v2.3.0 INFO except-JF: id=1564921 NameV=[R] 248 (LFR248)
+2020-03-25 19:30:16,146 aixmParser v2.3.0 INFO except-SDJF: id=1565039 NameV=[R] 251 (LFR251)
+2020-03-25 19:30:16,146 aixmParser v2.3.0 INFO except-JF: id=1613158 NameV=[R] 252 (LFR252)
+2020-03-25 19:30:16,146 aixmParser v2.3.0 INFO except-JF: id=11007016 NameV=[R] 256 (LFR256)
+2020-03-25 19:30:16,161 aixmParser v2.3.0 INFO except-JF: id=1563231 NameV=[R] 46 N1 (LFR46N1)
+2020-03-25 19:30:16,161 aixmParser v2.3.0 INFO except-JF: id=1563235 NameV=[R] 46 N2 (LFR46N2)
+2020-03-25 19:30:16,161 aixmParser v2.3.0 INFO except-JF: id=1563385 NameV=[R] 191 B (LFR191B)
+2020-03-25 19:30:16,161 aixmParser v2.3.0 INFO except-JF: id=1563381 NameV=[R] 191 C (LFR191C)
+2020-03-25 19:30:16,161 aixmParser v2.3.0 INFO except-JF: id=1563377 NameV=[R] 193 A (LFR193A)
+2020-03-25 19:30:16,161 aixmParser v2.3.0 INFO except-JF: id=1563375 NameV=[R] 193 B (LFR193B)
+2020-03-25 19:30:16,177 aixmParser v2.3.0 INFO except-JF: id=1563591 NameV=[R] 195 (LFR195)
+2020-03-25 19:30:16,192 aixmParser v2.3.0 INFO except-JF: id=1563469 NameV=[R] 69 (LFR69)
+2020-03-25 19:30:16,208 aixmParser v2.3.0 INFO except-JF: id=1563265 NameV=[R] 45 A (LFR45A)
+2020-03-25 19:30:16,208 aixmParser v2.3.0 INFO except-JF: id=1563239 NameV=[R] 45 B (LFR45B)
+2020-03-25 19:30:16,208 aixmParser v2.3.0 INFO except-JF: id=1563243 NameV=[R] 45 C (LFR45C)
+2020-03-25 19:30:16,208 aixmParser v2.3.0 INFO except-JF: id=1561103 NameV=[R] 49 D (LFR49D)
+2020-03-25 19:30:16,224 aixmParser v2.3.0 INFO except-DJF: id=1606193 NameV=[D] 526 B (LFD526B)
+2020-03-25 19:30:16,224 aixmParser v2.3.0 INFO except-JF: id=1563247 NameV=[R] 45 D (LFR45D)
+2020-03-25 19:30:16,224 aixmParser v2.3.0 INFO except-JF: id=1563935 NameV=[R] 45 N2 (LFR45N2)
+2020-03-25 19:30:16,255 aixmParser v2.3.0 INFO except-JF: id=16475465 NameV=[D] 42 A (LFD42A)
+2020-03-25 19:30:16,255 aixmParser v2.3.0 INFO except-JF: id=17916905 NameV=[D] 42 B (LFD42B)
+2020-03-25 19:30:16,255 aixmParser v2.3.0 INFO except-JF: id=1563927 NameV=[R] 45 N3 (LFR45N3)
+2020-03-25 19:30:16,255 aixmParser v2.3.0 INFO except-JF: id=1563883 NameV=[R] 45 N4 (LFR45N4)
+2020-03-25 19:30:16,255 aixmParser v2.3.0 INFO except-JF: id=1563923 NameV=[R] 45 N5.1 (LFR45N5.1)
+2020-03-25 19:30:16,255 aixmParser v2.3.0 INFO except-JF: id=21206849 NameV=[R] 45 N5.2 (LFR45N5.2)
+2020-03-25 19:30:16,255 aixmParser v2.3.0 INFO except-JF: id=1563123 NameV=[R] 124 (LFR124)
+2020-03-25 19:30:16,271 aixmParser v2.3.0 INFO except-JF: id=1566603 NameV=[R] 5 B2 (LFR5B2)
+2020-03-25 19:30:16,380 aixmParser v2.3.0 INFO except-JF: id=1565717 NameV=[D] CTR DOLE (LFGJ)
+2020-03-25 19:30:16,380 aixmParser v2.3.0 INFO except-JF: id=1561583 NameV=[D] CTR MERVILLE (LFQT)
+2020-03-25 19:30:16,474 aixmParser v2.3.0 INFO except-JF: id=1561267 NameV=[D] CTR SAINT-YAN 1 (LFLN1)
+2020-03-25 19:30:16,474 aixmParser v2.3.0 INFO except-JF: id=1561235 NameV=[D] CTR SAINT-YAN 2 (LFLN2)
+2020-03-25 19:30:16,474 aixmParser v2.3.0 INFO except-JF: id=1561591 NameV=[D] CTR MELUN (LFPM)
+2020-03-25 19:30:16,614 aixmParser v2.3.0 INFO except-JF: id=1613164 NameV=[D] TMA ETAIN 1 (LFQE1)
+2020-03-25 19:30:16,614 aixmParser v2.3.0 INFO except-JF: id=1613166 NameV=[D] TMA ETAIN 2 (LFQE2)
+2020-03-25 19:30:16,661 aixmParser v2.3.0 INFO except-JF: id=1561853 NameV=[R] 49 H2 (LFR49H2)
+2020-03-25 19:30:16,661 aixmParser v2.3.0 INFO except-JF: id=1562523 NameV=[R] 201 A (LFR201A)
+2020-03-25 19:30:16,661 aixmParser v2.3.0 INFO except-JF: id=21232739 NameV=[R] 201 B 1 (LFR201B1)
+2020-03-25 19:30:16,677 aixmParser v2.3.0 INFO except-JF: id=29831115 NameV=[D-OTHER] 333 -4 (LFV3334PJE)
+2020-03-25 19:30:16,692 aixmParser v2.3.0 INFO except-JF: id=29831094 NameV=[D-OTHER] 333 -2 (LFV3332PJE)
+2020-03-25 19:30:16,692 aixmParser v2.3.0 INFO except-JF: id=29831105 NameV=[D-OTHER] 333 -3 (LFV3333PJE)
+2020-03-25 19:30:16,692 aixmParser v2.3.0 INFO except-JF: id=29831080 NameV=[D-OTHER] 333 -1 (LFV3331PJE)
+2020-03-25 19:30:16,724 aixmParser v2.3.0 INFO except-JF: id=29697634 NameV=[D-OTHER] 6151 (LFV6151AFP)
+2020-03-25 19:30:16,770 aixmParser v2.3.0 INFO except-JF: id=1563077 NameV=[R] 150 D1 (LFR150D1)
+2020-03-25 19:30:16,770 aixmParser v2.3.0 INFO except-DJF: id=1565265 NameV=[R] 231 B (LFR231B)
+2020-03-25 19:30:16,770 aixmParser v2.3.0 INFO except-DJF: id=1565251 NameV=[R] 231 A (LFR231A)
+2020-03-25 19:30:16,770 aixmParser v2.3.0 INFO except-JF: id=1563257 NameV=[R] 44 A (LFR44A)
+2020-03-25 19:30:16,770 aixmParser v2.3.0 INFO except-JF: id=1565715 NameV=[R] 49 A2 (LFR49A2)
+2020-03-25 19:30:16,770 aixmParser v2.3.0 INFO except-JF: id=29827951 NameV=[R] 49 L2 (LFR49L2)
+2020-03-25 19:30:16,786 aixmParser v2.3.0 INFO except-JF: id=29827908 NameV=[R] 49 L1 (LFR49L1)
+2020-03-25 19:30:16,786 aixmParser v2.3.0 INFO except-JF: id=1565713 NameV=[R] 49 A1 (LFR49A1)
+2020-03-25 19:30:16,786 aixmParser v2.3.0 INFO except-JF: id=1563551 NameV=[R] 49 H1 (LFR49H1)
+2020-03-25 19:30:16,786 aixmParser v2.3.0 INFO except-JF: id=1563261 NameV=[R] 44 B (LFR44B)
+2020-03-25 19:30:16,958 aixmParser v2.3.0 INFO Write file airspacesCatalog.json
+2020-03-25 19:30:17,161 aixmParser v2.3.0 INFO Write file airspacesCatalog.csv
+2020-03-25 19:30:17,161 aixmParser v2.3.0 INFO Parsing Gbr to GeoJSON - Geographic borders
+2020-03-25 19:30:23,542 aixmParser v2.3.0 INFO Write file borders.geojson - 40 areas in map
+2020-03-25 19:30:25,761 aixmParser v2.3.0 INFO Parsing Abd to GeoJSON - Airspaces Borders
+2020-03-25 19:30:47,361 aixmParser v2.3.0 WARNING Missing Airspaces Borders AseUid=1562743
+2020-03-25 19:30:47,971 aixmParser v2.3.0 WARNING Missing Airspaces Borders AseUid=1562747 AseUidBase=1562743
+2020-03-25 19:32:55,261 aixmParser v2.3.0 WARNING Missing Airspaces Borders AseUid=10437886
+2020-03-25 19:33:55,443 aixmParser v2.3.0 WARNING Missing Airspaces Borders AseUid=1562597
+2020-03-25 19:34:54,842 aixmParser v2.3.0 WARNING Missing Airspaces Borders AseUid=1562735
+2020-03-25 19:38:11,805 aixmParser v2.3.0 INFO Prepare GeoJSON file - All Airspaces map
+2020-03-25 19:44:30,569 aixmParser v2.3.0 INFO Write file airspaces-all.geojson - 3728 areas in map
+2020-03-25 19:44:31,350 aixmParser v2.3.0 INFO Prepare GeoJSON file - IFR map (Instrument Flihgt Rules
+2020-03-25 19:51:10,101 aixmParser v2.3.0 INFO Write file airspaces-ifr.geojson - 2595 areas in map
+2020-03-25 19:51:10,398 aixmParser v2.3.0 INFO Prepare GeoJSON file - VFR map (Visual Flihgt Rules
+2020-03-25 19:57:55,939 aixmParser v2.3.0 INFO Write file airspaces-vfr.geojson - 1133 areas in map
+2020-03-25 19:57:56,470 aixmParser v2.3.0 INFO Prepare GeoJSON file - FreeFlight map (Paragliding / hanggliding)
+2020-03-25 20:05:06,029 aixmParser v2.3.0 INFO Write file airspaces-freeflight.geojson - 1017 areas in map
+2020-03-25 20:05:06,623 aixmParser v2.3.0 INFO [bpaTools.Logger.Logger]aixmParser v2.3.0 - Report
+   260 Informations
+     5 Warnings
+2020-03-25 20:05:06,623 aixmParser v2.3.0 INFO Logger closed - [bpaTools.Logger.Logger]aixmParser v2.3.0
+2020-03-26 13:54:47,349 aixmParser v2.3.0 INFO Logger started - [bpaTools.Logger.Logger]aixmParser v2.3.0
+2020-03-26 13:54:47,349 aixmParser v2.3.0 INFO Ligne de commande:
+2020-03-26 13:54:47,349 aixmParser v2.3.0 INFO     sys.argv[0] D:/_Users_/BPascal/_2_Parapente/Materiel/_GPS/__OpenAir-Files/AIXM/src/aixmParser/aixmParser/src/aixmParser.py
+2020-03-26 13:54:47,349 aixmParser v2.3.0 INFO     sys.argv[1] -h
+2020-03-26 13:54:47,365 aixmParser v2.3.0 INFO Logger closed - [bpaTools.Logger.Logger]aixmParser v2.3.0
+2020-03-26 20:27:58,536 aixmParser v2.3.0 INFO Logger started - [bpaTools.Logger.Logger]aixmParser v2.3.0
+2020-03-26 20:27:58,536 aixmParser v2.3.0 INFO Ligne de commande:
+2020-03-26 20:27:58,536 aixmParser v2.3.0 INFO     sys.argv[0] D:/_Users_/BPascal/_2_Parapente/Materiel/_GPS/__OpenAir-Files/AIXM/src/aixmParser/aixmParser/src/aixmParser.py
+2020-03-26 20:27:58,536 aixmParser v2.3.0 INFO     sys.argv[1] ../tst/aixm4.5_SIA-FR_map-Airspaces2.xml
+2020-03-26 20:27:58,536 aixmParser v2.3.0 INFO     sys.argv[2] -Fall
+2020-03-26 20:27:58,536 aixmParser v2.3.0 INFO     sys.argv[3] -Tall
+2020-03-26 20:27:58,536 aixmParser v2.3.0 INFO     sys.argv[4] -IFR
+2020-03-26 20:27:58,536 aixmParser v2.3.0 INFO     sys.argv[5] -VFR
+2020-03-26 20:27:58,536 aixmParser v2.3.0 INFO     sys.argv[6] -FreeFlight
+2020-03-26 20:27:58,536 aixmParser v2.3.0 INFO /!\ IFR mode for specific Upper vues of aeronautic maps (only IFR areas)
+2020-03-26 20:27:58,536 aixmParser v2.3.0 INFO /!\ VFR mode for specific Lower vues of aeronautic maps (only VFR areas, without IFR areas)
+2020-03-26 20:27:58,536 aixmParser v2.3.0 INFO /!\ FreeFlight mode for specific Paragliding/Hanggliding maps
+2020-03-26 20:27:58,536 aixmParser v2.3.0 INFO Reading source file: ../tst/aixm4.5_SIA-FR_map-Airspaces2.xml
+2020-03-26 20:27:59,098 aixmParser v2.3.0 INFO Parsing Obs to GeoJSON - Obstacles
+2020-03-26 20:27:59,347 aixmParser v2.3.0 INFO Write file obstacles.geojson - 0 areas in map
+2020-03-26 20:27:59,362 aixmParser v2.3.0 INFO Parsing Ahp to GeoJSON - Aerodromes / Heliports
+2020-03-26 20:27:59,550 aixmParser v2.3.0 INFO Write file aerodromes.geojson - 0 areas in map
+2020-03-26 20:27:59,550 aixmParser v2.3.0 INFO Parsing Rcp to GeoJSON - Runway Center Line Position
+2020-03-26 20:27:59,744 aixmParser v2.3.0 INFO Write file runwaysCenter.geojson - 0 areas in map
+2020-03-26 20:27:59,745 aixmParser v2.3.0 INFO Parsing Uni to GeoJSON - Aerodrome control towers
+2020-03-26 20:27:59,846 aixmParser v2.3.0 INFO Write file towers.geojson - 0 areas in map
+2020-03-26 20:27:59,847 aixmParser v2.3.0 INFO Parsing Gsd to GeoJSON - Gates and Stands
+2020-03-26 20:28:00,054 aixmParser v2.3.0 INFO Write file gates-stands.geojson - 0 areas in map
+2020-03-26 20:28:00,054 aixmParser v2.3.0 INFO Parsing Gbr to GeoJSON - Geographic borders
+2020-03-26 20:28:01,452 aixmParser v2.3.0 INFO Write file borders.geojson - 5 areas in map
+2020-03-26 20:28:01,548 aixmParser v2.3.0 INFO Indexing Adg - Airspaces Groups
+2020-03-26 20:28:01,839 aixmParser v2.3.0 INFO Indexing Sae - Airspaces Services
+2020-03-26 20:28:02,108 aixmParser v2.3.0 INFO Indexing Uni - Organizations
+2020-03-26 20:28:02,383 aixmParser v2.3.0 INFO Indexing Abd - Airspaces Borders
+2020-03-26 20:28:02,589 aixmParser v2.3.0 INFO Loading Ase - Airspaces Catalog
+2020-03-26 20:28:02,614 aixmParser v2.3.0 INFO except-SDJF: id=1613148-tst NameV=[R] 506 A (LFR506A)
+2020-03-26 20:28:02,616 aixmParser v2.3.0 INFO except-SDJF: id=1613148-1 NameV=[R] 506 A (LFR506A)
+2020-03-26 20:28:02,617 aixmParser v2.3.0 INFO except-JF: id=1613148-2 NameV=[R] 506 A (LFR506A)
+2020-03-26 20:28:02,619 aixmParser v2.3.0 INFO except-SD: id=17782506 NameV=[R] 239 (LFR239)
+2020-03-26 20:28:02,632 aixmParser v2.3.0 INFO except-JF: id=1563013 NameV=[R] 164 A2 (LFR164A2)
+2020-03-26 20:28:02,857 aixmParser v2.3.0 INFO Write file airspacesCatalog.json
+2020-03-26 20:28:03,050 aixmParser v2.3.0 INFO Write file airspacesCatalog.csv
+2020-03-26 20:28:03,128 aixmParser v2.3.0 INFO Parsing Abd to GeoJSON - Airspaces Borders
+2020-03-26 20:28:05,245 aixmParser v2.3.0 WARNING Missing Airspaces Borders AseUid=1562265
+2020-03-26 20:28:06,020 aixmParser v2.3.0 WARNING Missing geoBorder GbrUid='19012205' Name=ITALY_SWITZERLAND
+2020-03-26 20:28:06,020 aixmParser v2.3.0 WARNING Missing geoBorder GbrUid='19012205' Name=ITALY_SWITZERLAND
+2020-03-26 20:28:06,020 aixmParser v2.3.0 WARNING Missing geoBorder GbrUid='19006436' Name=AUSTRIA_ITALY
+2020-03-26 20:28:06,024 aixmParser v2.3.0 WARNING Missing geoBorder GbrUid='19006436' Name=AUSTRIA_ITALY
+2020-03-26 20:28:06,025 aixmParser v2.3.0 WARNING Missing geoBorder GbrUid='19055867' Name=ITALY_SLOVENIA
+2020-03-26 20:28:08,119 aixmParser v2.3.0 INFO Prepare GeoJSON file - All Airspaces map
+2020-03-26 20:28:10,473 aixmParser v2.3.0 INFO Write file airspaces-all.geojson - 27 areas in map
+2020-03-26 20:28:10,500 aixmParser v2.3.0 INFO Prepare GeoJSON file - IFR map (Instrument Flihgt Rules
+2020-03-26 20:28:12,871 aixmParser v2.3.0 INFO Write file airspaces-ifr.geojson - 5 areas in map
+2020-03-26 20:28:12,949 aixmParser v2.3.0 INFO Prepare GeoJSON file - VFR map (Visual Flihgt Rules
+2020-03-26 20:28:15,396 aixmParser v2.3.0 INFO Write file airspaces-vfr.geojson - 22 areas in map
+2020-03-26 20:28:15,418 aixmParser v2.3.0 INFO Prepare GeoJSON file - FreeFlight map (Paragliding / Hanggliding)
+2020-03-26 20:28:18,185 aixmParser v2.3.0 INFO Write file airspaces-freeflight.geojson - 21 areas in map
+2020-03-26 20:28:18,216 aixmParser v2.3.0 INFO [bpaTools.Logger.Logger]aixmParser v2.3.0 - Report
+    46 Informations
+     6 Warnings
+2020-03-26 20:28:18,216 aixmParser v2.3.0 INFO Logger closed - [bpaTools.Logger.Logger]aixmParser v2.3.0
+2020-03-26 20:41:42,329 aixmParser v2.3.0 INFO Logger started - [bpaTools.Logger.Logger]aixmParser v2.3.0
+2020-03-26 20:41:42,329 aixmParser v2.3.0 INFO Ligne de commande:
+2020-03-26 20:41:42,329 aixmParser v2.3.0 INFO     sys.argv[0] D:/_Users_/BPascal/_2_Parapente/Materiel/_GPS/__OpenAir-Files/AIXM/src/aixmParser/aixmParser/src/aixmParser.py
+2020-03-26 20:41:42,329 aixmParser v2.3.0 INFO     sys.argv[1] ../tst/aixm4.5_SIA-FR_map-Airspaces2.xml
+2020-03-26 20:41:42,329 aixmParser v2.3.0 INFO     sys.argv[2] -Fall
+2020-03-26 20:41:42,329 aixmParser v2.3.0 INFO     sys.argv[3] -Tall
+2020-03-26 20:41:42,329 aixmParser v2.3.0 INFO     sys.argv[4] -IFR
+2020-03-26 20:41:42,329 aixmParser v2.3.0 INFO     sys.argv[5] -VFR
+2020-03-26 20:41:42,329 aixmParser v2.3.0 INFO     sys.argv[6] -FreeFlight
+2020-03-26 20:41:42,329 aixmParser v2.3.0 INFO /!\ IFR mode for specific Upper vues of aeronautic maps (only IFR areas)
+2020-03-26 20:41:42,329 aixmParser v2.3.0 INFO /!\ VFR mode for specific Lower vues of aeronautic maps (only VFR areas, without IFR areas)
+2020-03-26 20:41:42,329 aixmParser v2.3.0 INFO /!\ FreeFlight mode for specific Paragliding/Hanggliding maps
+2020-03-26 20:41:42,329 aixmParser v2.3.0 INFO Reading source file: ../tst/aixm4.5_SIA-FR_map-Airspaces2.xml
+2020-03-26 20:41:42,658 aixmParser v2.3.0 INFO Parsing Obs to GeoJSON - Obstacles
+2020-03-26 20:41:42,671 aixmParser v2.3.0 ERROR Field not Found in=txtDescrLgt out=descrLight
+<Obs>
+<ObsUid mid="1577198">
+<geoLat>462948.12N</geoLat>
+<geoLong>0004632.00W</geoLong>
+</ObsUid>
+<txtName>85006</txtName>
+<txtDescrType>Pylône</txtDescrType>
+<codeGroup>N</codeGroup>
+<codeLgt>N</codeLgt>
+<codeDatum>U</codeDatum>
+<valElev>469</valElev>
+<valHgt>207</valHgt>
+<uomDistVer>FT</uomDistVer>
+</Obs>
+2020-03-26 20:41:42,767 aixmParser v2.3.0 ERROR Field not Found in=txtDescrLgt out=descrLight
+<Obs>
+<ObsUid mid="1577950">
+<geoLat>482936.00N</geoLat>
+<geoLong>0015526.00W</geoLong>
+</ObsUid>
+<txtName>22033</txtName>
+<txtDescrType>Pylône</txtDescrType>
+<codeGroup>N</codeGroup>
+<codeLgt>N</codeLgt>
+<codeDatum>U</codeDatum>
+<valElev>318</valElev>
+<valHgt>167</valHgt>
+<uomDistVer>FT</uomDistVer>
+</Obs>
+2020-03-26 20:41:43,094 aixmParser v2.3.0 INFO Write file obstacles.geojson - 2 areas in map
+2020-03-26 20:41:43,096 aixmParser v2.3.0 INFO Parsing Ahp to GeoJSON - Aerodromes / Heliports
+2020-03-26 20:41:43,311 aixmParser v2.3.0 INFO Write file aerodromes.geojson - 0 areas in map
+2020-03-26 20:41:43,311 aixmParser v2.3.0 INFO Parsing Rcp to GeoJSON - Runway Center Line Position
+2020-03-26 20:41:43,749 aixmParser v2.3.0 INFO Write file runwaysCenter.geojson - 2 areas in map
+2020-03-26 20:41:43,749 aixmParser v2.3.0 INFO Parsing Uni to GeoJSON - Aerodrome control towers
+2020-03-26 20:41:44,073 aixmParser v2.3.0 INFO Write file towers.geojson - 1 areas in map
+2020-03-26 20:41:44,074 aixmParser v2.3.0 INFO Parsing Gsd to GeoJSON - Gates and Stands
+2020-03-26 20:41:44,504 aixmParser v2.3.0 INFO Write file gates-stands.geojson - 2 areas in map
+2020-03-26 20:41:44,505 aixmParser v2.3.0 INFO Parsing Gbr to GeoJSON - Geographic borders
+2020-03-26 20:41:45,492 aixmParser v2.3.0 INFO Write file borders.geojson - 5 areas in map
+2020-03-26 20:41:45,565 aixmParser v2.3.0 INFO Indexing Adg - Airspaces Groups
+2020-03-26 20:41:45,885 aixmParser v2.3.0 INFO Indexing Sae - Airspaces Services
+2020-03-26 20:41:46,201 aixmParser v2.3.0 INFO Indexing Uni - Organizations
+2020-03-26 20:41:46,499 aixmParser v2.3.0 INFO Indexing Abd - Airspaces Borders
+2020-03-26 20:41:46,725 aixmParser v2.3.0 INFO Loading Ase - Airspaces Catalog
+2020-03-26 20:41:46,740 aixmParser v2.3.0 INFO except-SDJF: id=1613148-tst NameV=[R] 506 A (LFR506A)
+2020-03-26 20:41:46,740 aixmParser v2.3.0 INFO except-SDJF: id=1613148-1 NameV=[R] 506 A (LFR506A)
+2020-03-26 20:41:46,740 aixmParser v2.3.0 INFO except-JF: id=1613148-2 NameV=[R] 506 A (LFR506A)
+2020-03-26 20:41:46,740 aixmParser v2.3.0 INFO except-SD: id=17782506 NameV=[R] 239 (LFR239)
+2020-03-26 20:41:46,772 aixmParser v2.3.0 INFO except-JF: id=1563013 NameV=[R] 164 A2 (LFR164A2)
+2020-03-26 20:41:46,975 aixmParser v2.3.0 INFO Write file airspacesCatalog.json
+2020-03-26 20:41:46,990 aixmParser v2.3.0 INFO Write file airspacesCatalog.csv
+2020-03-26 20:41:47,068 aixmParser v2.3.0 INFO Parsing Abd to GeoJSON - Airspaces Borders
+2020-03-26 20:41:48,922 aixmParser v2.3.0 WARNING Missing Airspaces Borders AseUid=1562265
+2020-03-26 20:41:49,751 aixmParser v2.3.0 WARNING Missing geoBorder GbrUid='19012205' Name=ITALY_SWITZERLAND
+2020-03-26 20:41:49,751 aixmParser v2.3.0 WARNING Missing geoBorder GbrUid='19012205' Name=ITALY_SWITZERLAND
+2020-03-26 20:41:49,751 aixmParser v2.3.0 WARNING Missing geoBorder GbrUid='19006436' Name=AUSTRIA_ITALY
+2020-03-26 20:41:49,751 aixmParser v2.3.0 WARNING Missing geoBorder GbrUid='19006436' Name=AUSTRIA_ITALY
+2020-03-26 20:41:49,751 aixmParser v2.3.0 WARNING Missing geoBorder GbrUid='19055867' Name=ITALY_SLOVENIA
+2020-03-26 20:41:52,129 aixmParser v2.3.0 INFO Prepare GeoJSON file - All Airspaces map
+2020-03-26 20:41:54,927 aixmParser v2.3.0 INFO Write file airspaces-all.geojson - 27 areas in map
+2020-03-26 20:41:54,963 aixmParser v2.3.0 INFO Prepare GeoJSON file - IFR map (Instrument Flihgt Rules
+2020-03-26 20:41:57,823 aixmParser v2.3.0 INFO Write file airspaces-ifr.geojson - 5 areas in map
+2020-03-26 20:41:57,839 aixmParser v2.3.0 INFO Prepare GeoJSON file - VFR map (Visual Flihgt Rules
+2020-03-26 20:42:01,609 aixmParser v2.3.0 INFO Write file airspaces-vfr.geojson - 22 areas in map
+2020-03-26 20:42:01,640 aixmParser v2.3.0 INFO Prepare GeoJSON file - FreeFlight map (Paragliding / Hanggliding)
+2020-03-26 20:42:05,079 aixmParser v2.3.0 INFO Write file airspaces-freeflight.geojson - 21 areas in map
+2020-03-26 20:42:05,096 aixmParser v2.3.0 INFO [bpaTools.Logger.Logger]aixmParser v2.3.0 - Report
+    46 Informations
+     6 Warnings
+     2 Errors
+2020-03-26 20:42:05,096 aixmParser v2.3.0 INFO Logger closed - [bpaTools.Logger.Logger]aixmParser v2.3.0
+2020-03-26 20:47:35,233 aixmParser v2.3.0 INFO Logger started - [bpaTools.Logger.Logger]aixmParser v2.3.0
+2020-03-26 20:47:35,233 aixmParser v2.3.0 INFO Ligne de commande:
+2020-03-26 20:47:35,233 aixmParser v2.3.0 INFO     sys.argv[0] D:/_Users_/BPascal/_2_Parapente/Materiel/_GPS/__OpenAir-Files/AIXM/src/aixmParser/aixmParser/src/aixmParser.py
+2020-03-26 20:47:35,233 aixmParser v2.3.0 INFO     sys.argv[1] ../tst/aixm4.5_SIA-FR_map-Airspaces2.xml
+2020-03-26 20:47:35,233 aixmParser v2.3.0 INFO     sys.argv[2] -Fall
+2020-03-26 20:47:35,233 aixmParser v2.3.0 INFO     sys.argv[3] -Tall
+2020-03-26 20:47:35,233 aixmParser v2.3.0 INFO     sys.argv[4] -IFR
+2020-03-26 20:47:35,233 aixmParser v2.3.0 INFO     sys.argv[5] -VFR
+2020-03-26 20:47:35,233 aixmParser v2.3.0 INFO     sys.argv[6] -FreeFlight
+2020-03-26 20:47:35,233 aixmParser v2.3.0 INFO /!\ IFR mode for specific Upper vues of aeronautic maps (only IFR areas)
+2020-03-26 20:47:35,233 aixmParser v2.3.0 INFO /!\ VFR mode for specific Lower vues of aeronautic maps (only VFR areas, without IFR areas)
+2020-03-26 20:47:35,233 aixmParser v2.3.0 INFO /!\ FreeFlight mode for specific Paragliding/Hanggliding maps
+2020-03-26 20:47:35,233 aixmParser v2.3.0 INFO Reading source file: ../tst/aixm4.5_SIA-FR_map-Airspaces2.xml
+2020-03-26 20:47:35,565 aixmParser v2.3.0 INFO Parsing Obs to GeoJSON - Obstacles
+2020-03-26 20:47:35,579 aixmParser v2.3.0 ERROR Field not Found in=txtDescrLgt out=descrLight
+<Obs>
+<ObsUid mid="1577198">
+<geoLat>462948.12N</geoLat>
+<geoLong>0004632.00W</geoLong>
+</ObsUid>
+<txtName>85006</txtName>
+<txtDescrType>Pylône</txtDescrType>
+<codeGroup>N</codeGroup>
+<codeLgt>N</codeLgt>
+<codeDatum>U</codeDatum>
+<valElev>469</valElev>
+<valHgt>207</valHgt>
+<uomDistVer>FT</uomDistVer>
+</Obs>
+2020-03-26 20:47:35,675 aixmParser v2.3.0 ERROR Field not Found in=txtDescrLgt out=descrLight
+<Obs>
+<ObsUid mid="1577950">
+<geoLat>482936.00N</geoLat>
+<geoLong>0015526.00W</geoLong>
+</ObsUid>
+<txtName>22033</txtName>
+<txtDescrType>Pylône</txtDescrType>
+<codeGroup>N</codeGroup>
+<codeLgt>N</codeLgt>
+<codeDatum>U</codeDatum>
+<valElev>318</valElev>
+<valHgt>167</valHgt>
+<uomDistVer>FT</uomDistVer>
+</Obs>
+2020-03-26 20:47:35,998 aixmParser v2.3.0 INFO Write file obstacles.geojson - 2 areas in map
+2020-03-26 20:47:35,999 aixmParser v2.3.0 INFO Parsing Ahp to GeoJSON - Aerodromes / Heliports
+2020-03-26 20:47:36,435 aixmParser v2.3.0 INFO Write file aerodromes.geojson - 2 areas in map
+2020-03-26 20:47:36,435 aixmParser v2.3.0 INFO Parsing Rcp to GeoJSON - Runway Center Line Position
+2020-03-26 20:47:36,882 aixmParser v2.3.0 INFO Write file runwaysCenter.geojson - 2 areas in map
+2020-03-26 20:47:36,882 aixmParser v2.3.0 INFO Parsing Uni to GeoJSON - Aerodrome control towers
+2020-03-26 20:47:37,226 aixmParser v2.3.0 INFO Write file towers.geojson - 1 areas in map
+2020-03-26 20:47:37,226 aixmParser v2.3.0 INFO Parsing Gsd to GeoJSON - Gates and Stands
+2020-03-26 20:47:37,675 aixmParser v2.3.0 INFO Write file gates-stands.geojson - 2 areas in map
+2020-03-26 20:47:37,677 aixmParser v2.3.0 INFO Parsing Gbr to GeoJSON - Geographic borders
+2020-03-26 20:47:38,680 aixmParser v2.3.0 INFO Write file borders.geojson - 5 areas in map
+2020-03-26 20:47:38,767 aixmParser v2.3.0 INFO Indexing Adg - Airspaces Groups
+2020-03-26 20:47:39,086 aixmParser v2.3.0 INFO Indexing Sae - Airspaces Services
+2020-03-26 20:47:39,394 aixmParser v2.3.0 INFO Indexing Uni - Organizations
+2020-03-26 20:47:39,706 aixmParser v2.3.0 INFO Indexing Abd - Airspaces Borders
+2020-03-26 20:47:39,931 aixmParser v2.3.0 INFO Loading Ase - Airspaces Catalog
+2020-03-26 20:47:39,959 aixmParser v2.3.0 INFO except-SDJF: id=1613148-tst NameV=[R] 506 A (LFR506A)
+2020-03-26 20:47:39,960 aixmParser v2.3.0 INFO except-SDJF: id=1613148-1 NameV=[R] 506 A (LFR506A)
+2020-03-26 20:47:39,962 aixmParser v2.3.0 INFO except-JF: id=1613148-2 NameV=[R] 506 A (LFR506A)
+2020-03-26 20:47:39,963 aixmParser v2.3.0 INFO except-SD: id=17782506 NameV=[R] 239 (LFR239)
+2020-03-26 20:47:39,979 aixmParser v2.3.0 INFO except-JF: id=1563013 NameV=[R] 164 A2 (LFR164A2)
+2020-03-26 20:47:40,211 aixmParser v2.3.0 INFO Write file airspacesCatalog.json
+2020-03-26 20:47:40,215 aixmParser v2.3.0 INFO Write file airspacesCatalog.csv
+2020-03-26 20:47:40,298 aixmParser v2.3.0 INFO Parsing Abd to GeoJSON - Airspaces Borders
+2020-03-26 20:47:42,205 aixmParser v2.3.0 WARNING Missing Airspaces Borders AseUid=1562265
+2020-03-26 20:47:43,076 aixmParser v2.3.0 WARNING Missing geoBorder GbrUid='19012205' Name=ITALY_SWITZERLAND
+2020-03-26 20:47:43,076 aixmParser v2.3.0 WARNING Missing geoBorder GbrUid='19012205' Name=ITALY_SWITZERLAND
+2020-03-26 20:47:43,077 aixmParser v2.3.0 WARNING Missing geoBorder GbrUid='19006436' Name=AUSTRIA_ITALY
+2020-03-26 20:47:43,078 aixmParser v2.3.0 WARNING Missing geoBorder GbrUid='19006436' Name=AUSTRIA_ITALY
+2020-03-26 20:47:43,079 aixmParser v2.3.0 WARNING Missing geoBorder GbrUid='19055867' Name=ITALY_SLOVENIA
+2020-03-26 20:47:45,442 aixmParser v2.3.0 INFO Prepare GeoJSON file - All Airspaces map
+2020-03-26 20:47:48,353 aixmParser v2.3.0 INFO Write file airspaces-all.geojson - 27 areas in map
+2020-03-26 20:47:48,385 aixmParser v2.3.0 INFO Prepare GeoJSON file - IFR map (Instrument Flihgt Rules
+2020-03-26 20:47:51,218 aixmParser v2.3.0 INFO Write file airspaces-ifr.geojson - 5 areas in map
+2020-03-26 20:47:51,225 aixmParser v2.3.0 INFO Prepare GeoJSON file - VFR map (Visual Flihgt Rules
+2020-03-26 20:47:54,423 aixmParser v2.3.0 INFO Write file airspaces-vfr.geojson - 22 areas in map
+2020-03-26 20:47:54,455 aixmParser v2.3.0 INFO Prepare GeoJSON file - FreeFlight map (Paragliding / Hanggliding)
+2020-03-26 20:47:57,942 aixmParser v2.3.0 INFO Write file airspaces-freeflight.geojson - 21 areas in map
+2020-03-26 20:47:57,966 aixmParser v2.3.0 INFO [bpaTools.Logger.Logger]aixmParser v2.3.0 - Report
+    46 Informations
+     6 Warnings
+     2 Errors
+2020-03-26 20:47:57,966 aixmParser v2.3.0 INFO Logger closed - [bpaTools.Logger.Logger]aixmParser v2.3.0
