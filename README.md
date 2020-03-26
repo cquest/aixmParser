@@ -26,27 +26,21 @@ Les fichiers actuellements générées sont les suivants:
 		- obstacles.geojson  
 		- borders.geojson  
 
-## (*) AIXM - Aeronautical Information Exchange Modele
-	Il s'agit d'un standard d'échange de données aéronautiques.  
-	Ce standard d'échanges (basé sur la technologie XML) est décrit ici - http://www.aixm.aero/  
-    Actuellement, seul l'ancien format AIXM 4.5 est pris en charge.  
-    Il est par exemple utilisé par le 'Services de l'Information Aéronautique' (SIA) de la DGAC en France  
-    Ultérieurement, ce programme évoluera pour prendre en charge la version AIXM 5.1  
+(*) AIXM - Aeronautical Information Exchange Modele.  Est un standard d'échange de données aéronautiques. Basé sur la technologie XML (décrit ici - http://www.aixm.aero/)    
+Actuellement, seul l'ancien format AIXM 4.5 est pris en charge. Ultérieurement, ce programme évoluera pour prendre en charge la version AIXM 5.1  
 
-## (*) GeoJSON - JSON géographique
-	GeoJSON (Geographic JSON) est un format ouvert d'encodage d'ensemble de données géospatiales simples utilisant la norme JSON (JavaScript Object Notation)  
-	Ce format issu du projet OpenStreetMap est compatible avec le système : https://www.google.fr/maps  
-	Les données au format GeoJSON sont visualisables par des outils tels que : http://geojson.tools/   ou   http://geojson.io/  
+(*) GeoJSON - Geographic JSON.  Est un format ouvert d'encodage d'ensemble de données géospatiales simples utilisant la norme JSON (JavaScript Object Notation). Issu du projet OpenStreetMap, il est compatible avec le système : https://www.google.fr/maps  
+Les données au format GeoJSON sont visualisables par des outils tels que : http://geojson.tools/   ou   http://geojson.io/  
 
 ## Installation
 ```
 pip install -r requirements.txt
 ```
 
-# Utilisation
+## Utilisation
 
 Selon le choix des options de génération; le programme produira un log et les fichiers dans le dossier ./out/  
-Les options d'utilisations s'auto décrivent avec l'aide en ligne "aixmParser -h"  
+Les options d'utilisations s'auto décrivent avec l'aide en ligne "aixmParser -h":  
 
 aixmParser v2.3.0  
 -----------------  
