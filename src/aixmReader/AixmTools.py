@@ -78,11 +78,11 @@ class AixmTools:
             if self.oCtrl.MakePoints4map:
                 prop.update({"makePoints4map": True})
         if self.oCtrl.oAixm:
-            prop.update({"srcAixmFile": self.oCtrl.srcFile})
-            prop.update({"srcAixmOrigin": self.oCtrl.oAixm.srcOrigin})
-            prop.update({"srcAixmVersion": self.oCtrl.oAixm.srcVersion})
-            prop.update({"srcAixmCreated": self.oCtrl.oAixm.srcCreated})
-            prop.update({"srcAixmEffective": self.oCtrl.oAixm.srcEffective})
+            prop.update({"srcAixmFile":self.oCtrl.srcFile})
+            prop.update({"srcAixmOrigin":self.oCtrl.oAixm.srcOrigin})
+            prop.update({"srcAixmVersion":self.oCtrl.oAixm.srcVersion})
+            prop.update({"srcAixmCreated":self.oCtrl.oAixm.srcCreated})
+            prop.update({"srcAixmEffective":self.oCtrl.oAixm.srcEffective})
         return prop
 
         

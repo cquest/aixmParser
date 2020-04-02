@@ -25,6 +25,7 @@ class CONST:
     typeALL = "-Tall"
     optHelp = "-h"
     optCleanLog = "-CleanLog"
+    optALL = "-ALL"
     optIFR = "-IFR"
     optVFR = "-VFR"
     optFreeFlight = "-FreeFlight"
@@ -45,6 +46,7 @@ class AixmControler:
         self.oAixm = None                   #Lecteur xml du fichier source
         self.oAixmTools = None              #Utilitaire pour geojson
         self.sEncoding = "utf-8"            #Encoding du fichier source
+        self.__ALL = False                  #Generation de toutes zones cartographie IFR+VFR
         self.__IFR = False                  #Generation spécifique pour cartographie IFR (en dessus de FL115)
         self.__VFR = False                  #Generation spécifique pour cartographie VFR (en dessous FL115)
         self.__FreeFlight = False           #Generation spécifique pour le Vol Libre avec différents filtrages (E, F, G...)
@@ -60,7 +62,6 @@ class AixmControler:
     @property
     def Draft(self):
         return self.__Draft
-    
     @Draft.setter
     def Draft(self, bValue):
         assert(isinstance(bValue, bool))
@@ -73,7 +74,6 @@ class AixmControler:
     @property
     def MakePoints4map(self):
         return self.__MakePoints4map
-    
     @MakePoints4map.setter
     def MakePoints4map(self, bValue):
         assert(isinstance(bValue, bool))
@@ -84,40 +84,39 @@ class AixmControler:
         return
 
     @property
-    def IFR(self):
-        return self.__VFR
+    def ALL(self):
+        return self.__VFR    
+    @ALL.setter
+    def ALL(self, bValue):
+        assert(isinstance(bValue, bool))
+        self.__ALL = bValue
+        return
     
+    @property
+    def IFR(self):
+        return self.__IFR    
     @IFR.setter
     def IFR(self, bValue):
         assert(isinstance(bValue, bool))
         self.__IFR = bValue
-        if bValue:
-            self.oLog.info("/!\ IFR mode for specific Upper vues of aeronautic maps (only IFR areas)", outConsole=True)
         return
     
     @property
     def VFR(self):
-        return self.__VFR
-    
+        return self.__VFR    
     @VFR.setter
     def VFR(self, bValue):
         assert(isinstance(bValue, bool))
         self.__VFR = bValue
-        if bValue:
-            self.oLog.info("/!\ VFR mode for specific Lower vues of aeronautic maps (only VFR areas, without IFR areas)", outConsole=True)
         return
-
 
     @property
     def FreeFlight(self):
-        return self.__FreeFlight
-    
+        return self.__FreeFlight    
     @FreeFlight.setter
     def FreeFlight(self, bValue):
         assert(isinstance(bValue, bool))
         self.__FreeFlight = bValue
-        if bValue:
-            self.oLog.info("/!\ FreeFlight mode for specific Paragliding/Hanggliding maps", outConsole=True)
         return
 
     

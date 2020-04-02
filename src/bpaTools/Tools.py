@@ -1,7 +1,12 @@
 #!/usr/bin/env python3
 
 import os, sys, re, traceback
+import datetime
+import json
 
+def theQuit():
+    sys.exit()
+    return
 
 def ctrlPythonVersion():
     pyMajorVersion, pyMinorVersion = sys.version_info[:2]
@@ -26,7 +31,15 @@ def getFileName(sFile):
 
 def getFilePath(sFile):
     return os.path.dirname(sFile) + "/"
+
     
+def getDateNow(sep=""):
+    return getDate(datetime.datetime.now())
+
+def getDate(date, sep=""):
+    sFrmt = "%Y" + sep + "%m" + sep + "%d"
+    return date.strftime(sFrmt)
+
 
 def getVersionFile():
     versionFile = "_version.py"
@@ -38,6 +51,21 @@ def getVersionFile():
     else:
         raise RuntimeError("Unable to find version string in %s." % (versionFile,))
     return sVersion
+
+
+def readJsonFile(sFile):
+    if os.path.exists(sFile):
+        jsonFile = open(sFile, "rt", encoding="utf-8")
+        jdata = json.load(jsonFile)
+    else:
+        jdata = {}
+    return jdata
+
+
+def writeJsonFile(sFile, jdata):
+    jsonFile = open(sFile, "w", encoding="utf-8")
+    json.dump(jdata, jsonFile)
+    return
 
 
 ### Default file encoding

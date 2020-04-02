@@ -265,7 +265,7 @@ class Aixm2json4_5:
         idx = 0
         self.__geoAirspaces = []                #Réinitialisation avant traitement global
         for k,oZone in self.oAirspacesCatalog.oAirspaces.items():
-            idx += 1
+            idx+=1
             if not oZone["groupZone"]:          #Ne pas traiter les zones de type 'Regroupement'
                 sAseUid = oZone["UId"]
                 oBorder = self.findAixmObjectAirspacesBorders(sAseUid)
@@ -274,7 +274,7 @@ class Aixm2json4_5:
                 else:
                     sAseUidBase = self.oAirspacesCatalog.findZoneUIdBase(sAseUid)         #Identifier la zone de base (de référence)
                     if sAseUidBase==None:
-                        self.oCtrl.oLog.warning("Missing Airspaces Borders AseUid={0}".format(sAseUid), outConsole=True)
+                        self.oCtrl.oLog.warning("Missing Airspaces Borders AseUid={0}".format(sAseUid), outConsole=False)
                     else:
                         geom = self.findJsonObjectAirspacesBorders(sAseUidBase)  #Recherche si la zone de base a déjà été pasrsé
                         if geom:
@@ -282,7 +282,7 @@ class Aixm2json4_5:
                         else:
                             oBorder = self.findAixmObjectAirspacesBorders(sAseUidBase)
                             if oBorder==None:
-                                self.oCtrl.oLog.warning("Missing Airspaces Borders AseUid={0} AseUidBase={1}".format(sAseUid, sAseUidBase), outConsole=True)
+                                self.oCtrl.oLog.warning("Missing Airspaces Borders AseUid={0} AseUidBase={1}".format(sAseUid, sAseUidBase), outConsole=False)
                             else:
                                 self.parseAirspaceBorder(oZone, oBorder)
             barre.update(idx)
@@ -292,7 +292,8 @@ class Aixm2json4_5:
         
 
     def saveAirspaces(self):
-        self.saveAirspacesFilter("all", "All Airspaces map")
+        if self.oCtrl.ALL:
+            self.saveAirspacesFilter("all", "All Airspaces map")
         if self.oCtrl.IFR:
             self.saveAirspacesFilter("ifr", "IFR map (Instrument Flihgt Rules")
         if self.oCtrl.VFR:
@@ -309,7 +310,7 @@ class Aixm2json4_5:
         oGeojson = []       #Initialisation avant filtrage spécifique
         for o in self.__geoAirspaces:
             oZone = o["properties"]
-            idx += 1
+            idx+=1
             if not oZone["groupZone"]:          #Ne pas traiter les zones de type 'Regroupement'
                 if context=="all":
                     oGeojson.append(o)
@@ -464,7 +465,7 @@ class Aixm2json4_5:
                             lon, lat = c
                             g.append([lon, lat])
                     else:
-                        self.oCtrl.oLog.warning("Missing geoBorder GbrUid='{0}' Name={1}".format(avx.GbrUid["mid"], avx.GbrUid.txtName.string), outConsole=True)
+                        self.oCtrl.oLog.warning("Missing geoBorder GbrUid='{0}' Name={1}".format(avx.GbrUid["mid"], avx.GbrUid.txtName.string), outConsole=False)
                         g.append(start)
                 else:
                     g.append(self.oCtrl.oAixmTools.geo2coordinates(avx))
