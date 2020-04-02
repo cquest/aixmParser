@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2008 rel. 2 (http://www.altova.com) by mazuki (darksiderg) -->
 <!--<AIXM-Snapshot xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.aixm.aero/schema/4.5/AIXM-Snapshot.xsd" created="2019-11-20T10:43:01.141+01:00" origin="Sia-France" version="4.5" effective="2019-12-05T00:00:00.000+01:00">
 -->
-<AIXM-Snapshot created="2020-03-18T17:50:01.141+01:00" origin="BPa (with extract of SIA-France)" version="4.5" effective="2019-12-05T00:00:00.000+01:00">
+<AIXM-Snapshot created="2020-03-18T17:50:01.141+01:00" origin="BPa" version="4.5" effective="2019-12-05T00:00:00.000+01:00">
 	<Gbr>
 		<GbrUid mid="1545002">
 			<txtName>FRANCE_SWITZERLAND</txtName>
@@ -15197,7 +15198,7 @@
 		<codeDistVerUpper>STD</codeDistVerUpper>
 		<valDistVerUpper>115</valDistVerUpper>
 		<uomDistVerUpper>FL</uomDistVerUpper>
-		<codeDistVerLower>HEI</codeDistVerLower>
+		<codeDistVerLower>ALT</codeDistVerLower>
 		<valDistVerLower>0</valDistVerLower>
 		<uomDistVerLower>FT</uomDistVerLower>
 		<Att>
@@ -15275,7 +15276,7 @@ Activity known on :#
 		<valDistVerUpper>5000</valDistVerUpper>
 		<uomDistVerUpper>FT</uomDistVerUpper>
 		<codeDistVerLower>HEI</codeDistVerLower>
-		<valDistVerLower>0</valDistVerLower>
+		<valDistVerLower>500</valDistVerLower>
 		<uomDistVerLower>FT</uomDistVerLower>
 		<Att>
 			<codeWorkHr>HX</codeWorkHr>
@@ -15301,7 +15302,7 @@ Activity known on :#
 			<codeId>LFR278</codeId>
 		</AseUid>
 		<txtName>278</txtName>
-		<codeDistVerUpper>ALT</codeDistVerUpper>
+		<codeDistVerUpper>HEI</codeDistVerUpper>
 		<valDistVerUpper>2500</valDistVerUpper>
 		<uomDistVerUpper>FT</uomDistVerUpper>
 		<codeDistVerLower>HEI</codeDistVerLower>
@@ -17768,38 +17769,38 @@ Safety officer 93ème RAM : 06 73 90 50 33</txtRmk>
 		<geoLong>0030944.82E</geoLong>
 		<codeDatum>WGE</codeDatum>
 	</Uni>
-    <Uni>
-        <UniUid mid="1524610">
-            <txtName>LFSN NANCY</txtName>
-        </UniUid>
-        <OrgUid mid="1520800">
-            <txtName>FRANCE</txtName>
-        </OrgUid>
-        <AhpUid mid="1520954">
-            <codeId>LFSN</codeId>
-        </AhpUid>
-        <codeType>FIC</codeType>
-        <codeClass>OTHER</codeClass>
-        <geoLat>484131.51N</geoLat>
-        <geoLong>0061333.78E</geoLong>
-        <codeDatum>WGE</codeDatum>
-    </Uni>
-    <Uni>
-        <UniUid mid="1524612">
-            <txtName>LFLE CHALLES</txtName>
-        </UniUid>
-        <OrgUid mid="1520800">
-            <txtName>FRANCE</txtName>
-        </OrgUid>
-        <AhpUid mid="1521658">
-            <codeId>LFLE</codeId>
-        </AhpUid>
-        <codeType>OTHER</codeType>
-        <codeClass>OTHER</codeClass>
-        <geoLat>453338.00N</geoLat>
-        <geoLong>0055833.00E</geoLong>
-        <codeDatum>WGE</codeDatum>
-    </Uni>	
+	<Uni>
+		<UniUid mid="1524610">
+			<txtName>LFSN NANCY</txtName>
+		</UniUid>
+		<OrgUid mid="1520800">
+			<txtName>FRANCE</txtName>
+		</OrgUid>
+		<AhpUid mid="1520954">
+			<codeId>LFSN</codeId>
+		</AhpUid>
+		<codeType>FIC</codeType>
+		<codeClass>OTHER</codeClass>
+		<geoLat>484131.51N</geoLat>
+		<geoLong>0061333.78E</geoLong>
+		<codeDatum>WGE</codeDatum>
+	</Uni>
+	<Uni>
+		<UniUid mid="1524612">
+			<txtName>LFLE CHALLES</txtName>
+		</UniUid>
+		<OrgUid mid="1520800">
+			<txtName>FRANCE</txtName>
+		</OrgUid>
+		<AhpUid mid="1521658">
+			<codeId>LFLE</codeId>
+		</AhpUid>
+		<codeType>OTHER</codeType>
+		<codeClass>OTHER</codeClass>
+		<geoLat>453338.00N</geoLat>
+		<geoLong>0055833.00E</geoLong>
+		<codeDatum>WGE</codeDatum>
+	</Uni>
 	<Obs>
 		<ObsUid mid="1577198">
 			<geoLat>462948.12N</geoLat>
@@ -17888,42 +17889,42 @@ Safety officer 93ème RAM : 06 73 90 50 33</txtRmk>
 		<geoLong>0041140.48E</geoLong>
 		<codeDatum>WGE</codeDatum>
 	</Gsd>
-    <Ahp>
-        <AhpUid mid="1522384">
-            <codeId>LFH241</codeId>
-        </AhpUid>
-        <OrgUid mid="1520800">
-            <txtName>FRANCE</txtName>
-        </OrgUid>
-        <txtName>POISSY CENTRE HOSPITALIER.</txtName>
-        <codeType>HP</codeType>
-        <geoLat>485501.00N</geoLat>
-        <geoLong>0020124.00E</geoLong>
-        <codeDatum>U</codeDatum>
-        <valElev>233</valElev>
-        <uomDistVer>FT</uomDistVer>
-        <Aht>
-            <codeWorkHr>OTHER</codeWorkHr>
-            <txtRmkWorkHr>NIL</txtRmkWorkHr>
-        </Aht>
-    </Ahp>
-    <Ahp>
-        <AhpUid mid="1521346">
-            <codeId>LFEX</codeId>
-        </AhpUid>
-        <OrgUid mid="1520800">
-            <txtName>FRANCE</txtName>
-        </OrgUid>
-        <txtName>NANCY AZELOT</txtName>
-        <codeIcao>LFEX</codeIcao>
-        <codeType>AD</codeType>
-        <geoLat>483531.00N</geoLat>
-        <geoLong>0061423.00E</geoLong>
-        <codeDatum>WGE</codeDatum>
-        <valElev>958</valElev>
-        <valGeoidUndulation>155</valGeoidUndulation>
-        <uomDistVer>FT</uomDistVer>
-        <valMagVar>0.62</valMagVar>
-        <dateMagVar>2010</dateMagVar>
-    </Ahp>	
+	<Ahp>
+		<AhpUid mid="1522384">
+			<codeId>LFH241</codeId>
+		</AhpUid>
+		<OrgUid mid="1520800">
+			<txtName>FRANCE</txtName>
+		</OrgUid>
+		<txtName>POISSY CENTRE HOSPITALIER.</txtName>
+		<codeType>HP</codeType>
+		<geoLat>485501.00N</geoLat>
+		<geoLong>0020124.00E</geoLong>
+		<codeDatum>U</codeDatum>
+		<valElev>233</valElev>
+		<uomDistVer>FT</uomDistVer>
+		<Aht>
+			<codeWorkHr>OTHER</codeWorkHr>
+			<txtRmkWorkHr>NIL</txtRmkWorkHr>
+		</Aht>
+	</Ahp>
+	<Ahp>
+		<AhpUid mid="1521346">
+			<codeId>LFEX</codeId>
+		</AhpUid>
+		<OrgUid mid="1520800">
+			<txtName>FRANCE</txtName>
+		</OrgUid>
+		<txtName>NANCY AZELOT</txtName>
+		<codeIcao>LFEX</codeIcao>
+		<codeType>AD</codeType>
+		<geoLat>483531.00N</geoLat>
+		<geoLong>0061423.00E</geoLong>
+		<codeDatum>WGE</codeDatum>
+		<valElev>958</valElev>
+		<valGeoidUndulation>155</valGeoidUndulation>
+		<uomDistVer>FT</uomDistVer>
+		<valMagVar>0.62</valMagVar>
+		<dateMagVar>2010</dateMagVar>
+	</Ahp>
 </AIXM-Snapshot>

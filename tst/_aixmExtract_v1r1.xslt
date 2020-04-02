@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?altova_samplexml .\aixm4.5_SIA-FR_2019-12-05.xml?>
+<?altova_samplexml .\aixm4.5_SIA-FR_2020-04-23.xml?>
 <?altova_samplexml .\aixm4.5_Eurocontrol-EU_2019-11-07.xml?>
 <?altova_samplexml .\aixm4.5_SIA-FR_map-Airspaces2.xml?>
 <?altova_samplexml .\aixm4.5_Eurocontrol-FR_2019-11-07.xml?>
@@ -10,7 +10,9 @@
 	<xsl:variable name="alphabet">AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZzÀàÁáÂâÃãÄäÅåÆæÇçÈèÉéÊêËëÌìÍíÎîÏïÐðÑñÒòÓóÔôÕõÖöØøÙùÚúÛûÜüÝýÞþ</xsl:variable>
 	<xsl:variable name="minuscule">aabbccddeeffgghhiijjkkllmmnnooppqqrrssttuuvvwwxxyyzzaaaaaaaaaaaaææcceeeeeeeeiiiiiiiiððnnooooooooooøøuuuuuuuuyyþþ</xsl:variable>
 	<xsl:variable name="msgNoFound"><xsl:text>msg:Aucun resultat associé à la demande...</xsl:text></xsl:variable>
-	<xsl:key name="keyTxtName" match="//*/Uni/OrgUid/txtName/text()" use="." />
+	<xsl:key name="keyOrgUidTxtName" match="//*/Uni/OrgUid/txtName/text()" use="." />
+	<xsl:key name="keyCodeDistVerUpper" match="//*/Ase/codeDistVerUpper/text()" use="." />
+	<xsl:key name="keyCodeDistVerLower" match="//*/Ase/codeDistVerLower/text()" use="." />
 	
 	<xsl:template match="/">
 		<!-- <xsl:variable name="ret" select="//*/Ase[txtName='FRANCE UIR']"/> -->
@@ -26,11 +28,17 @@
 				<!-- <xsl:apply-templates select="//*/Ase[(AseUid/codeType='D-OTHER') and not(codeClass)]"/> -->
 				
 				<!-- Sortie d'une sélection unique d'éléments (en relation avec la définition de la <xsl:key ...> définie plus haut)-->
-				<xsl:for-each select="//*/Uni/OrgUid/txtName/text()[generate-id() = generate-id(key('keyTxtName',.)[1])]">
+				<!-- <xsl:for-each select="//*/Uni/OrgUid/txtName/text()[generate-id() = generate-id(key('keyOrgUidTxtName',.)[1])]">-->
+				<xsl:for-each select="//*/Ase/codeDistVerLower/text()[generate-id() = generate-id(key('keyCodeDistVerLower',.)[1])]">
 					<li>
 						<xsl:value-of select="."/>
 					</li>
 				</xsl:for-each>
+				<xsl:for-each select="//*/Ase/codeDistVerUpper/text()[generate-id() = generate-id(key('keyCodeDistVerUpper',.)[1])]">
+					<li>
+						<xsl:value-of select="."/>
+					</li>
+				</xsl:for-each>				
 			</xsl:element>
 		</xsl:result-document>
 	</xsl:template>
