@@ -153,7 +153,7 @@ else:
     
     #Select dataObject in src file
     oUnknownHeader = oUnknownGroundHeight["headerFile"]      #Get the header file
-    oUnknownContent = oUnknownGroundHeight["unknownRef"]     #Get the content of unknownRef
+    oUnknownContent = oUnknownGroundHeight["referential"]     #Get the content of referential
     
     #Let specific header file & save the source file
     sHeadFileName = "_{0}_".format(oUnknownHeader["srcAixmOrigin"])
