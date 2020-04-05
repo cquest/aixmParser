@@ -15895,6 +15895,22 @@ Safety officer 93ème RAM : 06 73 90 50 33</txtRmk>
 		<txtRmk>Lower limit FL 065 within VIC part 2.1 lateral limits.#Lower limit FL 110 within CHAMPEIX part 2.2 lateral limits.#Lower limit FL 085 within ORCINES part 2.3 lateral limits.</txtRmk>
 	</Ase>
 	<Abd>
+		<AbdUid mid="1613322-zz">
+			<AseUid mid="1562265">
+				<codeType>D</codeType>
+				<codeId>LFD214-test</codeId>
+			</AseUid>
+		</AbdUid>
+		<Circle>
+			<geoLatCen>475710.00N</geoLatCen>
+			<geoLongCen>0020000.00W</geoLongCen>
+			<codeDatum>WGE</codeDatum>
+			<valRadius>5</valRadius>
+			<uomRadius>NM</uomRadius>
+			<valCrc>0E7C2798</valCrc>
+		</Circle>
+	</Abd>
+	<Abd>
 		<AbdUid mid="1613322">
 			<AseUid mid="1613148-tst">
 				<codeType>R</codeType>
