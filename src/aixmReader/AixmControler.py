@@ -225,7 +225,8 @@ class AixmControler:
         found = any(item in (CONST.typeAIRSPACES, CONST.typeALL) for item in oOpts.keys())
         if found:
             oAs = self.getFactory("reader")     #Récupération dynamique du lecteur geojson associé au format du fichier source
-            oAs.initAirspaceIdx()               #Initialisation des index
+            oAs.initAirspacesCatalogIdx()       #Initialisation des index pour construction du catalogue
+            oAs.initAirspacesBordersIdx()       #Initialisation de l'index des bordures de zones
             oAs.loadAirspacesCatalog()          #Lecture/Chargement de toutes les zones aériennes (classification & Propriétés)
             oAs.saveAirspacesCalalog()          #Construction des catalogues
             oAs.clearAirspaceIdx()              #Libération de mémoire
@@ -236,12 +237,17 @@ class AixmControler:
                 o2json.parseAirspacesBorders(oAs)
                 o2json.saveAirspaces()
                 bExec = True
-
-            found = any(item in (CONST.frmtOPENAIR, CONST.frmtALL) for item in oOpts.keys())
-            if found:
-                o2openair = self.getFactory("parser", "openair")    #Récupération dynamique du parser aixm/openair associé au format du fichier source
-                o2openair.parseAirspace()
+    
+            #Interruption nécessaire pour mise a niveau des référentiels
+            if self.oLog.CptCritical>0:
                 bExec = True
+                self.oLog.error("Interrupt process - Show Critical items in log file", outConsole=True)
+            else:
+                found = any(item in (CONST.frmtOPENAIR, CONST.frmtALL) for item in oOpts.keys())
+                if found:
+                    o2openair = self.getFactory("parser", "openair")    #Récupération dynamique du parser aixm/openair associé au format du fichier source
+                    o2openair.parseAirspace()
+                    bExec = True
                 
         #############################################################################################
         #Finalisation des traitements

@@ -21,7 +21,8 @@ class ProgressBar:
         perc  = round((float(val) / float(self.valmax)) * 100)
         scale = 100.0 / float(self.maxbar)
         bar   = int(perc / scale)
-        out = '\r%s [%s%s] %3d %% ' % (self.title, '=' * bar, ' ' * (self.maxbar - bar), perc)
+        #REtour début de ligne avec écruture de la suite
+        out = '\r[%s%s] %3d %% - %s' % ('=' * bar, ' ' * (self.maxbar - bar), perc, self.title)
         sys.stdout.write(out)
         self.setCursor('off')                   #Extinction du curseur
         sys.stdout.flush()                      #Rafraichissement de la barre

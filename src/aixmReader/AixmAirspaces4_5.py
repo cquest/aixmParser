@@ -16,26 +16,68 @@ class AixmAirspaces4_5:
         self.oIdxAseUid2AseUid = dict()
         self.oIdxAseUid2AseUid2 = dict()
         
-        self.oGroundEstimatedHeight = dict()
-        self.oUnknownGroundHeight = dict()
-        self.loadRefFiles()
+        self.loadRefFiles()                 #Referentials
         return
 
 
-    def loadRefFiles(self):
+    def loadRefFiles(self) -> None:
         self.referentialsPath = "referentials/"                         #Referentials folder
         sHeadFileName = "_{0}_".format(self.oCtrl.oAixm.srcOrigin)      #Secific header file
-        self.groundEstimatedHeightFileName = "{0}{1}{2}".format(self.referentialsPath, sHeadFileName, "refGroundEstimatedHeight.json")
-        self.UnknownGroundHeightFileName = "{0}{1}".format(self.referentialsPath, "refUnknownGroundHeight.json")
-        oJson = bpaTools.readJsonFile(self.groundEstimatedHeightFileName)
-        if "referential" in oJson:
-            self.oGroundEstimatedHeight = oJson["referential"]        #Ne récupère que les datas du fichier
-        sMsg = "Loading referential: {0} ground estimated height of areas in file - {1}".format(len(self.oGroundEstimatedHeight), self.groundEstimatedHeightFileName)
-        self.oCtrl.oLog.info(sMsg, outConsole=False)
+        
+        #Referentiel topologique : Nécessaire pour connaissance des hauteurs sols
+        self.sUnknownGroundHeightFileName = "{0}{1}".format(self.referentialsPath, "refUnknownGroundHeight.json")
+        self.oUnknownGroundHeight = dict()
+        self.sGroundEstimatedHeightFileName = "{0}{1}{2}".format(self.referentialsPath, sHeadFileName, "refGroundEstimatedHeight.json")
+        self.oGroundEstimatedHeight = dict()
+        self.oGroundEstimatedHeight = self.loadRefFileData(self.sGroundEstimatedHeightFileName)
+        
+        #Referentiel topologique : Nécessaire pour connaissance des hauteurs sols
+        self.oPotentialFilter4FreeFlightZone = dict()
+        self.sPotentialFilter4FreeFlightZoneFileName = "{0}{1}".format(self.referentialsPath, "refPotentialFilter4FreeFlightZone.json")
+        self.oExcludeFilter4FreeFlightZone = dict()
+        self.sExcludeFilter4FreeFlightZoneFileName = "{0}{1}{2}".format(self.referentialsPath, sHeadFileName, "refExcludeFilter4FreeFlightZone.json")
+        self.oExcludeFilter4FreeFlightZone = self.loadRefFileData(self.sExcludeFilter4FreeFlightZoneFileName)
         return
 
+    
+    def loadRefFileData(self, sFileName:str) -> dict:
+        oJson = bpaTools.readJsonFile(sFileName)
+        if "referential" in oJson:
+            dstObject = oJson["referential"]        #Ne récupère que les datas du fichier
+            sMsg = "Loading referential: {0} datas in file - {1}".format(len(dstObject), sFileName)
+            self.oCtrl.oLog.info(sMsg, outConsole=False)
+            return dstObject
+        else:
+            return {}
 
-    def initAirspaceIdx(self):
+
+    #Controle de cohérence croisée des contenus de référentiels dans le catalogue généré
+    def ctrlReferentialContent(self) -> None:
+        for sKey,val in self.oGroundEstimatedHeight.items():
+            aKey = sKey.split("@")
+            sNameV = aKey[0]
+            sAlt = aKey[1]
+            if not self.findAirspaceByProps(sNameV, sAlt):
+                sMsg = "Referential error: {0} - Unused key {1}".format(self.sGroundEstimatedHeightFileName, sKey)
+                self.oCtrl.oLog.error(sMsg, outConsole=False)
+        for sKey,val in self.oExcludeFilter4FreeFlightZone.items():
+            aKey = sKey.split("@")
+            sNameV = aKey[0]
+            sAlt = aKey[1]
+            if not self.findAirspaceByProps(sNameV, sAlt):
+                sMsg = "Referential error: {0} - Unused key {1}".format(self.sExcludeFilter4FreeFlightZoneFileName, sKey)
+                self.oCtrl.oLog.error(sMsg, outConsole=False)
+        return
+    
+    
+    #Recherche de présence d'une zone dans le catalogue par le contenu de propriétés
+    def findAirspaceByProps(self, sNameV:str, sAlt:str) -> bool:
+        for oProp in self.oAirspaces.values():
+            if (oProp["nameV"]==sNameV) and (oProp["alt"]==sAlt):                
+                return True
+
+
+    def initAirspacesCatalogIdx(self):
         sTitle = "Airspaces Groups"
         sXmlTag = "Adg"
         if not self.oCtrl.oAixm.doc.find(sXmlTag):
@@ -90,7 +132,10 @@ class AixmAirspaces4_5:
                 self.oIdxUniUid2OrgName.update({o.UniUid["mid"]:o.OrgUid.txtName.string})
                 barre.update(idx)
             barre.reset()
-            
+        return
+
+
+    def initAirspacesBordersIdx(self):
         sTitle = "Airspaces Borders"
         sXmlTag = "Abd"
         if not self.oCtrl.oAixm.doc.find(sXmlTag):
@@ -118,10 +163,20 @@ class AixmAirspaces4_5:
         return    
     
     
-    def getGroundEstimatedHeight(self, theAirspace):
+    def getExcludeAirspace(self, theAirspace:dict) -> bool:
+        if not theAirspace["vfrZone"]:
+            return False
+        sKey = self.oCtrl.oAixmTools.getAirspaceFunctionalKey(theAirspace)
+        if sKey in self.oExcludeFilter4FreeFlightZone:
+            return True
+        else:
+            return False
+
+
+    def getGroundEstimatedHeight(self, theAirspace:dict) -> int:
         if not theAirspace["vfrZone"]:
             return 0
-        sKey = "{0}@{1}.{2}.{3}".format(theAirspace["nameV"], theAirspace["lowerType"], theAirspace["lowerValue"], theAirspace["lowerUnit"])
+        sKey = self.oCtrl.oAixmTools.getAirspaceFunctionalKey(theAirspace)
         lValue = None
         if sKey in self.oGroundEstimatedHeight:
             lValue = self.oGroundEstimatedHeight[sKey]                                  #Extract value of Ground Estimated Height
@@ -132,26 +187,33 @@ class AixmAirspaces4_5:
         return lValue
     
     
-    def getAirspacesCatalog(self, sFilename):
+    def createAirspacesCatalog(self, sFilename:str) -> dict:
         ret = {"type":"Aeronautical areas catalog", "headerFile":self.oCtrl.oAixmTools.getJsonPropHeaderFile(sFilename), "catalog":self.oAirspaces}
         return ret
 
 
-    def saveAirspacesCalalog(self):
-        #Phase 0 : Control of Referential of GroundEstimatedHeight
+    def saveAirspacesCalalog(self) -> None:
+        #Phase 0a: Contrôle de cohérence des référentiels
+        self.ctrlReferentialContent()
+        
+        #Phase 0b: Ecriture des réeferentiels
+        header = dict()
+        header.update({"srcAixmFile":self.oCtrl.srcFile})
+        header.update({"srcAixmOrigin":self.oCtrl.oAixm.srcOrigin})
+        header.update({"srcAixmVersion": self.oCtrl.oAixm.srcVersion})
+        header.update({"srcAixmEffective":self.oCtrl.oAixm.srcEffective})
         if len(self.oUnknownGroundHeight)>0:
-            header = dict()
-            header.update({"srcAixmFile":self.oCtrl.srcFile})
-            header.update({"srcAixmOrigin":self.oCtrl.oAixm.srcOrigin})
-            header.update({"srcAixmVersion": self.oCtrl.oAixm.srcVersion})
-            header.update({"srcAixmEffective":self.oCtrl.oAixm.srcEffective})
-            out = {"headerFile":header, "unknownRef":self.oUnknownGroundHeight}
-            bpaTools.writeJsonFile(self.UnknownGroundHeightFileName, out)
-            self.oCtrl.oLog.critical("Missing Ground Estimated Height: {0} Unknown heights in file {1}".format(len(self.oUnknownGroundHeight), self.UnknownGroundHeightFileName), outConsole=True)
+            out = {"headerFile":header, "referential":self.oUnknownGroundHeight}
+            bpaTools.writeJsonFile(self.sUnknownGroundHeightFileName, out)
+            self.oCtrl.oLog.critical("Missing Ground Estimated Height: {0} Unknown heights in file {1}".format(len(self.oUnknownGroundHeight), self.sUnknownGroundHeightFileName), outConsole=True)
+        if len(self.oPotentialFilter4FreeFlightZone)>0:
+            out = {"headerFile":header, "referential":self.oPotentialFilter4FreeFlightZone}
+            bpaTools.writeJsonFile(self.sPotentialFilter4FreeFlightZoneFileName, out)
+            self.oCtrl.oLog.critical("Potential Filter for Free Flight Zone: {0} in file {1}".format(len(self.oPotentialFilter4FreeFlightZone), self.sPotentialFilter4FreeFlightZoneFileName), outConsole=True)
 
         #Phase 1 : JSON calatlog
         sFilename = "airspacesCatalog"
-        cat = self.getAirspacesCatalog(sFilename)              #Construct Catalog on CSV format
+        cat = self.createAirspacesCatalog(sFilename)              #Construct Catalog on CSV format
         self.oCtrl.oAixmTools.writeJsonFile(sFilename, cat)    #Save Catalog on Json format
         
         #Phase 2 : CSV calatlog
@@ -165,7 +227,7 @@ class AixmAirspaces4_5:
         
         #Phase 2.2 : Construct a global index on columns (collect all columns in contents for complete header of CSV file...)
         #oCols avec initialisation d'une table d'index avec imposition de l'ordonnancement de colonnes choisies
-        oCols = {"zoneType":0, "groupZone":0, "vfrZone":0, "freeFlightZone":0, "orgName":0, "UId":0, "id":0, "type":0, "class":0, "name":0, "groundEstimatedHeight":0, "ordinalLowerM":0, "lowerM":0, "ordinalUpperM":0, "upperM":0, "nameV":0, "alt":0, "altM":0, "altV":0, "exceptSAT":0, "exceptSUN":0, "exceptHOL":0}
+        oCols = {"zoneType":0, "groupZone":0, "vfrZone":0, "freeFlightZone":0, "excludeAirspaceByReferential":0, "potentialFilter4FreeFlightZone":0, "orgName":0, "UId":0, "id":0, "type":0, "class":0, "name":0, "groundEstimatedHeight":0, "ordinalLowerM":0, "lowerM":0, "ordinalUpperM":0, "upperM":0, "nameV":0, "alt":0, "altM":0, "altV":0, "exceptSAT":0, "exceptSUN":0, "exceptHOL":0}
         oCatalog = cat["catalog"]
         for key0,val0 in oCatalog.items():
             for key1,val1 in val0.items():
@@ -342,8 +404,6 @@ class AixmAirspaces4_5:
 
         #--------------------------------
         #Classification détaillée pour préfiltrage des zones
-        #if sZoneUId == "1563421":
-        #    print(theAirspace["vfrZone"], theAirspace["freeFlightZone"])        
         aFreeFlightZone = ["A","B","C","D","R","P","D","W","CTA","CTA-P","CTR","CTR-P","TMA","TMA-P"]   #Pour cartographie Vol-Libre / For FreeFlight map
         aVfrZone = aFreeFlightZone + ["E","F","G"]                                              #Pour cartographie VFR / For VFR map
         #aVfrTypeZone = ["CTA","CTA-P","CTR","CTR-P","TMA","TMA-P"]                                  #Pour cartographie VFR / For VFR map
@@ -389,16 +449,29 @@ class AixmAirspaces4_5:
 
         #--------------------------------
         #Eventuel filtrage complémentaire pour requalification des zones 'vfrZone' & 'freeFlightZone' (zones spécifiques Vol-Libre Parapente/Delta)
-        #if sZoneUId == "1563421":
-        #    print(theAirspace["vfrZone"], theAirspace["freeFlightZone"])
         if (theAirspace["vfrZone"]) and ("lowerValue" in theAirspace) and ("upperValue" in theAirspace):
-            bFilter = low>=3505                                             #Filtrer toutes les zones dont le plancher débute au dessus FL115/3505m
-            bFilter = bFilter or (low==0 and up>=3505)                      #Filtrer les zones qui portent sur tous les étages
-            #theAirspace.update({"altFilter":bFilter})
-            if theAirspace["vfrZone"] and bFilter:
+            bFilter0 = bool(low>=3505)                           #Filtrer toutes les zones dont le plancher débute au dessus FL115/3505m
+            if bFilter0:
                 theAirspace.update({"vfrZone":False})
-            if theAirspace["freeFlightZone"] and bFilter:
+
+            bPotentialFilter = bool(low==0 and up>=3505)        #Filtre potentiel de zones qui portent sur tous les étages
+            if bPotentialFilter:
+                theAirspace.update({"potentialFilter4FreeFlightZone":True})
+
+            bFilter1 = False
+            sKey = self.oCtrl.oAixmTools.getAirspaceFunctionalKey(theAirspace)
+            if sKey in self.oExcludeFilter4FreeFlightZone:
+                bFilter1 = self.oExcludeFilter4FreeFlightZone[sKey]
+                if bFilter1:
+                    theAirspace.update({"excludeAirspaceByReferential":True})
+                    self.oCtrl.oLog.info("Exclude airspace for Free-Flight-Zone {0}".format(sKey), outConsole=False)
+            elif bPotentialFilter:
+                self.oPotentialFilter4FreeFlightZone.update({sKey:False})           #Ajoute une zone potentiellement filtrable
+                self.oCtrl.oLog.info("Potential Filter for Free-Flight-Zone {0}".format(sKey), outConsole=False)
+            
+            if theAirspace["freeFlightZone"] and (bFilter0 or bFilter1):
                 theAirspace.update({"freeFlightZone":False})
+            
             #NE JAMAIS FILTRER: les éventuelles extensions de vol classées "E"; dont le planfond va au delà de FL115/3505m               
             if classZone=="E" and up>3505:
                 #theAirspace.update({"altAddE":True})
@@ -598,7 +671,7 @@ class AixmAirspaces4_5:
                 else:
                     sTmp = "{0}{1} {2}".format(ase.uomDistVerUpper.string, ase.valDistVerUpper.string, upType)
                 if ase.codeDistVerUpper.string == "HEI":
-                    theAirspace.update({"ordinalUpperrM": up})
+                    theAirspace.update({"ordinalUpperM": up})
                     up += lGroundEstimatedHeight
                 sZoneAlt   += sTmp
                 sZoneAlt_m += "{0}m".format(up)
@@ -610,7 +683,7 @@ class AixmAirspaces4_5:
                 else:
                     sTmp = "{0}{1} {2}".format(ase.valDistVerUpper.string, ase.uomDistVerUpper.string, upType)
                 if ase.codeDistVerUpper.string == "HEI":
-                    theAirspace.update({"ordinalUpperrM": up})
+                    theAirspace.update({"ordinalUpperM": up})
                     up += lGroundEstimatedHeight
                 sZoneAlt   += sTmp
                 sZoneAlt_m += "{0}m".format(up)
@@ -622,7 +695,7 @@ class AixmAirspaces4_5:
                 else:
                     sTmp = "{0}M {2}".format(ase.valDistVerUpper.string, upType)
                 if ase.codeDistVerUpper.string == "HEI":
-                    theAirspace.update({"ordinalUpperrM": up})
+                    theAirspace.update({"ordinalUpperM": up})
                     up += lGroundEstimatedHeight
                 sZoneAlt   += "{0}".format(sTmp)
                 sZoneAlt_m += "{0}m".format(up)

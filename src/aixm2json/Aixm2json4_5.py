@@ -302,6 +302,7 @@ class Aixm2json4_5:
             self.saveAirspacesFilter("ff", "FreeFlight map (Paragliding / Hanggliding)")
         return
 
+
     def saveAirspacesFilter(self, context, title):
         sMsg = "Prepare GeoJSON file - {0}".format(title)
         self.oCtrl.oLog.info(sMsg)

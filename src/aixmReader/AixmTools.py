@@ -452,3 +452,23 @@ class AixmTools:
         return LineString(vertex_list)
 
 
+    def getAirspaceFunctionalKey(self, airspaceProperties:dict) -> str:
+        if ("nameV" in airspaceProperties) and \
+            ("alt" in airspaceProperties):
+            sKey = "{0}@{1}".format(airspaceProperties["nameV"], airspaceProperties["alt"])
+        else:
+            sKey = None
+        return sKey
+
+
+    def getAirspaceFunctionalLowerKey(self, airspaceProperties:dict) -> str:
+        if ("nameV" in airspaceProperties) and \
+            ("lowerType" in airspaceProperties) and \
+            ("lowerValue" in airspaceProperties) and \
+            ("lowerUnit" in airspaceProperties):
+            sKey = "{0}@{1}.{2}.{3}".format(airspaceProperties["nameV"], airspaceProperties["lowerType"], airspaceProperties["lowerValue"], airspaceProperties["lowerUnit"])
+        else:
+            sKey = None
+        return sKey
+
+
