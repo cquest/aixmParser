@@ -1,14 +1,20 @@
 #!/usr/bin/env python3
 
-import os, sys, re, traceback
-import datetime
+import os, sys, re, traceback, logging, datetime
 import json
+
+
+#def raiseErrorSample(Att1, Att2):
+#    sHeader = "[" + bpaTools.getFileName(__file__) + "." + raiseErrorSample.__name__ + "()] "
+#    sMsg = "/!\ Parsing Line Error - {}".format(Att2)
+#    raise Exception(sHeader + sMsg)
+#    return
 
 def theQuit():
     sys.exit()
     return
 
-def ctrlPythonVersion():
+def ctrlPythonVersion() -> None:
     pyMajorVersion, pyMinorVersion = sys.version_info[:2]
     if not (pyMajorVersion==3 and pyMinorVersion>=5):
         sys.stderr.write("Sorry, only Python 3.5 or and higher are supported at this time.\n")
@@ -17,7 +23,7 @@ def ctrlPythonVersion():
     return
 
 #Use: bpaTools.initEvent(__file__)
-def initEvent(sFile, oLog=None):
+def initEvent(sFile:str, oLog:logging=None) -> None:
     msg = "({0}) Initialisation".format(getFileName(sFile))
     if oLog:
         oLog.debug(msg, outConsole=True)
@@ -25,23 +31,28 @@ def initEvent(sFile, oLog=None):
         print(msg)
     return
 
-def getFileName(sFile):
+def getFileName(sFile:str) -> str:
     return os.path.basename(sFile).split(".")[0]
     
 
-def getFilePath(sFile):
+def getFilePath(sFile:str) -> str:
     return os.path.dirname(sFile) + "/"
 
-    
-def getDateNow(sep=""):
-    return getDate(datetime.datetime.now())
+def getNow() -> datetime:
+    return datetime.datetime.now()
 
-def getDate(date, sep=""):
+def getNowISO() -> str:
+    return datetime.datetime.now().isoformat()
+    
+def getDateNow(sep:str="") -> str:
+    return getDate(datetime.datetime.now(), sep)
+
+def getDate(date:datetime, sep:str="") -> str:
     sFrmt = "%Y" + sep + "%m" + sep + "%d"
     return date.strftime(sFrmt)
 
 
-def getVersionFile():
+def getVersionFile() -> str:
     versionFile = "_version.py"
     fileContent = open(versionFile, "rt").read()
     token = r"^__version__ = ['\"]([^'\"]*)['\"]"
@@ -53,7 +64,7 @@ def getVersionFile():
     return sVersion
 
 
-def readJsonFile(sFile):
+def readJsonFile(sFile:str) -> dict:
     if os.path.exists(sFile):
         jsonFile = open(sFile, "rt", encoding="utf-8")
         jdata = json.load(jsonFile)
@@ -62,37 +73,37 @@ def readJsonFile(sFile):
     return jdata
 
 
-def writeJsonFile(sFile, jdata):
+def writeJsonFile(sFile:str, jdata:dict) -> None:
     jsonFile = open(sFile, "w", encoding="utf-8")
     json.dump(jdata, jsonFile)
     return
 
 
 ### Default file encoding
-def defaultEncoding():
+def defaultEncoding() -> str:
     return encodingUTF8()
 
-def encodingUTF8():
+def encodingUTF8() -> str:
     return 'utf-8'
 
 
 ### Create folder if not exists
-def createFolder(path):
+def createFolder(path:str) -> None:
     try:
         if not os.path.exists(path):
             os.mkdir(path)
     except OSError as e:
-        print ("Erreur en création du dossier {0}. ".format(e))
+        print("Erreur en création du dossier {0}. ".format(e))
     return
 
 
 ### Remove file if exixts
-def deleteFile(file):
+def deleteFile(file) -> None:
     try:
         if os.path.exists(file):
             os.remove(file)
     except OSError as e:
-        print ("Erreur en supression du fichier. {0}".format(e))
+        print("Erreur en supression du fichier. {0}".format(e))
     return
 
 
@@ -107,7 +118,7 @@ def deleteFile(file):
 #       python aixmParser.py param0 -idx1 param1 -idx2 param2
 #           argv = ['aixmParser.py', 'srcfile', '-json', '-Openair' '-CleanLog']
 #           opts = {'-json': '-json', '-Openair': '-Openair', '-CleanLog': '-CleanLog'}
-def getCommandLineOptions(argv):
+def getCommandLineOptions(argv) -> dict:
     #print(argv)
     opts = dict()
     while argv:

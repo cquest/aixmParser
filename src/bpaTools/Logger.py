@@ -19,7 +19,7 @@ class Logger:
     #       oLog.log.critical("Un message Critique")
     #       ../..
     #       oLog.closeFile()
-    def __init__(self, sLogName, sLogFile, isDebug=False):
+    def __init__(self, sLogName:str, sLogFile:str, isDebug:bool=False)-> None:
         bpaTools.initEvent(__file__)
         #print(self.__class__.__name__, self.__class__.__module__, self.__class__.__dir__)
         self.sLogName = sLogName
@@ -32,7 +32,7 @@ class Logger:
         return
 
     ### Ouverture du fichier log
-    def __initFile__(self):
+    def __initFile__(self)-> None:
         self.CptInfo = 0
         self.CptDebug = 0
         self.CptWarning = 0
@@ -55,35 +55,35 @@ class Logger:
         return
           
     ### Destruction de la classe
-    def __del__(self):
+    def __del__(self) -> None:
         self.closeFile()
         return
     
-    def __repr__(self):
+    def __repr__(self) -> str:
         #Org value - print(self.__class__.__repr__)
         return "[{0}.{1}]logName={2};logFile={3}".format(self.__class__.__module__, self.__class__.__name__, self.sLogName, self.sLogFile)
 
-    def getInfo(self):
+    def getInfo(self) -> str:
         return "[{0}.{1}]{2}".format(self.__class__.__module__, self.__class__.__name__, self.sLogName)
     
-    def getReport(self):
+    def getReport(self) -> str:
         sMsg = self.getInfo() + " - Report"
-        if self.CptInfo:        sMsg += "\n{0:6d} Informations".format(self.CptInfo)
-        if self.CptDebug:       sMsg += "\n{0:6d} Debugs".format(self.CptDebug)
-        if self.CptWarning:     sMsg += "\n{0:6d} Warnings".format(self.CptWarning)
-        if self.CptError:       sMsg += "\n{0:6d} Errors".format(self.CptError)
-        if self.CptCritical:    sMsg += "\n{0:6d} Criticals".format(self.CptCritical)
+        if self.CptInfo:        sMsg += "\n{0:6d} (i)Informations".format(self.CptInfo)
+        if self.CptDebug:       sMsg += "\n{0:6d} (i)Debugs".format(self.CptDebug)
+        if self.CptWarning:     sMsg += "\n{0:6d} (!)Warnings".format(self.CptWarning)
+        if self.CptError:       sMsg += "\n{0:6d} /!\Errors".format(self.CptError)
+        if self.CptCritical:    sMsg += "\n{0:6d} /!\Criticals".format(self.CptCritical)
         return sMsg
     
-    def Report(self):
+    def Report(self) -> None:
         self.info(self.getReport(), outConsole=True)
         return
     
-    def default(self):
+    def default(self) -> logging:
         return self.log
     
     ### Fermeture du/des fichiers de logs
-    def closeFile(self):
+    def closeFile(self) -> None:
         if self.log!=None:
             self.info("Logger closed - {0}".format(self.getInfo()))
             oHandlers = self.log.handlers[:]
@@ -94,19 +94,20 @@ class Logger:
             self.log=None
         return
     
-    def resetFile(self):
+    def resetFile(self) -> None:
         self.closeFile()
         bpaTools.deleteFile(self.sLogFile)
         self.__initFile__()
+        return
 
-    def info(self, *args, **kw):
+    def info(self, *args, **kw) -> None:
         self.CptInfo += 1
         self.log.info(*args)
         outConsole = kw.get("outConsole", False)
         if outConsole:    print(*args)
         return
                 
-    def debug(self, *args, **kw):
+    def debug(self, *args, **kw) -> None:
         if self.isDebug:
             self.CptDebug += 1
             self.log.debug(*args)
@@ -115,7 +116,7 @@ class Logger:
             if outConsole:  print(sMsg)          
         return
     
-    def warning(self, *args, **kw):
+    def warning(self, *args, **kw) -> None:
         self.CptWarning += 1
         self.log.warning(*args)
         outConsole = kw.get("outConsole", False)
@@ -123,7 +124,7 @@ class Logger:
         if outConsole:  print(sMsg)
         return
     
-    def error(self, *args, **kw):
+    def error(self, *args, **kw) -> None:
         self.CptError += 1
         self.log.error(*args)
         outConsole = kw.get("outConsole", False)
@@ -131,7 +132,7 @@ class Logger:
         if outConsole:  print(sMsg)
         return
     
-    def critical(self, *args, **kw):
+    def critical(self, *args, **kw) -> None:
         self.CptCritical += 1
         self.log.critical(*args)
         outConsole = kw.get("outConsole", False)
@@ -139,11 +140,10 @@ class Logger:
         if outConsole:  print(sMsg)
         return
 
-    def writeCommandLine(self, argv):
+    def writeCommandLine(self, argv) -> None:
         self.info("Ligne de commande:")
         idx = 0
         for arg in argv:
             self.info("    sys.argv[{0}] {1}".format(idx, arg))
             idx += 1        
         return
-    
