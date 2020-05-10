@@ -1,4 +1,10 @@
-Shapely
+###
+### Librayries
+###    Syntaxe4load --> pip install -r aixm2json/requirements.txt
+###
 beautifulsoup4
 lxml
 pyproj
+geog
+Shapely
+###Sous Windows, 'Shapely' peut ne pas s'installer, si besoin le télécharger --> https://www.lfd.uci.edu/~gohlke/pythonlibs/#shapely
