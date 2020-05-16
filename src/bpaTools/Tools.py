@@ -23,11 +23,11 @@ def ctrlPythonVersion() -> None:
     return
 
 #Use: bpaTools.initEvent(__file__)
-def initEvent(sFile:str, oLog:logging=None) -> None:
+def initEvent(sFile:str, oLog:logging=None, isSilent:bool=False) -> None:
     msg = "({0}) Initialisation".format(getFileName(sFile))
     if oLog:
         oLog.debug(msg, outConsole=True)
-    else:
+    elif not isSilent:
         print(msg)
     return
 

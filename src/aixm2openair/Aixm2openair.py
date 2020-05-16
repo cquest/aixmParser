@@ -10,6 +10,5 @@ class Aixm2openair:
         return        
     
     def parseAirspace(self):
-        print("/!\ Traitement interrompu car actuellement non implémenté...")
+        self.oCtrl.oLog.info("/!\ Traitement interrompu car actuellement non implémenté...", outConsole=True)
         return
-    

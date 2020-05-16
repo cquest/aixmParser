@@ -19,15 +19,17 @@ class Logger:
     #       oLog.log.critical("Un message Critique")
     #       ../..
     #       oLog.closeFile()
-    def __init__(self, sLogName:str, sLogFile:str, isDebug:bool=False)-> None:
-        bpaTools.initEvent(__file__)
+    def __init__(self, sLogName:str, sLogFile:str, isDebug:bool=False, isSilent:bool=False)-> None:
+        bpaTools.initEvent(__file__, isSilent=isSilent)
         #print(self.__class__.__name__, self.__class__.__module__, self.__class__.__dir__)
         self.sLogName = sLogName
         self.sLogFile = sLogFile
         self.log = None
-        self.isDebug = isDebug        # Set as 'True' for write the debug-messages in the log file
-        print(self.sLogName)
-        print("-" * len(self.sLogName))
+        self.isSilent = isSilent    # Set as 'True' for Silent mode (no log-file, no system-message, but log-report is available ;-)
+        self.isDebug = isDebug      # Set as 'True' for write the debug-messages in the log-file
+        if not self.isSilent:
+            print(self.sLogName)
+            print("-" * len(self.sLogName))
         self.__initFile__()
         return
 
@@ -38,20 +40,21 @@ class Logger:
         self.CptWarning = 0
         self.CptError = 0
         self.CptCritical = 0
-        oLogger = logging.getLogger(self.sLogName)
-        oLogger.setLevel(logging.DEBUG)
-        #oFormatter = logging.Formatter("%(asctime)-15s %(levelname)s %(name)s [%(filename)s:%(funcName)s:%(lineno)d] %(message)s")
-        oFormatter = logging.Formatter("%(asctime)-15s %(name)s %(levelname)s %(message)s")
-        oFH = logging.FileHandler(self.sLogFile)
-        oFH.setLevel(logging.DEBUG)
-        oFH.setFormatter(oFormatter)
-        oLogger.addHandler(oFH)
-        oCH = logging.StreamHandler(stream=sys.stdout)
-        oCH.setLevel(logging.DEBUG)
-        oCH.setFormatter(oFormatter)
-        oLogger.addHandler(oFH)
-        self.log = oLogger
-        self.info("Logger started - {0}".format(self.getInfo()))
+        if not self.isSilent:
+            oLogger = logging.getLogger(self.sLogName)
+            oLogger.setLevel(logging.DEBUG)
+            #oFormatter = logging.Formatter("%(asctime)-15s %(levelname)s %(name)s [%(filename)s:%(funcName)s:%(lineno)d] %(message)s")
+            oFormatter = logging.Formatter("%(asctime)-15s %(name)s %(levelname)s %(message)s")
+            oFH = logging.FileHandler(self.sLogFile)
+            oFH.setLevel(logging.DEBUG)
+            oFH.setFormatter(oFormatter)
+            oLogger.addHandler(oFH)
+            oCH = logging.StreamHandler(stream=sys.stdout)
+            oCH.setLevel(logging.DEBUG)
+            oCH.setFormatter(oFormatter)
+            oLogger.addHandler(oFH)
+            self.log = oLogger
+            self.info("Logger started - {0}".format(self.getInfo()))
         return
           
     ### Destruction de la classe
@@ -96,20 +99,22 @@ class Logger:
     
     def resetFile(self) -> None:
         self.closeFile()
-        bpaTools.deleteFile(self.sLogFile)
+        if not self.isSilent:
+            bpaTools.deleteFile(self.sLogFile)
         self.__initFile__()
         return
 
     def info(self, *args, **kw) -> None:
         self.CptInfo += 1
-        self.log.info(*args)
-        outConsole = kw.get("outConsole", False)
-        if outConsole:    print(*args)
+        if not self.isSilent:
+            self.log.info(*args)
+            outConsole = kw.get("outConsole", False)
+            if outConsole:    print(*args)
         return
                 
     def debug(self, *args, **kw) -> None:
-        if self.isDebug:
-            self.CptDebug += 1
+        self.CptDebug += 1
+        if self.isDebug and not self.isSilent:
             self.log.debug(*args)
             outConsole = kw.get("outConsole", False)
             sMsg = "(i)Debug--> {}".format(*args)
@@ -118,32 +123,36 @@ class Logger:
     
     def warning(self, *args, **kw) -> None:
         self.CptWarning += 1
-        self.log.warning(*args)
-        outConsole = kw.get("outConsole", False)
-        sMsg = "(!)Warning--> {}".format(*args)
-        if outConsole:  print(sMsg)
+        if not self.isSilent:
+            self.log.warning(*args)
+            outConsole = kw.get("outConsole", False)
+            sMsg = "(!)Warning--> {}".format(*args)
+            if outConsole:  print(sMsg)
         return
     
     def error(self, *args, **kw) -> None:
         self.CptError += 1
-        self.log.error(*args)
-        outConsole = kw.get("outConsole", False)
-        sMsg = "/!\Error--> {}".format(*args)
-        if outConsole:  print(sMsg)
+        if not self.isSilent:
+            self.log.error(*args)
+            outConsole = kw.get("outConsole", False)
+            sMsg = "/!\Error--> {}".format(*args)
+            if outConsole:  print(sMsg)
         return
     
     def critical(self, *args, **kw) -> None:
         self.CptCritical += 1
-        self.log.critical(*args)
-        outConsole = kw.get("outConsole", False)
-        sMsg = "/!\Critical--> {}".format(*args)
-        if outConsole:  print(sMsg)
+        if not self.isSilent:
+            self.log.critical(*args)
+            outConsole = kw.get("outConsole", False)
+            sMsg = "/!\Critical--> {}".format(*args)
+            if outConsole:  print(sMsg)
         return
 
     def writeCommandLine(self, argv) -> None:
-        self.info("Ligne de commande:")
-        idx = 0
-        for arg in argv:
-            self.info("    sys.argv[{0}] {1}".format(idx, arg))
-            idx += 1        
+        if not self.isSilent:
+            self.info("Ligne de commande:")
+            idx = 0
+            for arg in argv:
+                self.info("    sys.argv[{0}] {1}".format(idx, arg))
+                idx += 1        
         return

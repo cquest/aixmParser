@@ -25,6 +25,7 @@ class CONST:
     typeALL = "-Tall"
     optHelp = "-h"
     optCleanLog = "-CleanLog"
+    optSilent = "-Silent"
     optALL = "-ALL"
     optIFR = "-IFR"
     optVFR = "-VFR"

@@ -212,12 +212,12 @@ class AixmTools:
             sFill = "#ff8080"
             nFillOpacity = 0.5
         #Purple
-        elif sClass in ["D","D-AMC","R","R-AMC","ZMT"]:
+        elif sClass in ["D","D-AMC","R","R-AMC","ZMT","W"]:
             sStroke = "#800080"
             sFill = "#ffb9dc"
             nFillOpacity = 0.5
         #Blue
-        elif sClass in ["Q", "GP","RMZ","TMZ","ZSM","BIRD","PROTECT","D-OTHER"]:
+        elif sClass in ["Q","GP","RMZ","TMZ","RMZ/TMZ","TMZ/RMZ","ZSM","BIRD","PROTECT","D-OTHER"]:
             sStroke = "#0000ff"
             sFill = "#80ffff"
             nFillOpacity = 0.3
@@ -227,7 +227,7 @@ class AixmTools:
             sFill = "#80ff80"
             nFillOpacity = 0.3
         else:
-            self.oCtrl.oLog.warning("GeoJSON Color not found for Class={0}".format(sClass), outConsole=True)
+            self.oCtrl.oLog.warning("GeoJSON Color not found for Class={0}".format(sClass), outConsole=False)
             return
 
         prop = self.addField(prop, {"stroke": sStroke})

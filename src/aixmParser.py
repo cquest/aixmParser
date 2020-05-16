@@ -13,7 +13,7 @@ __AppVers__     = bpaTools.getVersionFile()
 ___AppId___     = __AppName__ + " v" + __AppVers__
 __OutPath__     = __AppPath__ + "../out/"
 __LogFile__     = __OutPath__ + __AppName__ + ".log"
-oLog = bpaTools.Logger(___AppId___,__LogFile__)
+
 
 def syntaxe():
     print("Aeronautical Information Exchange Model (AIXM) Converter")
@@ -39,7 +39,8 @@ def syntaxe():
     print("")
     print("  <Option(s)> - Complementary Options:")
     print("    " + aixmReader.CONST.optHelp + "              Help syntax")
-    print("    " + aixmReader.CONST.optCleanLog + "       Clean log file before exec")
+    print("    " + aixmReader.CONST.optSilent + "         Silent mode (no log-file, no system-message, but log-report is available ;-)")
+    print("    " + aixmReader.CONST.optCleanLog + "       Clean log-file before exec")
     print("    " + aixmReader.CONST.optALL + "            All areas of aeronautic maps (IFR+VFR areas)")    
     print("    " + aixmReader.CONST.optIFR + "            Specific upper vues of aeronautic maps (IFR areas)")    
     print("    " + aixmReader.CONST.optVFR + "            Specific lower vues of aeronautic maps (only IFR areas, without IFR areas)")    
@@ -55,39 +56,14 @@ def syntaxe():
     print("     OpenAir test format: http://xcglobe.com/cloudapi/browser  -or-  http://cunimb.net/openair2map.php")
     return
 
-### Context d'excecution
-if len(sys.argv)<2:
-    #oLog.isDebug = True     # Write the debug-messages in the log file
-    sSrcPath = "../tst/"
-    #sSrcFile = sSrcPath+"aixm5.1_testHeader.xml"
-  #  sSrcFile = sSrcPath+"aixm4.5_SIA-FR_map-Airspaces2.xml"
-    #sSrcFile = sSrcPath + "aixm4.5_SIA-FR_2020-03-26.xml"
-    #sSrcFile = sSrcPath + "aixm4.5_SIA-FR_2020-04-23.xml"
-    sSrcFile = sSrcPath + "aixm4.5_Eurocontrol-FR_2020-03-26.xml"
-    #------- tests unitaires ---
-    #sys.argv += [sSrcFile, "-Fgeojson", aixmReader.CONST.optTstGeojson, aixmReader.CONST.optDraft, aixmReader.CONST.optCleanLog]
-    #sys.argv += [sSrcFile, "-Fgeojson", aixmReader.CONST.typeAIRSPACES, aixmReader.CONST.optFreeFlight, aixmReader.CONST.optDraft, aixmReader.CONST.optMakePoints4map, aixmReader.CONST.optCleanLog]
-    #------- tests de non-reg ---
-    #sys.argv += [sSrcFile, "-Fall", aixmReader.CONST.typeCTRLTOWERS, aixmReader.CONST.optCleanLog]
-    #sys.argv += [sSrcFile, "-Fall", aixmReader.CONST.typeAERODROMES, aixmReader.CONST.optCleanLog]
-    #sys.argv += [sSrcFile, "-Fall", aixmReader.CONST.typeOBSTACLES, aixmReader.CONST.optCleanLog]
-    #sys.argv += [sSrcFile, "-Fall", aixmReader.CONST.typeRUNWAYCENTER, aixmReader.CONST.optCleanLog]
-    #sys.argv += [sSrcFile, "-Fall", aixmReader.CONST.typeGATESTANDS, aixmReader.CONST.optCleanLog]
-    #sys.argv += [sSrcFile, "-Fall", aixmReader.CONST.typeGEOBORDER, aixmReader.CONST.optCleanLog]
-    #sys.argv += [sSrcFile, "-Fall", aixmReader.CONST.typeAIRSPACES, aixmReader.CONST.optIFR, aixmReader.CONST.optVFR, aixmReader.CONST.optFreeFlight, aixmReader.CONST.optCleanLog]
-    #------- appels standards ---
-    #sys.argv += [sSrcFile, "-Fall", aixmReader.CONST.typeAIRSPACES, aixmReader.CONST.optFreeFlight, aixmReader.CONST.optDraft, aixmReader.CONST.optCleanLog]
-    sys.argv += [sSrcFile, "-Fall", aixmReader.CONST.typeAIRSPACES, aixmReader.CONST.optFreeFlight, aixmReader.CONST.optCleanLog]
-    #sys.argv += [sSrcFile, "-Fall", "-Tall", aixmReader.CONST.optALL, aixmReader.CONST.optIFR, aixmReader.CONST.optVFR, aixmReader.CONST.optFreeFlight, aixmReader.CONST.optCleanLog]
-    #sys.argv += [aixmReader.CONST.optHelp]
 
-
-sSrcFile = sys.argv[1]                              #Nom de fichier
+### Context d'excecution   
 oOpts = bpaTools.getCommandLineOptions(sys.argv)    #Arguments en dictionnaire
+oLog = bpaTools.Logger(___AppId___, __LogFile__, isSilent=bool(aixmReader.CONST.optSilent in oOpts))
 oLog.writeCommandLine(sys.argv)                     #Trace le contexte d'execution
 
 
-if aixmReader.CONST.optHelp in oOpts:
+if len(sys.argv)<2 or (aixmReader.CONST.optHelp in oOpts):
     syntaxe()                                       #Aide en ligne
     oLog.closeFile()
 else:
@@ -97,6 +73,7 @@ else:
     bpaTools.createFolder(__OutPath__)              #Init dossier de sortie
    
     #Initialisation du controler de traitements
+    sSrcFile = sys.argv[1]                          #Nom de fichier
     aixmCtrl = aixmReader.AixmControler(sSrcFile, __OutPath__, oLog)
     #Execution des traitements
     if not aixmCtrl.execParser(oOpts):

@@ -15,7 +15,6 @@ class AixmAirspaces4_5:
         self.oIdxUniUid2OrgName = dict()
         self.oIdxAseUid2AseUid = dict()
         self.oIdxAseUid2AseUid2 = dict()
-        
         self.loadRefFiles()                 #Referentials
         return
 
@@ -59,14 +58,14 @@ class AixmAirspaces4_5:
             sAlt = aKey[1]
             if not self.findAirspaceByProps(sNameV, sAlt):
                 sMsg = "Referential error: {0} - Unused key {1}".format(self.sGroundEstimatedHeightFileName, sKey)
-                self.oCtrl.oLog.error(sMsg, outConsole=False)
+                self.oCtrl.oLog.warning(sMsg, outConsole=False)
         for sKey,val in self.oExcludeFilter4FreeFlightZone.items():
             aKey = sKey.split("@")
             sNameV = aKey[0]
             sAlt = aKey[1]
             if not self.findAirspaceByProps(sNameV, sAlt):
                 sMsg = "Referential error: {0} - Unused key {1}".format(self.sExcludeFilter4FreeFlightZoneFileName, sKey)
-                self.oCtrl.oLog.error(sMsg, outConsole=False)
+                self.oCtrl.oLog.warning(sMsg, outConsole=False)
         return
     
     
@@ -87,7 +86,7 @@ class AixmAirspaces4_5:
             sMsg = "Indexing {0} - {1}".format(sXmlTag, sTitle)
             self.oCtrl.oLog.info(sMsg)
             oList = self.oCtrl.oAixm.doc.find_all(sXmlTag)
-            barre = bpaTools.ProgressBar(len(oList), 20, title=sMsg)
+            barre = bpaTools.ProgressBar(len(oList), 20, title=sMsg, isSilent=self.oCtrl.oLog.isSilent)
             idx = 0
             for o in oList:
                 idx+=1
@@ -108,7 +107,7 @@ class AixmAirspaces4_5:
             sMsg = "Indexing {0} - {1}".format(sXmlTag, sTitle)
             self.oCtrl.oLog.info(sMsg)
             oList = self.oCtrl.oAixm.doc.find_all(sXmlTag)
-            barre = bpaTools.ProgressBar(len(oList), 20, title=sMsg)
+            barre = bpaTools.ProgressBar(len(oList), 20, title=sMsg, isSilent=self.oCtrl.oLog.isSilent)
             idx = 0
             for o in oList:
                 idx+=1
@@ -125,7 +124,7 @@ class AixmAirspaces4_5:
             sMsg = "Indexing {0} - {1}".format(sXmlTag, sTitle)
             self.oCtrl.oLog.info(sMsg)
             oList = self.oCtrl.oAixm.doc.find_all(sXmlTag)
-            barre = bpaTools.ProgressBar(len(oList), 20, title=sMsg)
+            barre = bpaTools.ProgressBar(len(oList), 20, title=sMsg, isSilent=self.oCtrl.oLog.isSilent)
             idx = 0
             for o in oList:
                 idx+=1
@@ -145,7 +144,7 @@ class AixmAirspaces4_5:
             sMsg = "Indexing {0} - {1}".format(sXmlTag, sTitle)
             self.oCtrl.oLog.info(sMsg)
             oList = self.oCtrl.oAixm.doc.find_all(sXmlTag)
-            barre = bpaTools.ProgressBar(len(oList), 20, title=sMsg)
+            barre = bpaTools.ProgressBar(len(oList), 20, title=sMsg, isSilent=self.oCtrl.oLog.isSilent)
             idx = 0
             for o in oList:
                 idx+=1
@@ -260,7 +259,7 @@ class AixmAirspaces4_5:
         sMsg = "Loading {0} - {1}".format(sXmlTag, sTitle)
         self.oCtrl.oLog.info(sMsg)
         oList = self.oCtrl.oAixm.doc.find_all(sXmlTag)
-        barre = bpaTools.ProgressBar(len(oList), 20, title=sMsg)
+        barre = bpaTools.ProgressBar(len(oList), 20, title=sMsg, isSilent=self.oCtrl.oLog.isSilent)
         idx = 0
         for o in oList:
             idx+=1
@@ -404,7 +403,7 @@ class AixmAirspaces4_5:
 
         #--------------------------------
         #Classification détaillée pour préfiltrage des zones
-        aFreeFlightZone = ["A","B","C","D","R","P","D","W","CTA","CTA-P","CTR","CTR-P","TMA","TMA-P"]   #Pour cartographie Vol-Libre / For FreeFlight map
+        aFreeFlightZone = ["A","B","C","D","R","P","W","CTA","CTA-P","CTR","CTR-P","TMA","TMA-P","RMZ","TMZ","RMZ/TMZ","TMZ/RMZ","ZSM"]   #Pour cartographie Vol-Libre / For FreeFlight map
         aVfrZone = aFreeFlightZone + ["E","F","G"]                                              #Pour cartographie VFR / For VFR map
         #aVfrTypeZone = ["CTA","CTA-P","CTR","CTR-P","TMA","TMA-P"]                                  #Pour cartographie VFR / For VFR map
         vfrZone = bool((not groupZone) and typeZone in aVfrZone)

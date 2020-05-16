@@ -2,11 +2,11 @@
 
 import sys
 import time
-import os
 
 class ProgressBar:
 
-    def __init__ (self, valmax, maxbar, mod=10, title="") -> None:
+    def __init__ (self, valmax, maxbar, mod=10, title="", isSilent:bool=False) -> None:
+        self.isSilent = isSilent            # Set as 'True' for Silent mode (no ProgressBar message!
         if valmax == 0:  valmax = 1
         if maxbar > 200: maxbar = 200
         self.valmax = valmax
@@ -16,7 +16,7 @@ class ProgressBar:
         return
     
     def update(self, val:int=0) -> None:
-        if val<self.valmax and val%self.mod == 0:
+        if self.isSilent or (val<self.valmax and val%self.mod==0):
             return
         if val > self.valmax: val = self.valmax     # format
         perc  = round((float(val) / float(self.valmax)) * 100)
@@ -30,6 +30,8 @@ class ProgressBar:
         return
 
     def reset(self) -> None:
+        if self.isSilent:
+                return
         self.update(self.valmax)
         print()
         self.setCursor("on")                    #Redemarrage du curseur
@@ -38,6 +40,8 @@ class ProgressBar:
     #val='off' - Extinction du curseur
     #val='on' - Redemarrage du curseur
     def setCursor(self, val:str) -> None:
+        if self.isSilent:
+            return
         #Nota: Suppression de la gestion curseur car implique une grosse consamation de ressource !
         #os.system("setterm -cursor" + val)      #Extinction du curseur
         return

@@ -26,7 +26,7 @@ class Aixm2json4_5:
         self.oCtrl.oLog.info(sMsg) 
         
         oList = self.oCtrl.oAixm.doc.find_all(sXmlTag)
-        barre = bpaTools.ProgressBar(len(oList), 20, title=sMsg)
+        barre = bpaTools.ProgressBar(len(oList), 20, title=sMsg, isSilent=self.oCtrl.oLog.isSilent)
         idx = 0
         geojson = []
         for uni in oList:
@@ -62,7 +62,7 @@ class Aixm2json4_5:
         self.oCtrl.oLog.info(sMsg)
         
         oList = self.oCtrl.oAixm.doc.find_all(sXmlTag)
-        barre = bpaTools.ProgressBar(len(oList), 20, title=sMsg)
+        barre = bpaTools.ProgressBar(len(oList), 20, title=sMsg, isSilent=self.oCtrl.oLog.isSilent)
         idx = 0
         geojson = []
         for ahp in oList:
@@ -100,7 +100,7 @@ class Aixm2json4_5:
         self.oCtrl.oLog.info(sMsg)
 
         oList = self.oCtrl.oAixm.doc.find_all(sXmlTag)
-        barre = bpaTools.ProgressBar(len(oList), 20, title=sMsg)
+        barre = bpaTools.ProgressBar(len(oList), 20, title=sMsg, isSilent=self.oCtrl.oLog.isSilent)
         idx = 0
         geojson = []
         for obs in oList:
@@ -134,7 +134,7 @@ class Aixm2json4_5:
         self.oCtrl.oLog.info(sMsg)
         
         oList = self.oCtrl.oAixm.doc.find_all(sXmlTag)
-        barre = bpaTools.ProgressBar(len(oList), 20, title=sMsg)
+        barre = bpaTools.ProgressBar(len(oList), 20, title=sMsg, isSilent=self.oCtrl.oLog.isSilent)
         idx = 0
         geojson = []
         for rcp in oList:
@@ -163,7 +163,7 @@ class Aixm2json4_5:
         self.oCtrl.oLog.info(sMsg) 
 
         oList = self.oCtrl.oAixm.doc.find_all(sXmlTag)
-        barre = bpaTools.ProgressBar(len(oList), 20, title=sMsg)
+        barre = bpaTools.ProgressBar(len(oList), 20, title=sMsg, isSilent=self.oCtrl.oLog.isSilent)
         idx = 0
         geojson = []
         for gsd in oList:
@@ -196,7 +196,7 @@ class Aixm2json4_5:
         if self.__geoBorders == None:
             self.__geoBorders = dict()
             oList = self.oCtrl.oAixm.doc.find_all(sXmlTag)
-            barre = bpaTools.ProgressBar(len(oList), 20, title=sMsg)
+            barre = bpaTools.ProgressBar(len(oList), 20, title=sMsg, isSilent=self.oCtrl.oLog.isSilent)
             idx = 0
             geojson = []
             for gbr in oList:
@@ -261,7 +261,7 @@ class Aixm2json4_5:
         sMsg = "Parsing {0} to GeoJSON - {1}".format(sXmlTag, sTitle)
         self.oCtrl.oLog.info(sMsg)
         
-        barre = bpaTools.ProgressBar(len(self.oAirspacesCatalog.oAirspaces), 20, title=sMsg)
+        barre = bpaTools.ProgressBar(len(self.oAirspacesCatalog.oAirspaces), 20, title=sMsg, isSilent=self.oCtrl.oLog.isSilent)
         idx = 0
         self.__geoAirspaces = []                #Réinitialisation avant traitement global
         for k,oZone in self.oAirspacesCatalog.oAirspaces.items():
@@ -306,7 +306,7 @@ class Aixm2json4_5:
     def saveAirspacesFilter(self, context, title):
         sMsg = "Prepare GeoJSON file - {0}".format(title)
         self.oCtrl.oLog.info(sMsg)
-        barre = bpaTools.ProgressBar(len(self.oAirspacesCatalog.oAirspaces), 20, title=sMsg)
+        barre = bpaTools.ProgressBar(len(self.oAirspacesCatalog.oAirspaces), 20, title=sMsg, isSilent=self.oCtrl.oLog.isSilent)
         idx = 0
         oGeojson = []       #Initialisation avant filtrage spécifique
         for o in self.__geoAirspaces:
