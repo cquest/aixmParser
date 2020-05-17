@@ -12,7 +12,7 @@ __AppPath__     = bpaTools.getFilePath(__file__)
 __AppVers__     = bpaTools.getVersionFile()
 ___AppId___     = __AppName__ + " v" + __AppVers__
 __OutPath__     = __AppPath__ + "../out/"
-__LogFile__     = __OutPath__ + __AppName__ + ".log"
+__LogFile__     = __OutPath__ + "_" + __AppName__ + ".log"
 
 
 def syntaxe():

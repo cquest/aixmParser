@@ -5,19 +5,19 @@ import aixmReader
 
 
 ### Context applicatif
-appName     = "YourAppName"                             #or original name "aixmParser" ;-)
-appPath     = bpaTools.getFilePath(__file__)            #or YourAppPath
-appVersion     = bpaTools.getVersionFile()              #or YourAppVersion
+appName     = "aixmParser"                             #or yourAppName
+appPath     = bpaTools.getFilePath(__file__)            #or yourAppPath
+appVersion     = bpaTools.getVersionFile()              #or yourAppVersion
 appId     = appName + " v" + appVersion
 outPath     = appPath + "../out/"
-logFile     = outPath + appName + ".log"
+logFile     = outPath + "_" + appName + ".log"
 
 
 ####  Quelques fichiers source  ####
 srcPath = "../tst/"
 #------- fichiers officiels & opérationnels ---
-#srcFile = srcPath + "aixm4.5_SIA-FR_2020-04-23.xml"
-#srcFile = srcPath + "aixm4.5_Eurocontrol-FR_2020-03-26.xml"
+srcFile = srcPath + "20200618_aixm4.5_SIA-FR.xml"
+#srcFile = srcPath + "20200326_aixm4.5_Eurocontrol-FR.xml"
 #srcFile = srcPath + "20200510_BPa_FR-ZSM_Protection-des-rapaces_aixm45.xml"
 #srcFile = srcPath + "20191210_BPa_ZonesComplementaires_aixm45.xml"
 #srcFile = srcPath + "20190401_WPa_ParcCevennes_aixm45.xml"
@@ -25,29 +25,33 @@ srcPath = "../tst/"
 #srcFile = srcPath + "20191213_FFVP_AIRSPACE_FRANCE_TXT_1911_aixm45.xml"
 #srcFile = srcPath + "20191214_BPa_FR-BPa4XCsoar_aixm45.xml"
 #srcFile = srcPath + "aixm5.1_testHeader.xml"
-srcFile = srcPath + "aixm4.5_SIA-FR_map-Airspaces2.xml"
+#srcFile = srcPath + "aixm4.5_SIA-FR_map-Airspaces2.xml"
 
 
 ####  Préparation de quelques options d'appels  ####
 #Simulation des arguments d'appels 'sys.argv' via le tableau 'aArgv'
-#aArgv = [appName, aixmReader.CONST.optHelp, aixmReader.CONST.optSilent]
+#aArgv = [appName, aixmReader.CONST.optHelp]
 #------- tests unitaires ---
-#aArgv = [appName, srcFile, "-Fgeojson", aixmReader.CONST.optTstGeojson, aixmReader.CONST.optDraft, aixmReader.CONST.optCleanLog]
-#aArgv = [appName, srcFile, "-Fgeojson", aixmReader.CONST.typeAIRSPACES, aixmReader.CONST.optFreeFlight, aixmReader.CONST.optDraft, aixmReader.CONST.optMakePoints4map, aixmReader.CONST.optCleanLog]
+#aArgv = [appName, srcFile, "-Fgeojson", aixmReader.CONST.optTstGeojson, aixmReader.CONST.optDraft]
+#aArgv = [appName, srcFile, "-Fgeojson", aixmReader.CONST.typeAIRSPACES, aixmReader.CONST.optFreeFlight, aixmReader.CONST.optDraft, aixmReader.CONST.optMakePoints4map]
 #------- tests de non-reg ---
-#aArgv = [appName, srcFile, "-Fall", aixmReader.CONST.typeCTRLTOWERS, aixmReader.CONST.optCleanLog]
-#aArgv = [appName, srcFile, "-Fall", aixmReader.CONST.typeAERODROMES, aixmReader.CONST.optCleanLog]
-#aArgv = [appName, srcFile, "-Fall", aixmReader.CONST.typeOBSTACLES, aixmReader.CONST.optCleanLog]
-#aArgv = [appName, srcFile, "-Fall", aixmReader.CONST.typeRUNWAYCENTER, aixmReader.CONST.optCleanLog]
-#aArgv = [appName, srcFile, "-Fall", aixmReader.CONST.typeGATESTANDS, aixmReader.CONST.optCleanLog]
-#aArgv = [appName, srcFile, "-Fall", aixmReader.CONST.typeGEOBORDER, aixmReader.CONST.optCleanLog]
-#aArgv = [appName, srcFile, "-Fall", aixmReader.CONST.typeAIRSPACES, aixmReader.CONST.optIFR, aixmReader.CONST.optVFR, aixmReader.CONST.optFreeFlight, aixmReader.CONST.optCleanLog]
+#aArgv = [appName, srcFile, "-Fall", aixmReader.CONST.typeCTRLTOWERS]
+#aArgv = [appName, srcFile, "-Fall", aixmReader.CONST.typeAERODROMES]
+#aArgv = [appName, srcFile, "-Fall", aixmReader.CONST.typeOBSTACLES]
+#aArgv = [appName, srcFile, "-Fall", aixmReader.CONST.typeRUNWAYCENTER]
+#aArgv = [appName, srcFile, "-Fall", aixmReader.CONST.typeGATESTANDS]
+#aArgv = [appName, srcFile, "-Fall", aixmReader.CONST.typeGEOBORDER]
+#aArgv = [appName, srcFile, "-Fall", aixmReader.CONST.typeAIRSPACES, aixmReader.CONST.optIFR, aixmReader.CONST.optVFR, aixmReader.CONST.optFreeFlight]
+#aArgv = [appName, srcFile, "-Fall", aixmReader.CONST.typeAIRSPACES, aixmReader.CONST.optFreeFlight, aixmReader.CONST.optDraft]
 #------- appels standards ---
-#aArgv = [appName, srcFile, "-Fall", aixmReader.CONST.typeAIRSPACES, aixmReader.CONST.optFreeFlight, aixmReader.CONST.optDraft, aixmReader.CONST.optCleanLog]
-aArgv = [appName, srcFile, "-Fall", aixmReader.CONST.typeAIRSPACES, aixmReader.CONST.optFreeFlight, aixmReader.CONST.optCleanLog]
-aArgv = [appName, srcFile, "-Fall", aixmReader.CONST.typeAIRSPACES, aixmReader.CONST.optFreeFlight, aixmReader.CONST.optSilent]
-aArgv = [appName, srcFile, "-Fall", "-Tall", aixmReader.CONST.optALL, aixmReader.CONST.optIFR, aixmReader.CONST.optVFR, aixmReader.CONST.optFreeFlight, aixmReader.CONST.optCleanLog]
-aArgv = [appName, srcFile, "-Fall", "-Tall", aixmReader.CONST.optALL, aixmReader.CONST.optIFR, aixmReader.CONST.optVFR, aixmReader.CONST.optFreeFlight, aixmReader.CONST.optSilent]
+#aArgv = [appName, srcFile, "-Fall", aixmReader.CONST.typeAIRSPACES, aixmReader.CONST.optFreeFlight]
+aArgv = [appName, srcFile, "-Fall", "-Tall", aixmReader.CONST.optALL, aixmReader.CONST.optIFR, aixmReader.CONST.optVFR, aixmReader.CONST.optFreeFlight]
+
+
+####  Ajout de l'option d'appel pour la gestion du Log  ####
+aArgv += [aixmReader.CONST.optCleanLog]     #Mode classique avec log et afficages sur console système
+#aArgv += [aixmReader.CONST.optSilent]      #Mode silencieux sans utilisation du fichier log et sans retour d'affichage
+
 
 
 

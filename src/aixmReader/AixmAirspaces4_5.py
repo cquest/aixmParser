@@ -593,7 +593,12 @@ class AixmAirspaces4_5:
         #Détermination du plancher de la zone
         low=0
         if ase.uomDistVerLower is not None:
-            if ase.codeDistVerLower.string == "ALT":
+            if ase.codeDistVerLower is None:
+                if ase.valDistVerLower.string == "0":
+                    lowType = "ASFC"
+                else:
+                    lowType = ""
+            elif ase.codeDistVerLower.string == "ALT":
                 lowType = "AMSL"
             elif ase.codeDistVerLower.string == "HEI":
                 lowType = "ASFC"
@@ -656,6 +661,11 @@ class AixmAirspaces4_5:
 
         #Détermination du plafond de la zone
         if ase.uomDistVerUpper is not None:
+            if ase.codeDistVerUpper is None:
+                if ase.valDistVerUpper.string == "0":
+                    upType = "ASFC"
+                else:
+                    upType = ""
             if ase.codeDistVerUpper.string == "ALT":
                 upType = "AMSL"
             elif ase.codeDistVerUpper.string == "HEI":
