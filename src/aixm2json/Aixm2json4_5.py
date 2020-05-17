@@ -117,7 +117,7 @@ class Aixm2json4_5:
         prop = self.oCtrl.oAixmTools.addProperty(prop, obs, "txtName", "name")
         prop = self.oCtrl.oAixmTools.addProperty(prop, obs, "txtDescrMarking", "marked", optional=True)
         prop = self.oCtrl.oAixmTools.addProperty(prop, obs, "codeLgt", "codeLight")
-        prop = self.oCtrl.oAixmTools.addProperty(prop, obs, "txtDescrLgt", "descrLight")
+        prop = self.oCtrl.oAixmTools.addProperty(prop, obs, "txtDescrLgt", "descrLight", optional=True)
         prop = self.oCtrl.oAixmTools.addProperty(prop, obs, "valElev", "elevation")
         prop = self.oCtrl.oAixmTools.addProperty(prop, obs, "valHgt", "height", optional=True)
         prop = self.oCtrl.oAixmTools.addProperty(prop, obs, "uomDistVer", "verticalUnit")
