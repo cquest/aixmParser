@@ -1,6 +1,6 @@
 **************************************************
-*     software - (aixmParser v2.6.0) RemoteCall
-*     created - 2020-05-23T11:52:26.248360
+*     software - (aixmParser v2.6.0) Paragliding-OpenAir-FrenchFiles - http://pascal.bazile.free.fr/paraglidingFolder/divers/GPS/OpenAir-Format/
+*     created - 2020-05-23T16:38:09.708266
 *     content - airspaces-all
 *     allMap - True
 *     numberOfAreas - 28

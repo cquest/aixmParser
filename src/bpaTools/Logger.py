@@ -95,7 +95,8 @@ class Logger:
     def Report(self) -> None:
         self.info(self.getReport(), outConsole=True)
         if self.CptWarning or self.CptError or self.CptCritical:
-            self.info("\n/!\Show log file for details - {0}".format(self.sLogFile), outConsole=True)
+            if not self.isSilent: print()
+            self.info("/!\Show log file for details - {0}".format(self.sLogFile), outConsole=True)
         return
     
     def default(self) -> logging:
