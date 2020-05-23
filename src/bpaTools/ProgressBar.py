@@ -12,7 +12,7 @@ class ProgressBar:
         self.valmax = valmax
         self.maxbar = maxbar
         self.mod = mod
-        self.title  = title
+        self.title = title
         return
     
     def update(self, val:int=0) -> None:
@@ -33,15 +33,15 @@ class ProgressBar:
         if self.isSilent:
                 return
         self.update(self.valmax)
-        print()
+        print("")
         self.setCursor("on")                    #Redemarrage du curseur
         return
     
     #val='off' - Extinction du curseur
     #val='on' - Redemarrage du curseur
     def setCursor(self, val:str) -> None:
-        if self.isSilent:
-            return
+        #if self.isSilent:
+        #    return
         #Nota: Suppression de la gestion curseur car implique une grosse consamation de ressource !
         #os.system("setterm -cursor" + val)      #Extinction du curseur
         return

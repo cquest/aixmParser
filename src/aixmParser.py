@@ -60,7 +60,6 @@ def syntaxe():
 ### Context d'excecution   
 oOpts = bpaTools.getCommandLineOptions(sys.argv)    #Arguments en dictionnaire
 oLog = bpaTools.Logger(___AppId___, __LogFile__, isSilent=bool(aixmReader.CONST.optSilent in oOpts))
-oLog.writeCommandLine(sys.argv)                     #Trace le contexte d'execution
 
 
 if len(sys.argv)<2 or (aixmReader.CONST.optHelp in oOpts):
@@ -70,6 +69,7 @@ else:
     if aixmReader.CONST.optCleanLog in oOpts:
         oLog.resetFile()                            #Clean du log si demandé
     
+    oLog.writeCommandLine(sys.argv)                 #Trace le contexte d'execution
     bpaTools.createFolder(__OutPath__)              #Init dossier de sortie
    
     #Initialisation du controler de traitements

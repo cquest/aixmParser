@@ -39,6 +39,28 @@ class AixmTools:
         return
 
 
+    def writeOpenairFile(self, sFileName, oOpenair, context=""):
+        assert(isinstance(sFileName, str))
+        if sFileName=="airspaces":
+            if context=="all":              sFileName = sFileName + "-all"            #Suffixe pour fichier toutes zones
+            if context=="ifr":              sFileName = sFileName + "-ifr"            #Suffixe pour fichier Instrument-Fligth-Rules
+            if context=="vfr":              sFileName = sFileName + "-vfr"            #Suffixe pour fichier Visual-Fligth-Rules
+            if context=="ff":               sFileName = sFileName + "-freeflight"     #Suffixe pour fichier Vol-Libre (Paraglinding/Hanggliding)
+        sOutFile = sFileName + ".txt"
+        sizeMap = len(oOpenair)
+        self.oCtrl.oLog.info("Write file {0} - {1} areas in map".format(sOutFile, sizeMap), outConsole=True)
+        with open(self.oCtrl.sOutPath + sOutFile, "w", encoding=self.oCtrl.sEncoding) as output:
+            oHeader = self.getJsonPropHeaderFile(sFileName, context, sizeMap)
+            output.write("*"*50 +"\n")
+            for head in oHeader:
+                output.write("*" + " "*5 + "{0} - {1}\n".format(head, oHeader[head]))
+            output.write("*"*50 + "\n\n")
+            for airspace in oOpenair:
+                output.write("\n".join(airspace))
+                output.write("\n\n")
+        return
+
+
     def writeJsonFile(self, sFileName, oJson):
         assert(isinstance(sFileName, str))
         sOutFile = sFileName + ".json"
@@ -59,7 +81,7 @@ class AixmTools:
     
     def getJsonPropHeaderFile(self, sFileName="", context="", sizeMap=0):
         prop = dict()
-        prop.update({"software": self.oCtrl.oLog.sLogName})
+        prop.update({"software": self.oCtrl.oLog.getLongName()})
         prop.update({"created": datetime.datetime.now().isoformat()})
         prop.update({"content": sFileName})
         if context=="all":
@@ -87,9 +109,6 @@ class AixmTools:
 
         
     def geo2coordinates(self, o, latitude=None, longitude=None, recurse=True):
-        #assert(isinstance(latitude, float))
-        #assert(isinstance(longitude, float))
-        
         """ codeDatum or CODE_DATUM Format:
             WGE [WGS-84 (GRS-80).] 
             WGC [WGS-72.] 
@@ -116,49 +135,50 @@ class AixmTools:
             NAW [North American 1983.] 
             U [Other datum or unknown..]
         """
-        
         #Ctrl du référentiel des coordonnées
         codedatum = o.find("codeDatum", recursive=recurse).string
         if not codedatum in ("WGE", "U"):
             self.oCtrl.oLog.critical("geo2coordinates() codedatum is {0}\n{1}".format(codedatum, o), outConsole=True)
 
         if latitude:
-            s = latitude
+            sLat = latitude
         else:
-            s = o.find("geoLat", recursive=recurse).string
+            sLat = o.find("geoLat", recursive=recurse).string
             
-        lat = s[:-1]
-        if len(lat)==2 or lat[2]==".": # DD[.dddd]
-            lat = float(lat)
-        elif len(lat)==4 or lat[4]==".": # DDMM[.mmmm]
-            lat = int(lat[0:2])+float(lat[2:])/60
-        else: # DDMMSS[.sss]
-            if self.oCtrl.bMakeWithNewSrc:
-                lat = int(lat[0:2])+int(lat[2:4])/60+float(lat[4:])/3600
-            else:
-                lat = int(lat[0:2])+int(lat[2:4])/60+float(lat[4:-1])/3600
-        if s[-1] == "S":
-            lat = -lat
-    
         if longitude:
-            s = longitude
+            sLon = longitude
         else:
-            s = o.find("geoLong", recursive=recurse).string
+            sLon = o.find("geoLong", recursive=recurse).string
             
-        lon = s[:-1]
-        if len(lon) == 3 or lon[3] == ".":
-            lon = float(lon)
-        elif len(lon) == 5 or lon[5] == ".":
-            lon = int(lon[0:3])+float(lon[3:])/60
-        else:
-            if self.oCtrl.bMakeWithNewSrc:
-                lon = int(lon[0:3])+int(lon[3:5])/60+float(lon[5:])/3600
-            else:
-                lon = int(lon[0:3])+int(lon[3:5])/60+float(lon[5:-1])/3600
-        if s[-1] == "W":
-            lon = -lon
-        return([round(lon,self.oCtrl.digit4roundPoint), round(lat,self.oCtrl.digit4roundPoint)])
+        lat, lon = bpaTools.GeoCoordinates.geoStr2dd(sLat, sLon, self.oCtrl.digit4roundPoint)
+        return([lon, lat])
+
+
+    def convertLength(self, length:float, srcRef:str, dstRef:str):
+        srcRef = srcRef.upper()
+        dstRef = dstRef.upper()
+        if not srcRef in ["NM","KM","M","FT"]:      raise Exception("Invalid input - srcRef")
+        if not dstRef in ["NM","M"]:                raise Exception("Invalid input - dstRef")
+        if srcRef == dstRef:
+            return length
         
+        if   dstRef=="M" and srcRef=="NM":
+            length = length * aixmReader.CONST.nm
+        elif dstRef=="M" and srcRef=="KM":
+            length = length * 1000
+        elif dstRef=="M" and srcRef=="FT":
+            length = length * aixmReader.CONST.ft
+        elif dstRef=="NM" and srcRef=="KM":
+            length = (length * 1000) / aixmReader.CONST.nm
+        elif dstRef=="NM" and srcRef=="M":
+            length = length / aixmReader.CONST.nm
+        elif dstRef=="NM" and srcRef=="FT":
+            length = (length * aixmReader.CONST.ft) / aixmReader.CONST.ft
+        else:
+            self.oCtrl.oLog.critical("convertLength() error value={0} srcRef={1} srcRef={2}}".format(length, srcRef, dstRef), outConsole=False)
+        
+        return length
+
 
     def getField(self, o, inputname, outputname=None, optional=False):
         if (o is None) and (not self.oCtrl.oLog is None):
@@ -175,6 +195,7 @@ class AixmTools:
             ret = ret.replace(" :",":")
             ret = ret.replace(" ;",";")
             ret = ret.replace(" ,",",")
+            ret = ret.replace(" .",".")
             ret = ret.replace("  "," ")
             return {outputname:ret}
         else:
@@ -182,9 +203,11 @@ class AixmTools:
                 self.oCtrl.oLog.error("Field not Found in={0} out={1}\n{2}".format(inputname, outputname, o), outConsole=True)    
         return None
 
+
     def addField(self, prop, field):
         if field: prop.update(field)
         return prop
+
 
     def addProperty(self, prop, o, inputname, outputname=None, optional=False):
         field = self.getField(o, inputname, outputname, optional)
@@ -195,7 +218,7 @@ class AixmTools:
         prop = dict()
         prop = self.addField(prop, {"zoneType":context})
         return prop
-    
+
 
     """
     geojson Colors attributes: stroke; stroke-width; stroke-opacity; fill; fill-opacity
@@ -264,6 +287,7 @@ class AixmTools:
         Pcenter: center-point of arc = Point([lon,lat]) in float values
         radius: is a float value in meters
         angles: in degrees (default values for construct a 'Circle')
+        clockwiseArc : is boolean value ; True='Clockwise Arc' and False='Counter Clockwise Arc'
     """
     def make_arc(self, Pcenter, radius, start_angle=0.0, stop_angle=360.0, clockwiseArc=False):
         assert(isinstance(Pcenter, Point))
@@ -290,7 +314,7 @@ class AixmTools:
     Construct array of coords for make Arc or Circle
         Pcenter, Pstart and Pstop : Points of arc = Point([lon,lat]) in float values
         radius: is a float value in meters (par défaut, est calculé avec l'écart entre Pstart et Pcenter)
-        clockwiseArc : is boolean value ; True='Clockwise Arc' and False='Counter Clockwise Arc' 
+        clockwiseArc : is boolean value ; True='Clockwise Arc' and False='Counter Clockwise Arc'
     """
     def make_arc2(self, Pcenter, Pstart, Pstop, radius=0.0, clockwiseArc=True):
         assert(isinstance(Pcenter, Point))

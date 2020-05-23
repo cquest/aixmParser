@@ -5,27 +5,17 @@ import aixmReader
 
 
 ### Context applicatif
-appName     = "aixmParser"                             #or yourAppName
-appPath     = bpaTools.getFilePath(__file__)            #or yourAppPath
-appVersion     = bpaTools.getVersionFile()              #or yourAppVersion
-appId     = appName + " v" + appVersion
-outPath     = appPath + "../out/"
-logFile     = outPath + "_" + appName + ".log"
+callingContext      = "RemoteCall"                              #Your app calling context
+appName             = "aixmParser"                              #or your app name
+appPath             = bpaTools.getFilePath(__file__)            #or your app path
+appVersion          = bpaTools.getVersionFile()                 #or your app version
+appId               = appName + " v" + appVersion
+outPath             = appPath + "../out/"
+logFile             = outPath + "_" + appName + ".log"
 
 
-####  Quelques fichiers source  ####
-srcPath = "../tst/"
-#------- fichiers officiels & opérationnels ---
-srcFile = srcPath + "20200618_aixm4.5_SIA-FR.xml"
-#srcFile = srcPath + "20200326_aixm4.5_Eurocontrol-FR.xml"
-#srcFile = srcPath + "20200510_BPa_FR-ZSM_Protection-des-rapaces_aixm45.xml"
-#srcFile = srcPath + "20191210_BPa_ZonesComplementaires_aixm45.xml"
-#srcFile = srcPath + "20190401_WPa_ParcCevennes_aixm45.xml"
-#------- fichiers de tests  ---
-#srcFile = srcPath + "20191213_FFVP_AIRSPACE_FRANCE_TXT_1911_aixm45.xml"
-#srcFile = srcPath + "20191214_BPa_FR-BPa4XCsoar_aixm45.xml"
-#srcFile = srcPath + "aixm5.1_testHeader.xml"
-#srcFile = srcPath + "aixm4.5_SIA-FR_map-Airspaces2.xml"
+####  Source test file  ####
+srcFile = "../tst/aixm4.5_SIA-FR_map-Airspaces.xml"
 
 
 ####  Préparation de quelques options d'appels  ####
@@ -57,12 +47,20 @@ aArgv += [aixmReader.CONST.optCleanLog]     #Mode classique avec log et afficage
 
 ####  Préparation d'appel ####
 oOpts = bpaTools.getCommandLineOptions(aArgv)                   #Arguments en dictionnaire
-oLog = bpaTools.Logger(appId, logFile, isSilent=bool(aixmReader.CONST.optSilent in oOpts))
+oLog = bpaTools.Logger(appId, logFile, callingContext, isSilent=bool(aixmReader.CONST.optSilent in oOpts))
+
 if aixmReader.CONST.optCleanLog in oOpts:
-    oLog.resetFile()                                            #Clean du log si demandé
-bpaTools.createFolder(outPath)                                  #Init dossier de sortie
+    oLog.resetFile()                                #Clean du log si demandé
+oLog.writeCommandLine(aArgv)                        #Trace le contexte d'execution
+bpaTools.createFolder(outPath)                      #Init dossier de sortie
 
 #### Appel du parser  ####
 aixmCtrl = aixmReader.AixmControler(srcFile, outPath, oLog)     #Init controler
 aixmCtrl.execParser(oOpts)                                      #Execution des traitements
 
+#Bilan des traitements disponible en mode 'Silent' ;-)
+if aixmReader.CONST.optSilent in oOpts:
+    if oLog.CptCritical or oLog.CptError:
+        print("/!\ Processing Error(s)")
+        print(oLog.getReport())
+    

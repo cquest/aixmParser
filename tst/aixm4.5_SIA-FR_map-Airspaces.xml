@@ -15540,10 +15540,10 @@ Activity known on :#
 		</AseUid>
 		<txtLocalType>FRA</txtLocalType>
 		<codeDistVerUpper>STD</codeDistVerUpper>
-		<valDistVerUpper>660</valDistVerUpper>
+		<valDistVerUpper>100</valDistVerUpper>
 		<uomDistVerUpper>FL</uomDistVerUpper>
 		<codeDistVerLower>STD</codeDistVerLower>
-		<valDistVerLower>305</valDistVerLower>
+		<valDistVerLower>50</valDistVerLower>
 		<uomDistVerLower>FL</uomDistVerLower>
 		<Att>
 			<codeWorkHr>H24</codeWorkHr>
@@ -15983,8 +15983,8 @@ Safety officer 93ème RAM : 06 73 90 50 33</txtRmk>
 		</AbdUid>
 		<Avx>
 			<codeType>GRC</codeType>
-			<geoLat>474641.00N</geoLat>
-			<geoLong>0024133.00W</geoLong>
+			<geoLat>474630.00N</geoLat>
+			<geoLong>0024914.00W</geoLong>
 			<codeDatum>WGE</codeDatum>
 			<valCrc>6274BA43</valCrc>
 		</Avx>
@@ -16480,27 +16480,6 @@ Safety officer 93ème RAM : 06 73 90 50 33</txtRmk>
 			<valCrc>1300C976</valCrc>
 		</Avx>
 		<Avx>
-			<GbrUid mid="19012205">
-				<txtName>ITALY_SWITZERLAND</txtName>
-			</GbrUid>
-			<codeType>FNT</codeType>
-			<geoLat>461201.0000N</geoLat>
-			<geoLong>0091142.0000E</geoLong>
-			<codeDatum>WGE</codeDatum>
-			<valCrc>2F7843B0</valCrc>
-		</Avx>
-		<Avx>
-			<GbrUid mid="19006436">
-				<txtName>AUSTRIA_ITALY</txtName>
-			</GbrUid>
-			<codeType>FNT</codeType>
-			<geoLat>465117.6900N</geoLat>
-			<geoLong>0102810.7600E</geoLong>
-			<codeDatum>WGE</codeDatum>
-			<valCrc>7EB332F5</valCrc>
-			<txtRmk>Vertex modified to create geometry, original coordinates: 465118N 0102811E</txtRmk>
-		</Avx>
-		<Avx>
 			<codeType>GRC</codeType>
 			<geoLat>470000.0000N</geoLat>
 			<geoLong>0115109.0000E</geoLong>
@@ -16513,16 +16492,6 @@ Safety officer 93ème RAM : 06 73 90 50 33</txtRmk>
 			<geoLong>0115118.0000E</geoLong>
 			<codeDatum>WGE</codeDatum>
 			<valCrc>43D1C2C7</valCrc>
-		</Avx>
-		<Avx>
-			<GbrUid mid="19006436">
-				<txtName>AUSTRIA_ITALY</txtName>
-			</GbrUid>
-			<codeType>FNT</codeType>
-			<geoLat>464802.0000N</geoLat>
-			<geoLong>0121716.0000E</geoLong>
-			<codeDatum>WGE</codeDatum>
-			<valCrc>EF7DFD96</valCrc>
 		</Avx>
 		<Avx>
 			<codeType>GRC</codeType>
@@ -16545,16 +16514,6 @@ Safety officer 93ème RAM : 06 73 90 50 33</txtRmk>
 			<geoLong>0132423.0000E</geoLong>
 			<codeDatum>WGE</codeDatum>
 			<valCrc>DC4883C6</valCrc>
-		</Avx>
-		<Avx>
-			<GbrUid mid="19055867">
-				<txtName>ITALY_SLOVENIA</txtName>
-			</GbrUid>
-			<codeType>FNT</codeType>
-			<geoLat>461813.0000N</geoLat>
-			<geoLong>0132314.0000E</geoLong>
-			<codeDatum>WGE</codeDatum>
-			<valCrc>8BB25B71</valCrc>
 		</Avx>
 		<Avx>
 			<codeType>GRC</codeType>

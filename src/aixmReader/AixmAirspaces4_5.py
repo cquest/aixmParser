@@ -3,6 +3,7 @@
 import bpaTools
 import aixmReader
 
+
 class AixmAirspaces4_5:
     
     def __init__(self, oCtrl=None):
@@ -268,6 +269,11 @@ class AixmAirspaces4_5:
         barre.reset()
         return
 
+    def findAixmObjectAirspacesBorders(self, sAseUid):
+        oBorder=None
+        if sAseUid in self.oAirspacesBorders:
+            oBorder = self.oAirspacesBorders[sAseUid]
+        return oBorder
 
     #Recherche de la zone de base (pris en référence)
     def findZoneUIdBase(self, sZoneUId):
@@ -280,7 +286,6 @@ class AixmAirspaces4_5:
             if sZoneUId in self.oIdxAseUid2AseUid2:                 #Cas d'une sous-zone: <Adg><AseUidBase mid="1561891">
                 sZoneUIdBase = self.oIdxAseUid2AseUid2[sZoneUId]    #Identification de la zone de base (dite classique)
         return sZoneUIdBase
-    
     
     #Détermination du responsable organisationnel de la zone
     def findOrgName(self, sZoneUId):

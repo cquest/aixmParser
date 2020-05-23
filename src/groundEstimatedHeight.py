@@ -5,7 +5,6 @@ import json
 import os
 import shutil
 import numpy as np
-#import statistics
 import srtm
 
 
@@ -108,7 +107,7 @@ def getGroundEstimatedHeight(oZone):
             aElevation.append(lElevation)
 
     #oLog.info("aElevation={}".format(aElevation), outConsole=False)
-    if lCptError > 20:
+    if lCptError > 40:
          oLog.warning("{0} errors in call elevation_data.get_elevation()\nProperties={1}\naElevation{2}".format(lCptError, oZone[sProp], aElevation), outConsole=False)
 
     eSortedElevation = sorted(aElevation)
@@ -139,84 +138,83 @@ def getGroundEstimatedHeight(oZone):
 
 
 
-
-#Chargement des éléments inconnus du référetentiel
-sUnknownGroundHeightFileName = "refUnknownGroundHeight.json"
-sGroundHeightFileName = "refGroundEstimatedHeight.json"
-sSrcFileName = __OutPath__ + sUnknownGroundHeightFileName
-oUnknownGroundHeight = bpaTools.readJsonFile(sSrcFileName)
-oGroundEstimatedHeight = {}
-
-if len(oUnknownGroundHeight)==0:
-    oLog.warning("Empty reference file : {0}".format(sSrcFileName), outConsole=True)
-else:
+if __name__ == '__main__':
+    #Chargement des éléments inconnus du référetentiel
+    sUnknownGroundHeightFileName = "refUnknownGroundHeight.json"
+    sGroundHeightFileName = "refGroundEstimatedHeight.json"
+    sSrcFileName = __OutPath__ + sUnknownGroundHeightFileName
+    oUnknownGroundHeight = bpaTools.readJsonFile(sSrcFileName)
+    oGroundEstimatedHeight = {}
     
-    #Select dataObject in src file
-    oUnknownHeader = oUnknownGroundHeight["headerFile"]      #Get the header file
-    oUnknownContent = oUnknownGroundHeight["referential"]     #Get the content of referential
+    if len(oUnknownGroundHeight)==0:
+        oLog.warning("Empty reference file : {0}".format(sSrcFileName), outConsole=True)
+    else:
+        
+        #Select dataObject in src file
+        oUnknownHeader = oUnknownGroundHeight["headerFile"]      #Get the header file
+        oUnknownContent = oUnknownGroundHeight["referential"]     #Get the content of referential
+        
+        #Let specific header file & save the source file
+        sHeadFileName = "_{0}_".format(oUnknownHeader["srcAixmOrigin"])
+        sCpyFileName = "{0}{1}{2}_{3}".format(__OutPath__, sHeadFileName, bpaTools.getDateNow(), sUnknownGroundHeightFileName)
+        shutil.copyfile(sSrcFileName, sCpyFileName)
+        
+        #Initialisation du référentiel de destination
+        sDstFileName = "{0}{1}{2}".format(__OutPath__, sHeadFileName, sGroundHeightFileName)
+        #Sauvegarde initiale de la première instence du jour (si pas déjà existant pour ne pas perdre les données en cas réexécution pour mises au point)
+        if os.path.exists(sDstFileName):
+            sCpyFileName = "{0}{1}{2}_{3}".format(__OutPath__, sHeadFileName, bpaTools.getDateNow(), sGroundHeightFileName)
+            if not os.path.exists(sCpyFileName):
+                shutil.copyfile(sDstFileName, sCpyFileName)
+                oLog.info("Save initial reference file : {0} --> {1}".format(sDstFileName, sCpyFileName), outConsole=False)
+        
+        #Chargement du reférentiel initial (si déjà existant ; pour ajout de la complétude des données manquantes)
+        oJson = bpaTools.readJsonFile(sDstFileName)
+        if "referential" in oJson:
+            oGroundEstimatedHeight = oJson["referential"]        #Ne récupère que les datas du fichier
+        
+        #Chargement des zones avec description des bordures
+        sGeoJsonFileName = __SrcPath__ + "airspaces-freeflight.geojson"
+        oGeoJsondata = bpaTools.readJsonFile(sGeoJsonFileName)   
+        oFeatures = oGeoJsondata["features"]
+        
+        #Analyse de toutes les zones manquante du référentiel
+        barre = bpaTools.ProgressBar(len(oUnknownContent), 20, title="Unknown Ground Estimated Height")
+        geoJSON = []
+        idx = 0
+        for sZoneUId,sDestKey in oUnknownContent.items():
+            idx+=1
+            #if sDestKey == "[TMA-P] GENEVE TMA1 (LSGG1)@HEI.1000.FT":
+            #    print("stop debug")
+            oZone = findZone(sZoneUId, oFeatures)
+            if oZone:
+                lGroundEstimatedHeight, objJSON = getGroundEstimatedHeight(oZone)   #Détermine la hauteur sol moyenne (dessous la zone)
+                oGroundEstimatedHeight.update({sDestKey:lGroundEstimatedHeight})    #Ajoute un point d'entrée attendu
+                #sMsg = "Update Reference Data: sZoneUId={0} - key={1} - {2}m".format(sZoneUId, sDestKey, lGroundEstimatedHeight)
+                #oLog.info(sMsg, outConsole=False)
+                for g in objJSON:
+                    geoJSON.append(g)
+            barre.update(idx)
+        barre.reset()
     
-    #Let specific header file & save the source file
-    sHeadFileName = "_{0}_".format(oUnknownHeader["srcAixmOrigin"])
-    sCpyFileName = "{0}{1}{2}_{3}".format(__OutPath__, sHeadFileName, bpaTools.getDateNow(), sUnknownGroundHeightFileName)
-    shutil.copyfile(sSrcFileName, sCpyFileName)
     
-    #Initialisation du référentiel de destination
-    sDstFileName = "{0}{1}{2}".format(__OutPath__, sHeadFileName, sGroundHeightFileName)
-    #Sauvegarde initiale de la première instence du jour (si pas déjà existant pour ne pas perdre les données en cas réexécution pour mises au point)
-    if os.path.exists(sDstFileName):
-        sCpyFileName = "{0}{1}{2}_{3}".format(__OutPath__, sHeadFileName, bpaTools.getDateNow(), sGroundHeightFileName)
-        if not os.path.exists(sCpyFileName):
-            shutil.copyfile(sDstFileName, sCpyFileName)
-            oLog.info("Save initial reference file : {0} --> {1}".format(sDstFileName, sCpyFileName), outConsole=False)
+    if len(oGroundEstimatedHeight)>0:
     
-    #Chargement du reférentiel initial (si déjà existant ; pour ajout de la complétude des données manquantes)
-    oJson = bpaTools.readJsonFile(sDstFileName)
-    if "referential" in oJson:
-        oGroundEstimatedHeight = oJson["referential"]        #Ne récupère que les datas du fichier
+        #Contruction du nouveau référentiel
+        header = dict()
+        header.update({"srcAixmOrigin":oUnknownHeader["srcAixmOrigin"]})
+        out = {"headerFile":header, "referential":oGroundEstimatedHeight}
+        bpaTools.writeJsonFile(sDstFileName, out)
+        oLog.info("Write Referential Ground Estimated Height: {0} heights in file {1}".format(len(oGroundEstimatedHeight), sDstFileName), outConsole=True)
+        
+        #Construction du fichier geojson représentatif du référentiel; y compris la précision du cadrage des zones référencées...
+        sGeoJsonFileName = str(sDstFileName).replace(".json",".geojson")
+        #bpaTools.writeJsonFile(sGeoJsonFileName, json.dumps(out, ensure_ascii=True))
+        with open(sGeoJsonFileName, "w", encoding="utf-8") as output:
+            output.write(json.dumps({"type":"FeatureCollection","features":geoJSON}, ensure_ascii=False))
+        oLog.info("Write GeoJSON View of Referential Ground Estimated Height: {0} features in file {1}".format(len(oGroundEstimatedHeight), sGeoJsonFileName), outConsole=True)
     
-    #Chargement des zones avec description des bordures
-    sGeoJsonFileName = __SrcPath__ + "airspaces-freeflight.geojson"
-    oGeoJsondata = bpaTools.readJsonFile(sGeoJsonFileName)   
-    oFeatures = oGeoJsondata["features"]
+    print()
+    oLog.Report()
+    oLog.closeFile
     
-    #Analyse de toutes les zones manquante du référentiel
-    barre = bpaTools.ProgressBar(len(oUnknownContent), 20, title="Unknown Ground Estimated Height")
-    geoJSON = []
-    idx = 0
-    for sZoneUId,sDestKey in oUnknownContent.items():
-        idx+=1
-        #if sDestKey == "[TMA-P] GENEVE TMA1 (LSGG1)@HEI.1000.FT":
-        #    print("stop debug")
-        oZone = findZone(sZoneUId, oFeatures)
-        if oZone:
-            lGroundEstimatedHeight, objJSON = getGroundEstimatedHeight(oZone)   #Détermine la hauteur sol moyenne (dessous la zone)
-            oGroundEstimatedHeight.update({sDestKey:lGroundEstimatedHeight})    #Ajoute un point d'entrée attendu
-            #sMsg = "Update Reference Data: sZoneUId={0} - key={1} - {2}m".format(sZoneUId, sDestKey, lGroundEstimatedHeight)
-            #oLog.info(sMsg, outConsole=False)
-            for g in objJSON:
-                geoJSON.append(g)
-        barre.update(idx)
-    barre.reset()
-
-
-if len(oGroundEstimatedHeight)>0:
-
-    #Contruction du nouveau référentiel
-    header = dict()
-    header.update({"srcAixmOrigin":oUnknownHeader["srcAixmOrigin"]})
-    out = {"headerFile":header, "referential":oGroundEstimatedHeight}
-    bpaTools.writeJsonFile(sDstFileName, out)
-    oLog.info("Write Referential Ground Estimated Height: {0} heights in file {1}".format(len(oGroundEstimatedHeight), sDstFileName), outConsole=True)
-    
-    #Construction du fichier geojson représentatif du référentiel; y compris la précision du cadrage des zones référencées...
-    sGeoJsonFileName = str(sDstFileName).replace(".json",".geojson")
-    #bpaTools.writeJsonFile(sGeoJsonFileName, json.dumps(out, ensure_ascii=True))
-    with open(sGeoJsonFileName, "w", encoding="utf-8") as output:
-        output.write(json.dumps({"type":"FeatureCollection","features":geoJSON}, ensure_ascii=False))
-    oLog.info("Write GeoJSON View of Referential Ground Estimated Height: {0} features in file {1}".format(len(oGroundEstimatedHeight), sGeoJsonFileName), outConsole=True)
-
-
-print()
-oLog.Report()
-oLog.closeFile
-

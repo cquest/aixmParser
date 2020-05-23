@@ -4,13 +4,13 @@ import bpaTools
 import aixmReader
 import aixm2json
 import aixm2openair
-
 import sys, traceback
 
+
 class CONST:
-    nm = 1852                           # Nautic Mile to meters
-    ft = 0.3048                         # foot in meter
-    pi = 3.1415926                      #Valeur de l'angle PI
+    nm = 1852                           # Nautic Mile to Meter
+    ft = 0.3048                         # Foot to Meter
+    pi = 3.1415926                      # PI angle
     frmtGEOJSON = "-Fgeojson"
     frmtOPENAIR = "-Fopenair"
     frmtKML = "-Fkml"
@@ -33,6 +33,12 @@ class CONST:
     optDraft = "-Draft"
     optTstGeojson = "-TstGeojson"
     optMakePoints4map = "-MakePoints4map"
+    fileSuffixAndMsg = {
+            optALL:["all", "All Airspaces map"],
+            optIFR:["ifr", "IFR map (Instrument Flihgt Rules"],
+            optVFR:["vfr", "VFR map (Visual Flihgt Rules"],
+            optFreeFlight:["ff", "FreeFlight map (Paragliding / Hanggliding)"]
+            }
 
 
 
@@ -54,7 +60,6 @@ class AixmControler:
         self.__Draft = False                #Limitation du nombre de segmentation des arcs et cercles en geojson
         self.__MakePoints4map = False       #Construction de points complémentaires pour mise au point de la sorties geojson
         
-        self.bMakeWithNewSrc = True                     #Just for execute with new source (False for Old source...)
         self.digit4roundArc = 6                         #Précision du nombre de digit pour les arrondis des Arcs/Cercles
         self.digit4roundPoint = self.digit4roundArc     #Précision du nombre de digit pour les arrondis des Points
         return
@@ -157,6 +162,18 @@ class AixmControler:
         return
 
 
+    def saveAirspaces(self, parser, criticalErrCatalog=0):
+        if self.ALL and criticalErrCatalog==0:
+            parser.saveAirspacesFilter(aixmReader.CONST.fileSuffixAndMsg[aixmReader.CONST.optALL])
+        if self.IFR and criticalErrCatalog==0:
+            parser.saveAirspacesFilter(aixmReader.CONST.fileSuffixAndMsg[aixmReader.CONST.optIFR])
+        if self.VFR and criticalErrCatalog==0:
+            parser.saveAirspacesFilter(aixmReader.CONST.fileSuffixAndMsg[aixmReader.CONST.optVFR])
+        if self.FreeFlight:
+            parser.saveAirspacesFilter(aixmReader.CONST.fileSuffixAndMsg[aixmReader.CONST.optFreeFlight])
+        return
+
+
     def execParser(self, oOpts):
         self.IFR = bool(CONST.optIFR in oOpts)
         self.VFR = bool(CONST.optVFR in oOpts)
@@ -231,30 +248,34 @@ class AixmControler:
             oAs.loadAirspacesCatalog()          #Lecture/Chargement de toutes les zones aériennes (classification & Propriétés)
             oAs.saveAirspacesCalalog()          #Construction des catalogues
             oAs.clearAirspaceIdx()              #Libération de mémoire
+
+            #En cas d'err, interruption nécessaire pour mise à niveau du référentiel 'refGroundEstimatedHeight.json'
+            criticalErrCatalog = self.oLog.CptCritical
+
             found = any(item in (CONST.frmtGEOJSON, CONST.frmtALL) for item in oOpts.keys())
             if found:
                 if o2json == None:
                     o2json = self.getFactory("parser", "geojson")       #Récupération dynamique du parser aixm/geojson associé au format du fichier source
                 o2json.parseAirspacesBorders(oAs)
-                o2json.saveAirspaces()
+                self.saveAirspaces(o2json, criticalErrCatalog)
                 bExec = True
-    
-            #Interruption nécessaire pour mise a niveau des référentiels
-            if self.oLog.CptCritical>0:
+
+            found = any(item in (CONST.frmtOPENAIR, CONST.frmtALL) for item in oOpts.keys())
+            if found:
+                o2openair = self.getFactory("parser", "openair")        #Récupération dynamique du parser aixm/openair associé au format du fichier source
+                o2openair.parseAirspacesBorders(oAs)
+                self.saveAirspaces(o2openair, criticalErrCatalog)
                 bExec = True
-                self.oLog.error("Interrupt process - Show Critical items in log file", outConsole=True)
-            else:
-                found = any(item in (CONST.frmtOPENAIR, CONST.frmtALL) for item in oOpts.keys())
-                if found:
-                    o2openair = self.getFactory("parser", "openair")    #Récupération dynamique du parser aixm/openair associé au format du fichier source
-                    o2openair.parseAirspace()
-                    bExec = True
-                
+
+            if criticalErrCatalog>0:
+                self.oLog.critical("Interrupt process; probably for update referential 'groundEstimatedHeight' - Show Critical errors details in log file", outConsole=True)
+            elif self.oLog.CptCritical>criticalErrCatalog:
+                self.oLog.error("Show Critical errors items in log file", outConsole=True)
+
         #############################################################################################
         #Finalisation des traitements
         print()
         if bExec: self.oLog.Report()
         self.oLog.closeFile()
         return bExec
-
 

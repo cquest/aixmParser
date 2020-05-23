@@ -1,9 +1,7 @@
 # aixmParser
 
-**EN COURS DE DEVELOPPEMENT !!!**  
---> Les Pull-Request et Issues sont les bienvenues :)  
-*ATTENTION: Seules les données d'origine doivent être utilisées pour la navigation aérienne.*  
- 
+*/!\ ATTENTION: Seules des données officielles doivent êtres utilisées pour la navigation aérienne.*  
+*/!\ WARNING  : Only official data must be used for air navigation*  
 
 Programme d'extraction et de formatage des données issues du standard AIXM (Aeronautical Information Exchange Modele)  
 Les fichiers actuellements générées sont les suivants:  
@@ -12,12 +10,12 @@ a/ Catalogue des zones aériennes, disponible sous deux formats:
 	- airspacesCatalog.json  
 	- airspacesCatalog.csv  
 
-b/ Description des zones aériennes, disponible au format GeoJSON(*):  
-	- airspaces-all.geojson			Cartographie complète de l'espace aérien (IFR + VFR)  
-	- airspaces-ifr.geojson			Cartographie de l'espace aérien IFR (zones situées au dessus  du niveau FL115)  
-	- airspaces-vfr.geojson			Cartographie de l'espace aérien VFR (zones situées en dessous le niveau FL115)  
-	- airspaces-freeflight.geojson	Cartographie de l'espace aérien dédié Vol-Libre (dessous FL115 +filtre +compl.)  
-	- (ces fichiers seront bientôts disponibles aux formats : Openair et Kml) 
+b/ Description des zones aériennes, disponibles selon deux formats : GeoJSON (file.geojson) et Openair (file.txt)
+	- airspaces-all             Cartographie complète de l'espace aérien (IFR + VFR)  
+	- airspaces-ifr             Cartographie de l'espace aérien IFR (zones situées au dessus  du niveau FL115)  
+	- airspaces-vfr             Cartographie de l'espace aérien VFR (zones situées en dessous le niveau FL115)  
+	- airspaces-freeflight      Cartographie de l'espace aérien dédié Vol-Libre (dessous FL115 +filtre +compl.)  
+	Nota. Ces fichiers seront bientôts disponibles au format GoogleEarth (file.kml) 
 
 c/ Description d'informations aéraunautique complémentaires, disponible au format GeoJSON(*):  
 	- aerodromes.geojson  
@@ -26,12 +24,18 @@ c/ Description d'informations aéraunautique complémentaires, disponible au for
 	- runwaysCenter.geojson  
 	- obstacles.geojson  
 	- borders.geojson  
+	Nota. Le fichier borders est également disponible au format Openair '.txt')
 
 (*) AIXM - Aeronautical Information Exchange Modele : Un standard internationanl d'échange de données aéronautiques. Basé sur la technologie XML - http://www.aixm.aero/   
 Nota. Actuellement, seul l'ancien format AIXM 4.5 est pris en charge. Ultérieurement, ce programme évoluera pour prendre en charge la version AIXM 5.1  
 
-(*) GeoJSON - Geographic JSON.  Un format ouvert d'encodage d'ensemble de données géospatiales. Basé sur la technologie JSON (JavaScript Object Notation) et issu du projet OpenStreetMap, il est compatible avec le système : https://www.google.fr/maps  
+(*) GeoJSON - Geographic JSON.  Un format ouvert d'encodage données géospatiales. Basé sur la technologie JSON (JavaScript Object Notation) et issu du projet OpenStreetMap, il est compatible avec le système : https://www.google.fr/maps  
 Les données GeoJSON sont visualisables par des outils tels que : http://geojson.tools/   ou   http://geojson.io/  
+
+(*) Openair - Open airspace and terrain description language - Un format ouvert d'encodage de données aéronautiques. Basé sur un format simplifié (TEXT file format) et utilisé par  de nombreux logiciels - http://www.winpilot.com/UsersGuide/UserAirspace.asp  
+Les données Openair sont visualisables par des outils tels que : http://xcglobe.com/cloudapi/browser  -or-  http://cunimb.net/openair2map.php  
+
+(*) GoogleEarth - Le globe terrestre en 3D le plus détaillé au monde - Un format d'encodage données géospatiales. Basé sur la technologie XML - https://www.google.com/earth/  
 ```
 
 ## Installation
@@ -44,7 +48,7 @@ pip install -r requirements.txt
 Selon le choix des options de génération; le programme produira un log et les fichiers dans le dossier ./out/  
 Les options d'utilisations s'auto décrivent avec l'aide en ligne "aixmParser -h":  
 ```
-aixmParser v2.5.0  
+aixmParser v2.6.0  
 -----------------  
 Aeronautical Information Exchange Model (AIXM) Converter  
 Call: aixmParser <[drive:][path]filename> <Format> <Type> [<Type2> ... <TypeN>] [<Option(s)>]  
