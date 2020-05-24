@@ -52,9 +52,8 @@ def getDate(date:datetime, sep:str="") -> str:
     return date.strftime(sFrmt)
 
 
-def getVersionFile() -> str:
-    versionFile = "_version.py"
-    fileContent = open(versionFile, "rt").read()
+def getVersionFile(versionPath="", versionFile="_version.py") -> str:
+    fileContent = open(versionPath + versionFile, "rt").read()
     token = r"^__version__ = ['\"]([^'\"]*)['\"]"
     oFound = re.search(token, fileContent, re.M)
     if oFound:

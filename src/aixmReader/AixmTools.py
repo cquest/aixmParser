@@ -31,11 +31,15 @@ class AixmTools:
             if context=="ff":               sFileName = sFileName + "-freeflight"     #Suffixe pour fichier Vol-Libre (Paraglinding/Hanggliding)
             if self.oCtrl.Draft:            sFileName = sFileName + "-draft"          #Suffixe pour fichier en mode draft
             if self.oCtrl.MakePoints4map:   sFileName = sFileName + "-points4map"     #Suffixe pour fichier avec ajout des points de séparation
-        sOutFile = sFileName + ".geojson"
+        sOutFile = self.oCtrl.sOutHeadFile + sFileName + ".geojson"
         sizeMap = len(oGeojson)
-        self.oCtrl.oLog.info("Write file {0} - {1} areas in map".format(sOutFile, sizeMap), outConsole=True)
-        with open(self.oCtrl.sOutPath + sOutFile, "w", encoding=self.oCtrl.sEncoding) as output:
-            output.write(json.dumps({"type":"FeatureCollection", "headerFile":self.getJsonPropHeaderFile(sFileName, context, sizeMap), "features":oGeojson}, ensure_ascii=False))
+        if sizeMap:
+            headMsg = "W"
+            with open(self.oCtrl.sOutPath + sOutFile, "w", encoding=self.oCtrl.sEncoding) as output:
+                output.write(json.dumps({"type":"FeatureCollection", "headerFile":self.getJsonPropHeaderFile(sFileName, context, sizeMap), "features":oGeojson}, ensure_ascii=False))
+        else:
+            headMsg = "Dont' w"
+        self.oCtrl.oLog.info("{0}rite file {1} - {2} areas in map".format(headMsg, sOutFile, sizeMap), outConsole=True)
         return
 
 
@@ -46,36 +50,44 @@ class AixmTools:
             if context=="ifr":              sFileName = sFileName + "-ifr"            #Suffixe pour fichier Instrument-Fligth-Rules
             if context=="vfr":              sFileName = sFileName + "-vfr"            #Suffixe pour fichier Visual-Fligth-Rules
             if context=="ff":               sFileName = sFileName + "-freeflight"     #Suffixe pour fichier Vol-Libre (Paraglinding/Hanggliding)
-        sOutFile = sFileName + ".txt"
+        sOutFile = self.oCtrl.sOutHeadFile + sFileName + ".txt"
         sizeMap = len(oOpenair)
-        self.oCtrl.oLog.info("Write file {0} - {1} areas in map".format(sOutFile, sizeMap), outConsole=True)
-        with open(self.oCtrl.sOutPath + sOutFile, "w", encoding=self.oCtrl.sEncoding) as output:
-            oHeader = self.getJsonPropHeaderFile(sFileName, context, sizeMap)
-            output.write("*"*50 +"\n")
-            for head in oHeader:
-                output.write("*" + " "*5 + "{0} - {1}\n".format(head, oHeader[head]))
-            output.write("*"*50 + "\n\n")
-            for airspace in oOpenair:
-                output.write("\n".join(airspace))
-                output.write("\n\n")
+        if sizeMap:
+            headMsg = "W"
+            with open(self.oCtrl.sOutPath + sOutFile, "w", encoding=self.oCtrl.sEncoding) as output:
+                oHeader = self.getJsonPropHeaderFile(sFileName, context, sizeMap)
+                output.write("*"*50 +"\n")
+                for head in oHeader:
+                    output.write("*" + " "*5 + "{0} - {1}\n".format(head, oHeader[head]))
+                output.write("*"*50 + "\n\n")
+                for airspace in oOpenair:
+                    output.write("\n".join(airspace))
+                    output.write("\n\n")
+        else:
+            headMsg = "Dont' w"
+        self.oCtrl.oLog.info("{0}rite file {1} - {2} areas in map".format(headMsg, sOutFile, sizeMap), outConsole=True)
         return
 
 
-    def writeJsonFile(self, sFileName, oJson):
-        assert(isinstance(sFileName, str))
-        sOutFile = sFileName + ".json"
-        self.oCtrl.oLog.info("Write file {0}".format(sOutFile), outConsole=True)
-        with open(self.oCtrl.sOutPath + sOutFile, "w", encoding=self.oCtrl.sEncoding) as output:
-            output.write(json.dumps(oJson, ensure_ascii=False))
+    def writeJsonFile(self, sPath="", sFileName="", oJson=None):
+        if sFileName!="":
+            sOutFile = self.oCtrl.sOutHeadFile + sFileName + ".json"
+            self.oCtrl.oLog.info("Write file {0}".format(sOutFile), outConsole=True)
+            if sPath=="":
+                sPath = self.oCtrl.sOutPath
+            with open(sPath + sOutFile, "w", encoding=self.oCtrl.sEncoding) as output:
+                output.write(json.dumps(oJson, ensure_ascii=False))
         return
 
 
-    def writeTextFile(self, sFileName, oText, fileExtention="txt"):
-        assert(isinstance(sFileName, str))
-        sOutFile = sFileName + "." + fileExtention
-        self.oCtrl.oLog.info("Write file {0}".format(sOutFile), outConsole=True)
-        with open(self.oCtrl.sOutPath + sOutFile, "w", encoding=self.oCtrl.sEncoding) as output:
-            output.write(oText)
+    def writeTextFile(self, sPath="", sFileName="", oText=None, fileExtention="txt"):
+        if sFileName!="":
+            sOutFile = self.oCtrl.sOutHeadFile + sFileName + "." + fileExtention
+            self.oCtrl.oLog.info("Write file {0}".format(sOutFile), outConsole=True)
+            if sPath=="":
+                sPath = self.oCtrl.sOutPath        
+            with open(sPath + sOutFile, "w", encoding=self.oCtrl.sEncoding) as output:
+                output.write(oText)
         return
 
     

@@ -1,6 +1,6 @@
 **************************************************
 *     software - (aixmParser v2.6.0) Paragliding-OpenAir-FrenchFiles - http://pascal.bazile.free.fr/paraglidingFolder/divers/GPS/OpenAir-Format/
-*     created - 2020-05-23T16:38:09.739508
+*     created - 2020-05-24T12:20:10.431377
 *     content - airspaces-vfr
 *     vfrMap - True
 *     numberOfAreas - 25

@@ -13,6 +13,7 @@ __AppVers__     = bpaTools.getVersionFile()
 ___AppId___     = __AppName__ + " v" + __AppVers__
 __OutPath__     = __AppPath__ + "../out/"
 __LogFile__     = __OutPath__ + "_" + __AppName__ + ".log"
+bpaTools.createFolder(__OutPath__)                                  #Init dossier de sortie
 
 
 def syntaxe():
@@ -56,25 +57,25 @@ def syntaxe():
     print("     OpenAir test format: http://xcglobe.com/cloudapi/browser  -or-  http://cunimb.net/openair2map.php")
     return
 
-
-### Context d'excecution   
-oOpts = bpaTools.getCommandLineOptions(sys.argv)    #Arguments en dictionnaire
-oLog = bpaTools.Logger(___AppId___, __LogFile__, isSilent=bool(aixmReader.CONST.optSilent in oOpts))
-
-
-if len(sys.argv)<2 or (aixmReader.CONST.optHelp in oOpts):
-    syntaxe()                                       #Aide en ligne
-    oLog.closeFile()
-else:
-    if aixmReader.CONST.optCleanLog in oOpts:
-        oLog.resetFile()                            #Clean du log si demandé
+if __name__ == '__main__':
+    ### Context d'excecution   
+    oOpts = bpaTools.getCommandLineOptions(sys.argv)    #Arguments en dictionnaire
+    oLog = bpaTools.Logger(___AppId___, __LogFile__, isSilent=bool(aixmReader.CONST.optSilent in oOpts))
     
-    oLog.writeCommandLine(sys.argv)                 #Trace le contexte d'execution
-    bpaTools.createFolder(__OutPath__)              #Init dossier de sortie
-   
-    #Initialisation du controler de traitements
-    sSrcFile = sys.argv[1]                          #Nom de fichier
-    aixmCtrl = aixmReader.AixmControler(sSrcFile, __OutPath__, oLog)
-    #Execution des traitements
-    if not aixmCtrl.execParser(oOpts):
-       syntaxe()
+    if len(sys.argv)<2 or (aixmReader.CONST.optHelp in oOpts):
+        syntaxe()                                                           #Aide en ligne
+        oLog.closeFile()
+    else:
+        if aixmReader.CONST.optCleanLog in oOpts:
+            oLog.resetFile()                                                #Clean du log
+        
+        oLog.writeCommandLine(sys.argv)                                     #Trace le contexte d'execution
+        sSrcFile = sys.argv[1]                                              #Nom de fichier
+        aixmCtrl = aixmReader.AixmControler(sSrcFile, __OutPath__, oLog=oLog)    #Controler de traitements
+        if aixmCtrl.execParser(oOpts):                                      #Execution des traitements
+            print()
+            oLog.Report()
+        else:
+           syntaxe()
+    oLog.closeFile()
+

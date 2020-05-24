@@ -8,7 +8,7 @@ class AixmAirspaces4_5:
     
     def __init__(self, oCtrl=None):
         bpaTools.initEvent(__file__, oCtrl.oLog)
-        self.oCtrl = oCtrl                  #Référence du contrôleur appelant
+        self.oCtrl = oCtrl                                              #Référence du contrôleur appelant
         self.oAirspaces = dict()            #Global collection
         self.oAirspacesBorders = dict()     #Global collection
         #self.oDebug = dict()               #Global debug
@@ -21,21 +21,22 @@ class AixmAirspaces4_5:
 
 
     def loadRefFiles(self) -> None:
-        self.referentialsPath = "referentials/"                         #Referentials folder
+        self.referentialsPath = self.oCtrl.sOutPath + "referentials/"  #Referentials folder
+        bpaTools.createFolder(self.referentialsPath)                    #Init dossier si besoin
         sHeadFileName = "_{0}_".format(self.oCtrl.oAixm.srcOrigin)      #Secific header file
         
         #Referentiel topologique : Nécessaire pour connaissance des hauteurs sols
-        self.sUnknownGroundHeightFileName = "{0}{1}".format(self.referentialsPath, "refUnknownGroundHeight.json")
         self.oUnknownGroundHeight = dict()
-        self.sGroundEstimatedHeightFileName = "{0}{1}{2}".format(self.referentialsPath, sHeadFileName, "refGroundEstimatedHeight.json")
+        self.sUnknownGroundHeightFile = "{0}{1}{2}".format(self.referentialsPath, self.oCtrl.sOutHeadFile, "refUnknownGroundHeight.json")
         self.oGroundEstimatedHeight = dict()
-        self.oGroundEstimatedHeight = self.loadRefFileData(self.sGroundEstimatedHeightFileName)
+        self.sGroundEstimatedHeightFile = "{0}{1}{2}{3}".format(self.referentialsPath, sHeadFileName, self.oCtrl.sOutHeadFile, "refGroundEstimatedHeight.json")
+        self.oGroundEstimatedHeight = self.loadRefFileData(self.sGroundEstimatedHeightFile)
         
-        #Referentiel topologique : Nécessaire pour connaissance des hauteurs sols
+        #Referentiel d'exclusion de zones : Nécessaire pour la réalisation des filtrages spécifique Vol Libre
         self.oPotentialFilter4FreeFlightZone = dict()
-        self.sPotentialFilter4FreeFlightZoneFileName = "{0}{1}".format(self.referentialsPath, "refPotentialFilter4FreeFlightZone.json")
+        self.sPotentialFilter4FreeFlightZoneFileName = "{0}{1}{2}".format(self.referentialsPath, self.oCtrl.sOutHeadFile, "refPotentialFilter4FreeFlightZone.json")
         self.oExcludeFilter4FreeFlightZone = dict()
-        self.sExcludeFilter4FreeFlightZoneFileName = "{0}{1}{2}".format(self.referentialsPath, sHeadFileName, "refExcludeFilter4FreeFlightZone.json")
+        self.sExcludeFilter4FreeFlightZoneFileName = "{0}{1}{2}{3}".format(self.referentialsPath, sHeadFileName, self.oCtrl.sOutHeadFile, "refExcludeFilter4FreeFlightZone.json")
         self.oExcludeFilter4FreeFlightZone = self.loadRefFileData(self.sExcludeFilter4FreeFlightZoneFileName)
         return
 
@@ -58,7 +59,7 @@ class AixmAirspaces4_5:
             sNameV = aKey[0]
             sAlt = aKey[1]
             if not self.findAirspaceByProps(sNameV, sAlt):
-                sMsg = "Referential error: {0} - Unused key {1}".format(self.sGroundEstimatedHeightFileName, sKey)
+                sMsg = "Referential error: {0} - Unused key {1}".format(self.sGroundEstimatedHeightFile, sKey)
                 self.oCtrl.oLog.warning(sMsg, outConsole=False)
         for sKey,val in self.oExcludeFilter4FreeFlightZone.items():
             aKey = sKey.split("@")
@@ -204,8 +205,8 @@ class AixmAirspaces4_5:
         header.update({"srcAixmEffective":self.oCtrl.oAixm.srcEffective})
         if len(self.oUnknownGroundHeight)>0:
             out = {"headerFile":header, "referential":self.oUnknownGroundHeight}
-            bpaTools.writeJsonFile(self.sUnknownGroundHeightFileName, out)
-            self.oCtrl.oLog.critical("Missing Ground Estimated Height: {0} Unknown heights in file {1}".format(len(self.oUnknownGroundHeight), self.sUnknownGroundHeightFileName), outConsole=True)
+            bpaTools.writeJsonFile(self.sUnknownGroundHeightFile, out)
+            self.oCtrl.oLog.critical("Missing Ground Estimated Height: {0} Unknown heights in file {1}".format(len(self.oUnknownGroundHeight), self.sUnknownGroundHeightFile), outConsole=True)
         if len(self.oPotentialFilter4FreeFlightZone)>0:
             out = {"headerFile":header, "referential":self.oPotentialFilter4FreeFlightZone}
             bpaTools.writeJsonFile(self.sPotentialFilter4FreeFlightZoneFileName, out)
@@ -213,8 +214,8 @@ class AixmAirspaces4_5:
 
         #Phase 1 : JSON calatlog
         sFilename = "airspacesCatalog"
-        cat = self.createAirspacesCatalog(sFilename)              #Construct Catalog on CSV format
-        self.oCtrl.oAixmTools.writeJsonFile(sFilename, cat)    #Save Catalog on Json format
+        cat = self.createAirspacesCatalog(sFilename)                                #Construct Catalog
+        self.oCtrl.oAixmTools.writeJsonFile(self.referentialsPath, sFilename, cat)  #Save Catalog on Json format
         
         #Phase 2 : CSV calatlog
         #Phase 2.1 : Header CSV file
@@ -249,7 +250,7 @@ class AixmAirspaces4_5:
                     csv += ';'
         
         csv += "\n\n<EOF>"
-        self.oCtrl.oAixmTools.writeTextFile(sFilename, csv, "csv")    #Save Catalog on CSV format
+        self.oCtrl.oAixmTools.writeTextFile(self.referentialsPath, sFilename, csv, "csv")    #Save Catalog on CSV format
         return
     
     

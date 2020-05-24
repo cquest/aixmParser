@@ -283,7 +283,7 @@ class Aixm2openair:
         
 
     def parseAlt(self, sType:str, sValue:str, sUnit:str) -> str:
-        ret = ""
+        ret = "???"
         if   sValue=="0":
             ret = "SFC"                         #sample AH SFC
         elif sValue=="999" and sUnit=="FL":
@@ -297,7 +297,7 @@ class Aixm2openair:
             else:
                 ret += " AMSL"                   #sample AH 2500FT AMSL
         else:   
-            self.oLog.error("parseAlt() error sType={0} sValue={1} sUnit={2}".format(sType, sValue, sUnit), outConsole=False)
+            self.oCtrl.oLog.error("parseAlt() error sType={0} sValue={1} sUnit={2}".format(sType, sValue, sUnit), outConsole=False)
 
         return ret
 

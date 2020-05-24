@@ -44,10 +44,13 @@ class CONST:
 
 class AixmControler:
         
-    def __init__(self, sSrcFile, sOutPath, oLog=None):
+    def __init__(self, sSrcFile, sOutPath, sOutHeadFile="", oLog=None):
         bpaTools.initEvent(__file__, oLog)
         self.srcFile = sSrcFile             #Source file
         self.sOutPath = sOutPath            #Destination folder
+        self.sOutHeadFile = sOutHeadFile    #File name header for outputs files
+        if sOutHeadFile!="":
+            self.sOutHeadFile += "@"
         self.oLog = oLog                    #Log file
         
         self.oAixm = None                   #Lecteur xml du fichier source
@@ -272,10 +275,5 @@ class AixmControler:
             elif self.oLog.CptCritical>criticalErrCatalog:
                 self.oLog.error("Show Critical errors items in log file", outConsole=True)
 
-        #############################################################################################
-        #Finalisation des traitements
-        print()
-        if bExec: self.oLog.Report()
-        self.oLog.closeFile()
         return bExec
 

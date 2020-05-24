@@ -204,12 +204,12 @@ if __name__ == '__main__':
         header = dict()
         header.update({"srcAixmOrigin":oUnknownHeader["srcAixmOrigin"]})
         out = {"headerFile":header, "referential":oGroundEstimatedHeight}
-        bpaTools.writeJsonFile(sDstFileName, out)
+        bpaTools.writeJsonFile("", sDstFileName, out)
         oLog.info("Write Referential Ground Estimated Height: {0} heights in file {1}".format(len(oGroundEstimatedHeight), sDstFileName), outConsole=True)
         
         #Construction du fichier geojson représentatif du référentiel; y compris la précision du cadrage des zones référencées...
         sGeoJsonFileName = str(sDstFileName).replace(".json",".geojson")
-        #bpaTools.writeJsonFile(sGeoJsonFileName, json.dumps(out, ensure_ascii=True))
+        #bpaTools.writeJsonFile("", sGeoJsonFileName, json.dumps(out, ensure_ascii=True))
         with open(sGeoJsonFileName, "w", encoding="utf-8") as output:
             output.write(json.dumps({"type":"FeatureCollection","features":geoJSON}, ensure_ascii=False))
         oLog.info("Write GeoJSON View of Referential Ground Estimated Height: {0} features in file {1}".format(len(oGroundEstimatedHeight), sGeoJsonFileName), outConsole=True)

@@ -13,13 +13,14 @@ if __name__ == '__main__':
     appId               = appName + " v" + appVersion
     outPath             = appPath + "../out/"
     logFile             = outPath + "_" + appName + ".log"
+    bpaTools.createFolder(outPath)                                  #Init dossier de sortie
     
     
     ####  Source test file  ####
     srcFile = "../tst/aixm4.5_SIA-FR_map-Airspaces.xml"
     
     
-    ####  Préparation de quelques options d'appels  ####
+    ####  quelques options d'appels  ####
     #Simulation des arguments d'appels 'sys.argv' via le tableau 'aArgv'
     #aArgv = [appName, aixmReader.CONST.optHelp]
     #------- tests unitaires ---
@@ -45,21 +46,17 @@ if __name__ == '__main__':
     
     
     ####  Préparation d'appel ####
-    oOpts = bpaTools.getCommandLineOptions(aArgv)                   #Arguments en dictionnaire
+    oOpts = bpaTools.getCommandLineOptions(aArgv)       #Arguments en dictionnaire
     oLog = bpaTools.Logger(appId, logFile, callingContext, linkContext, isSilent=bool(aixmReader.CONST.optSilent in oOpts))
     
     if aixmReader.CONST.optCleanLog in oOpts:
         oLog.resetFile()                                #Clean du log si demandé
     oLog.writeCommandLine(aArgv)                        #Trace le contexte d'execution
-    bpaTools.createFolder(outPath)                      #Init dossier de sortie
-    
-    #### Appel du parser  ####
-    aixmCtrl = aixmReader.AixmControler(srcFile, outPath, oLog)     #Init controler
-    aixmCtrl.execParser(oOpts)                                      #Execution des traitements
-    
-    #Bilan des traitements disponible en mode 'Silent' ;-)
-    if aixmReader.CONST.optSilent in oOpts:
+    aixmCtrl = aixmReader.AixmControler(srcFile, outPath, "", oLog=oLog)	    #Init controler
+    if aixmCtrl.execParser(oOpts):                                              #Execution des traitements
+        print()
         if oLog.CptCritical or oLog.CptError:
             print("/!\ Processing Error(s)")
-            print(oLog.getReport())
+        oLog.Report()
+    oLog.closeFile()
     
