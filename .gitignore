@@ -1,5 +1,10 @@
+# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
+
+# Spyder project settings
 .spyproject/
-src/referentials/
+
+# Local resources
+out/referentials/
