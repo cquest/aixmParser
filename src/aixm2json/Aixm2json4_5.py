@@ -45,7 +45,7 @@ class Aixm2json4_5:
                 geom = {"type":"Point", "coordinates":self.oCtrl.oAixmTools.geo2coordinates(uni)}
                 return {"type":"Feature", "properties":prop, "geometry":geom}
             else:
-                self.oCtrl.oLog.warning("Missing TWR coordinates {0}".format(uni.UniUid), outConsole=True)
+                self.oCtrl.oLog.warning("Missing TWR coordinates {0}".format(uni.UniUid), outConsole=False)
         return
 
     def parseAerodromes(self):
@@ -253,7 +253,7 @@ class Aixm2json4_5:
                 else:
                     sAseUidBase = self.oAirspacesCatalog.findZoneUIdBase(sAseUid)       #Identifier la zone de base (de référence)
                     if sAseUidBase==None:
-                        self.oCtrl.oLog.warning("Missing Airspaces Borders AseUid={0}".format(sAseUid), outConsole=False)
+                        self.oCtrl.oLog.warning("Missing Airspaces Borders AseUid={0} of {1}".format(sAseUid, oZone["nameV"]), outConsole=False)
                     else:
                         geom = self.findJsonObjectAirspacesBorders(sAseUidBase)         #Recherche si la zone de base a déjà été parsé
                         if geom:
@@ -261,7 +261,7 @@ class Aixm2json4_5:
                         else:
                             oBorder = self.oAirspacesCatalog.findAixmObjectAirspacesBorders(sAseUidBase)
                             if oBorder==None:
-                                self.oCtrl.oLog.warning("Missing Airspaces Borders AseUid={0} AseUidBase={1}".format(sAseUid, sAseUidBase), outConsole=False)
+                                self.oCtrl.oLog.warning("Missing Airspaces Borders AseUid={0} AseUidBase={1} of {2}".format(sAseUid, sAseUidBase, oZone["nameV"]), outConsole=False)
                             else:
                                 self.parseAirspaceBorder(oZone, oBorder)
             barre.update(idx)
@@ -350,14 +350,14 @@ class Aixm2json4_5:
                             lon, lat = c
                             g.append([lon, lat])
                     else:
-                        self.oCtrl.oLog.warning("Missing geoBorder GbrUid='{0}' Name={1}".format(avx.GbrUid["mid"], avx.GbrUid.txtName.string), outConsole=False)
+                        self.oCtrl.oLog.warning("Missing geoBorder GbrUid='{0}' Name={1} of {2}".format(avx.GbrUid["mid"], avx.GbrUid.txtName.string, oZone["nameV"]), outConsole=False)
                         g.append(start)
                 else:
-                    self.oCtrl.oLog.warning("Default case - GbrUid='{0}' Name={1}".format(avx.GbrUid["mid"], avx.GbrUid.txtName.string), outConsole=False)
+                    self.oCtrl.oLog.warning("Default case - GbrUid='{0}' Name={1} of {2}".format(avx.GbrUid["mid"], avx.GbrUid.txtName.string, oZone["nameV"]), outConsole=False)
                     g.append(self.oCtrl.oAixmTools.geo2coordinates(avx))
 
             if len(g) == 0:
-                self.oCtrl.oLog.error("Geometry vide\n{0}".format(oBorder.prettify()), outConsole=True)
+                self.oCtrl.oLog.error("Geometry vide of {0}\n{1}".format(oZone["nameV"], oBorder.prettify()), outConsole=True)
                 geom = None
             elif len(g) == 1:
                 geom = {"type":"Point", "coordinates":g[0]}
