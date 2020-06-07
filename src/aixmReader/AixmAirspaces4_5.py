@@ -210,7 +210,7 @@ class AixmAirspaces4_5:
         if len(self.oPotentialFilter4FreeFlightZone)>0:
             out = {"headerFile":header, "referential":self.oPotentialFilter4FreeFlightZone}
             bpaTools.writeJsonFile(self.sPotentialFilter4FreeFlightZoneFileName, out)
-            self.oCtrl.oLog.critical("Potential Filter for Free Flight Zone: {0} in file {1}".format(len(self.oPotentialFilter4FreeFlightZone), self.sPotentialFilter4FreeFlightZoneFileName), outConsole=True)
+            self.oCtrl.oLog.warning("Potential Filter for Free Flight Zone: {0} in file {1}".format(len(self.oPotentialFilter4FreeFlightZone), self.sPotentialFilter4FreeFlightZoneFileName), outConsole=True)
 
         #Phase 1 : JSON calatlog
         sFilename = "airspacesCatalog"
