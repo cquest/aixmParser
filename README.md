@@ -48,7 +48,7 @@ pip install -r requirements.txt
 Selon le choix des options de génération; le programme produira un log et les fichiers dans le dossier ./out/  
 Les options d'utilisations s'auto décrivent avec l'aide en ligne "aixmParser -h":  
 ```
-aixmParser v2.6.0  
+aixmParser v2.7.0  
 -----------------  
 Aeronautical Information Exchange Model (AIXM) Converter  
 Call: aixmParser <[drive:][path]filename> <Format> <Type> [<Type2> ... <TypeN>] [<Option(s)>]  
@@ -88,3 +88,15 @@ With:
      GeoJSON test format: http://geojson.tools/  -or-  http://geojson.io  
      OpenAir test format: http://xcglobe.com/cloudapi/browser  -or-  http://cunimb.net/openair2map.php  
 ```
+
+
+## Output samples
+![OpenAir_sample](20200607_OpenAir_sample.jpg)
+![GeoJSON_sample](20200325_GeoJSON_sample.jpg)
+
+
+## Credits
+- [Cristian Quest](https://github.com/cquest) for the first version of parser aixm2geojson
+- [Pascal Bazile](https://github.com/BPascal-91/) for complete modular rewriting of aixmPaser. For integration of: OpenAir parser and Referential estimated height of grounds
+- the many open source libraries, projects, and data sources used by this software (show file content of 'requirements.txt' for complete components detail)
+
