@@ -91,8 +91,8 @@ With:
 
 
 ## Output samples
-![OpenAir_sample](20200607_OpenAir_sample.jpg)
-![GeoJSON_sample](20200325_GeoJSON_sample.jpg)
+![OpenAir_sample](20200614_OpenAir_sample.jpg)
+![GeoJSON_sample](20200614_GeoJSON_sample.jpg)
 
 
 ## Credits
