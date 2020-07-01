@@ -12,11 +12,15 @@ a/ Catalogue des zones aériennes, disponible sous deux formats:
 
 b/ Description des zones aériennes, disponibles selon deux formats : GeoJSON (file.geojson) et Openair (file.txt)
 	- airspaces-all             Cartographie complète de l'espace aérien (IFR + VFR)  
-	- airspaces-ifr             Cartographie de l'espace aérien IFR (zones situées au dessus  du niveau FL115)  
+	- airspaces-ifr             Cartographie de l'espace aérien IFR (zones majoritairement situées au dessus du niveau FL115)  
 	- airspaces-vfr             Cartographie de l'espace aérien VFR (zones situées en dessous le niveau FL115)  
 	- airspaces-freeflight      Cartographie de l'espace aérien dédié Vol-Libre (dessous FL115 +filtre +compl.)  
-	Nota. Ces fichiers seront bientôts disponibles au format GoogleEarth (file.kml) 
-
+	Nota. 
+		- Ces fichiers seront bientôts disponibles aux formats FAF (Flytec and Brauniger format) et KML (GoogleEarth format) 
+		- La sortie 'airspaces-freeflight' s'accompagne de deux fichiers Openair pour s'adapter aux types de GPS suivants: 
+			- gpsWithTopo - Cartographie pour: XCsoar / LK8000 / XCTrack / FlyMe / Compass / Syride ../.. et tout autres appareils/logiciels AVEC Carte-Topographique (en capacité de connaître les altitudes terrain)
+			- gpsWithoutTopo - Cartographie pour: Flytec / Brauniger ../.. et tout autres appareils/logiciels SANS Carte-Topographique (n'ayant pas la capacité de connaître les altitudes terrain)
+		
 c/ Description d'informations aéraunautique complémentaires, disponible au format GeoJSON(*):  
 	- aerodromes.geojson  
 	- towers.geojson  
@@ -48,7 +52,7 @@ pip install -r requirements.txt
 Selon le choix des options de génération; le programme produira un log et les fichiers dans le dossier ./out/  
 Les options d'utilisations s'auto décrivent avec l'aide en ligne "aixmParser -h":  
 ```
-aixmParser v2.7.0  
+aixmParser v2.8.0  
 -----------------  
 Aeronautical Information Exchange Model (AIXM) Converter  
 Call: aixmParser <[drive:][path]filename> <Format> <Type> [<Type2> ... <TypeN>] [<Option(s)>]  

@@ -43,14 +43,14 @@ class AixmTools:
         return
 
 
-    def writeOpenairFile(self, sFileName, oOpenair, context=""):
+    def writeOpenairFile(self, sFileName, oOpenair, context="", gpsType=""):
         assert(isinstance(sFileName, str))
         if sFileName=="airspaces":
             if context=="all":              sFileName = sFileName + "-all"            #Suffixe pour fichier toutes zones
             if context=="ifr":              sFileName = sFileName + "-ifr"            #Suffixe pour fichier Instrument-Fligth-Rules
             if context=="vfr":              sFileName = sFileName + "-vfr"            #Suffixe pour fichier Visual-Fligth-Rules
             if context=="ff":               sFileName = sFileName + "-freeflight"     #Suffixe pour fichier Vol-Libre (Paraglinding/Hanggliding)
-        sOutFile = self.oCtrl.sOutHeadFile + sFileName + ".txt"
+        sOutFile = self.oCtrl.sOutHeadFile + sFileName + gpsType + ".txt"
         sizeMap = len(oOpenair)
         if sizeMap:
             headMsg = "W"
@@ -59,13 +59,27 @@ class AixmTools:
                 output.write("*"*50 +"\n")
                 for head in oHeader:
                     output.write("*" + " "*5 + "{0} - {1}\n".format(head, oHeader[head]))
+                output.write("*" + " "*5 + "-"*44 + "\n")
+                if context=="all":
+                    output.write("*" + " "*5 + "Information - {0}\n".format("Cartographie complète de l'espace aérien (IFR + VFR)"))
+                if context=="ifr":
+                    output.write("*" + " "*5 + "Information - {0}\n".format("Cartographie de l'espace aérien IFR (zones majotitairement situées au dessus du niveau FL115)"))
+                if context=="vfr":
+                    output.write("*" + " "*5 + "Information - {0}\n".format("Cartographie de l'espace aérien VFR (zones situées en dessous le niveau FL115)"))
+                elif context=="ff":
+                    output.write("*" + " "*5 + "Information - {0}\n".format("Version VFR spécifique Parapente/Deltaplane (zones situées en dessous le niveau FL115 avec filtrage des zones de type 'E, F, G et W')"))   
+                if gpsType=="-gpsWithTopo":
+                    gpsSample = "Cartographie pour: XCsoar / LK8000 / XCTrack / FlyMe / Compass / Syride ../.. et tout autres appareils/logiciels AVEC Carte-Topographique (en capacité de connaître les altitudes terrain)"
+                else:
+                    gpsSample = "Cartographie pour: Flytec / Brauniger ../.. et tout autres appareils/logiciels SANS Carte-Topographique (n'ayant pas la capacité de connaître les altitudes terrain)"
+                output.write("*" + " "*5 + "GPS type - {0} - {1}\n".format(gpsType[1:], gpsSample))
                 output.write("*"*50 + "\n\n")
                 for airspace in oOpenair:
                     output.write("\n".join(airspace))
                     output.write("\n\n")
         else:
             headMsg = "Dont' w"
-        self.oCtrl.oLog.info("{0}rite file {1} - {2} areas in map".format(headMsg, sOutFile, sizeMap), outConsole=True)
+            self.oCtrl.oLog.info("{0}rite file {1} - {2} areas in map".format(headMsg, sOutFile, sizeMap), outConsole=True)
         return
 
 

@@ -2,6 +2,7 @@
 
 import bpaTools
 from shapely.geometry import LineString, Point
+import aixmReader
 
 
 class Aixm2openair:
@@ -239,7 +240,16 @@ class Aixm2openair:
 
     def saveAirspacesFilter(self, aContext):
         context = aContext[0]
-        sMsg = "Prepare Openair file - {0}".format(aContext[1])
+        if context=="ff":
+            self.saveAirspacesFilter2(aContext, "-gpsWithTopo")
+            self.saveAirspacesFilter2(aContext, "-gpsWithoutTopo")
+        else:    #context == "all", "ifr" or "vfr"
+            self.saveAirspacesFilter2(aContext, "-gpsWithTopo")
+        return
+
+    def saveAirspacesFilter2(self, aContext, gpsType=""):
+        context = aContext[0]
+        sMsg = "Prepare Openair file - {0} / {1}".format(aContext[1], gpsType)
         self.oCtrl.oLog.info(sMsg)
         barre = bpaTools.ProgressBar(len(self.oAirspacesCatalog.oAirspaces), 20, title=sMsg, isSilent=self.oCtrl.oLog.isSilent)
         idx = 0
@@ -254,14 +264,14 @@ class Aixm2openair:
                 if context=="vfr" and oZone["vfrZone"]:         include = True
                 if context=="ff" and oZone["freeFlightZone"]:   include = True
                 if include == True:
-                    openair.append(self.makeOpenair(o))
+                    openair.append(self.makeOpenair(o, gpsType))
             barre.update(idx)
         barre.reset()        
         if openair:
-            self.oCtrl.oAixmTools.writeOpenairFile("airspaces", openair, context)
+            self.oCtrl.oAixmTools.writeOpenairFile("airspaces", openair, context, gpsType)
         return
 
-    def makeOpenair(self, oAirspace:dict):
+    def makeOpenair(self, oAirspace:dict, gpsType):
         openair = []
         oZone = oAirspace["properties"]
         openair.append("** UId={0} / Id={1}".format(oZone["UId"], oZone["id"]))
@@ -275,13 +285,35 @@ class Aixm2openair:
         if "exceptSAT" in oZone:    openair.append("*AExSAT {0}".format(oZone["exceptSAT"]))
         if "exceptSUN" in oZone:    openair.append("*AExSUN {0}".format(oZone["exceptSUN"]))
         if "exceptHOL" in oZone:    openair.append("*AExHOL {0}".format(oZone["exceptHOL"]))
-        openair.append("AH {0}".format(self.parseAlt(oZone["upperType"], oZone["upperValue"], oZone["upperUnit"])))
-        openair.append("AL {0}".format(self.parseAlt(oZone["lowerType"], oZone["lowerValue"], oZone["lowerUnit"])))
+        openair.append("AH {0}".format(self.parseAlt("AH", gpsType, oZone)))
+        openair.append("AL {0}".format(self.parseAlt("AL", gpsType, oZone)))
         openair += oAirspace["geometry"]
         return openair
         
 
-    def parseAlt(self, sType:str, sValue:str, sUnit:str) -> str:
+    def parseAlt(self, altRef, gpsType, oZone:dict) -> str:
+        if altRef=="AH":
+            if gpsType=="-gpsWithoutTopo" and ("ordinalUpperM" in oZone):
+                altM = oZone["upperM"]
+                altFT = int(float(altM+100) / aixmReader.CONST.ft)      #Surélévation du plafond de 100 mètres pour marge d'altitude
+                ret = "{0}FT AMSL".format(altFT)
+                return ret
+            sType = oZone["upperType"]
+            sValue =  oZone["upperValue"]
+            sUnit = oZone["upperUnit"]
+        else:
+            if gpsType=="-gpsWithoutTopo" and ("ordinalLowerM" in oZone):
+                altM = oZone["lowerM"]
+                altFT = int(float(altM-100) / aixmReader.CONST.ft)      #Abaissement du plancher de 100 mètres pour marge d'altitude
+                if altFT <= 0:
+                    ret = "SFC"
+                else:
+                    ret = "{0}FT AMSL".format(altFT)
+                return ret
+            sType = oZone["lowerType"]
+            sValue =  oZone["lowerValue"]
+            sUnit = oZone["lowerUnit"]        
+        
         ret = "???"
         if   sValue=="0":
             ret = "SFC"                         #sample AH SFC
