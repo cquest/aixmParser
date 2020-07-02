@@ -20,7 +20,8 @@ b/ Description des zones aériennes, disponibles selon deux formats : GeoJSON (f
 		- La sortie 'airspaces-freeflight' s'accompagne de deux fichiers Openair pour s'adapter aux types de GPS suivants: 
 			- gpsWithTopo - Cartographie pour: XCsoar / LK8000 / XCTrack / FlyMe / Compass / Syride ../.. et tout autres appareils/logiciels AVEC Carte-Topographique (en capacité de connaître les altitudes terrain)
 			- gpsWithoutTopo - Cartographie pour: Flytec / Brauniger ../.. et tout autres appareils/logiciels SANS Carte-Topographique (n'ayant pas la capacité de connaître les altitudes terrain)
-		
+		- Chaque version de fichier OpenAir 'airspaces-freeflight' est accompagnée des trois déclinaisons spécifiques 'forSAT', 'forSUN et 'forHOL' ; dépourvus des zones non-activables les jours concernés
+
 c/ Description d'informations aéraunautique complémentaires, disponible au format GeoJSON(*):  
 	- aerodromes.geojson  
 	- towers.geojson  

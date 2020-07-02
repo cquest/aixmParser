@@ -43,14 +43,15 @@ class AixmTools:
         return
 
 
-    def writeOpenairFile(self, sFileName, oOpenair, context="", gpsType=""):
+    def writeOpenairFile(self, sFileName, oOpenair, context="", gpsType="", exceptDay=""):
         assert(isinstance(sFileName, str))
         if sFileName=="airspaces":
             if context=="all":              sFileName = sFileName + "-all"            #Suffixe pour fichier toutes zones
             if context=="ifr":              sFileName = sFileName + "-ifr"            #Suffixe pour fichier Instrument-Fligth-Rules
             if context=="vfr":              sFileName = sFileName + "-vfr"            #Suffixe pour fichier Visual-Fligth-Rules
             if context=="ff":               sFileName = sFileName + "-freeflight"     #Suffixe pour fichier Vol-Libre (Paraglinding/Hanggliding)
-        sOutFile = self.oCtrl.sOutHeadFile + sFileName + gpsType + ".txt"
+        ext4exceptDay = exceptDay.replace("except","-for")
+        sOutFile = self.oCtrl.sOutHeadFile + sFileName + gpsType + ext4exceptDay + ".txt"
         sizeMap = len(oOpenair)
         if sizeMap:
             headMsg = "W"
@@ -60,20 +61,36 @@ class AixmTools:
                 for head in oHeader:
                     output.write("*" + " "*5 + "{0} - {1}\n".format(head, oHeader[head]))
                 output.write("*" + " "*5 + "-"*44 + "\n")
+                
                 if context=="all":
-                    output.write("*" + " "*5 + "Information - {0}\n".format("Cartographie complète de l'espace aérien (IFR + VFR)"))
-                if context=="ifr":
-                    output.write("*" + " "*5 + "Information - {0}\n".format("Cartographie de l'espace aérien IFR (zones majotitairement situées au dessus du niveau FL115)"))
-                if context=="vfr":
-                    output.write("*" + " "*5 + "Information - {0}\n".format("Cartographie de l'espace aérien VFR (zones situées en dessous le niveau FL115)"))
+                    output.write("*" + " "*5 + "(i)Information - 'ALL Map' - Cartographie complète de l'espace aérien (IFR + VFR)\n")
+                elif context=="ifr":
+                    output.write("*" + " "*5 + "/!\Warning - 'IFR Map' - Cartographie de l'espace aérien IFR (zones majotitairement situées au dessus du niveau FL115)\n")
+                elif context=="vfr":
+                    output.write("*" + " "*5 + "/!\Warning - 'VFR Map' - Cartographie de l'espace aérien VFR (zones situées en dessous le niveau FL115)\n")
                 elif context=="ff":
-                    output.write("*" + " "*5 + "Information - {0}\n".format("Version VFR spécifique Parapente/Deltaplane (zones situées en dessous le niveau FL115 avec filtrage des zones de type 'E, F, G et W')"))   
+                    output.write("*" + " "*5 + "/!\Warning - 'Free Flight Map' - Version VFR spécifique Parapente/Deltaplane (zones situées en dessous le niveau FL115 avec filtrage des zones de type 'E, F, G et W')\n")   
+                
                 if gpsType=="-gpsWithTopo":
-                    gpsSample = "Cartographie pour: XCsoar / LK8000 / XCTrack / FlyMe / Compass / Syride ../.. et tout autres appareils/logiciels AVEC Carte-Topographique (en capacité de connaître les altitudes terrain)"
+                    gpsSample = "XCsoar / LK8000 / XCTrack / FlyMe / Compass / Syride ; et tout autres appareils/logiciels AVEC Carte-Topographique (en capacité de connaître les altitudes terrain)"
                 else:
-                    gpsSample = "Cartographie pour: Flytec / Brauniger ../.. et tout autres appareils/logiciels SANS Carte-Topographique (n'ayant pas la capacité de connaître les altitudes terrain)"
-                output.write("*" + " "*5 + "GPS type - {0} - {1}\n".format(gpsType[1:], gpsSample))
+                    gpsSample = "Flytec ou Brauniger ; et tout autres appareils/logiciels SANS Carte-Topographique (n'ayant pas la capacité de connaître les altitudes terrain)"
+                output.write("*" + " "*5 + "/!\Warning - '{0}' - Cartographie pour {1}\n".format(gpsType[1:], gpsSample))
+
+                if exceptDay!="":
+                    if exceptDay=="exceptSAT":
+                        sDay1 = "SATerday"
+                        sDay2 = "Samedis"
+                    elif exceptDay=="exceptSUN":
+                        sDay1 = "SUNday"
+                        sDay2 = "Dimanches"
+                    elif exceptDay=="exceptHOL":
+                        sDay1 = "HOLiday"
+                        sDay2 = "Jours-Fériés"                    
+                    output.write("*" + " "*5 + "/!\Warning - '{0}' - Fichier spécifiquement utilisable les '{1}/{2}' (dépourvu des zones non-activables '{3}')\n".format(ext4exceptDay[1:], sDay1, sDay2, exceptDay))
+
                 output.write("*"*50 + "\n\n")
+
                 for airspace in oOpenair:
                     output.write("\n".join(airspace))
                     output.write("\n\n")

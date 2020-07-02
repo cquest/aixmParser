@@ -242,14 +242,20 @@ class Aixm2openair:
         context = aContext[0]
         if context=="ff":
             self.saveAirspacesFilter2(aContext, "-gpsWithTopo")
+            self.saveAirspacesFilter2(aContext, "-gpsWithTopo", "exceptSAT")
+            self.saveAirspacesFilter2(aContext, "-gpsWithTopo", "exceptSUN")
+            self.saveAirspacesFilter2(aContext, "-gpsWithTopo", "exceptHOL")
             self.saveAirspacesFilter2(aContext, "-gpsWithoutTopo")
+            self.saveAirspacesFilter2(aContext, "-gpsWithoutTopo", "exceptSAT")
+            self.saveAirspacesFilter2(aContext, "-gpsWithoutTopo", "exceptSUN")
+            self.saveAirspacesFilter2(aContext, "-gpsWithoutTopo", "exceptHOL")
         else:    #context == "all", "ifr" or "vfr"
             self.saveAirspacesFilter2(aContext, "-gpsWithTopo")
         return
 
-    def saveAirspacesFilter2(self, aContext, gpsType=""):
+    def saveAirspacesFilter2(self, aContext, gpsType="", exceptDay=""):
         context = aContext[0]
-        sMsg = "Prepare Openair file - {0} / {1}".format(aContext[1], gpsType)
+        sMsg = "Prepare Openair file - {0} / {1} / {2}".format(aContext[1], gpsType, exceptDay)
         self.oCtrl.oLog.info(sMsg)
         barre = bpaTools.ProgressBar(len(self.oAirspacesCatalog.oAirspaces), 20, title=sMsg, isSilent=self.oCtrl.oLog.isSilent)
         idx = 0
@@ -263,12 +269,14 @@ class Aixm2openair:
                 if context=="ifr" and not oZone["vfrZone"]:     include = True
                 if context=="vfr" and oZone["vfrZone"]:         include = True
                 if context=="ff" and oZone["freeFlightZone"]:   include = True
-                if include == True:
+                if include==True and exceptDay!="":
+                    if exceptDay in oZone:                      include = False
+                if include==True:
                     openair.append(self.makeOpenair(o, gpsType))
             barre.update(idx)
         barre.reset()        
         if openair:
-            self.oCtrl.oAixmTools.writeOpenairFile("airspaces", openair, context, gpsType)
+            self.oCtrl.oAixmTools.writeOpenairFile("airspaces", openair, context, gpsType, exceptDay)
         return
 
     def makeOpenair(self, oAirspace:dict, gpsType):
