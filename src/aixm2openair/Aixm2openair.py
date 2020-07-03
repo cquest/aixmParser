@@ -175,6 +175,8 @@ class Aixm2openair:
                 
                 if codeType=="CCA":             #'Counter clockWise Arc'
                     openair.append("V D=-")
+                else:
+                    openair.append("V D=+")
 
                 lonc, latc = center
                 lons, lats = start
