@@ -53,7 +53,7 @@ pip install -r requirements.txt
 Selon le choix des options de génération; le programme produira un log et les fichiers dans le dossier ./out/  
 Les options d'utilisations s'auto décrivent avec l'aide en ligne "aixmParser -h":  
 ```
-aixmParser v2.8.0  
+aixmParser v2.9.3  
 -----------------  
 Aeronautical Information Exchange Model (AIXM) Converter  
 Call: aixmParser <[drive:][path]filename> <Format> <Type> [<Type2> ... <TypeN>] [<Option(s)>]  
@@ -80,6 +80,7 @@ With:
     -h              Help syntax  
     -CleanLog       Clean log file before exec  
     -Silent         Silent mode (no log-file, no system-message, but log-report is available ;-)  
+    -ALL            Complete aeronautic maps (IFR and VFR areas)  
     -IFR            Specific upper vues of aeronautic maps (IFR areas)  
     -VFR            Specific lower vues of aeronautic maps (only IFR areas, without IFR areas)  
     -FreeFlight     Specific Paragliding/Hanggliding maps (out E,F,G,W areas and others...)  

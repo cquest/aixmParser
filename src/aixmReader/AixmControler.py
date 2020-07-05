@@ -94,7 +94,7 @@ class AixmControler:
 
     @property
     def ALL(self):
-        return self.__VFR    
+        return self.__ALL       # Complet : IFR + VFR
     @ALL.setter
     def ALL(self, bValue):
         assert(isinstance(bValue, bool))
@@ -166,9 +166,9 @@ class AixmControler:
 
 
     def saveAirspaces(self, parser, criticalErrCatalog=0):
-        if self.ALL and criticalErrCatalog==0:
+        if self.ALL:    # and criticalErrCatalog==0:
             parser.saveAirspacesFilter(aixmReader.CONST.fileSuffixAndMsg[aixmReader.CONST.optALL])
-        if self.IFR and criticalErrCatalog==0:
+        if self.IFR:    # and criticalErrCatalog==0:
             parser.saveAirspacesFilter(aixmReader.CONST.fileSuffixAndMsg[aixmReader.CONST.optIFR])
         if self.VFR:
             parser.saveAirspacesFilter(aixmReader.CONST.fileSuffixAndMsg[aixmReader.CONST.optVFR])
@@ -178,6 +178,7 @@ class AixmControler:
 
 
     def execParser(self, oOpts):
+        self.ALL = bool(CONST.optALL in oOpts)
         self.IFR = bool(CONST.optIFR in oOpts)
         self.VFR = bool(CONST.optVFR in oOpts)
         self.FreeFlight = bool(CONST.optFreeFlight in oOpts)
