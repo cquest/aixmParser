@@ -170,7 +170,7 @@ class AixmControler:
             parser.saveAirspacesFilter(aixmReader.CONST.fileSuffixAndMsg[aixmReader.CONST.optALL])
         if self.IFR and criticalErrCatalog==0:
             parser.saveAirspacesFilter(aixmReader.CONST.fileSuffixAndMsg[aixmReader.CONST.optIFR])
-        if self.VFR and criticalErrCatalog==0:
+        if self.VFR:
             parser.saveAirspacesFilter(aixmReader.CONST.fileSuffixAndMsg[aixmReader.CONST.optVFR])
         if self.FreeFlight:
             parser.saveAirspacesFilter(aixmReader.CONST.fileSuffixAndMsg[aixmReader.CONST.optFreeFlight])
