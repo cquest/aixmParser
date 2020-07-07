@@ -233,7 +233,9 @@ class AixmTools:
             outputname = inputname
         value = o.find(inputname, recursive=False)
         if value:
-            ret = value.string.replace("#"," ")
+            #ret = value.string.encode('ascii', 'ignore').decode("utf-8")   #No use this !
+            ret = value.string.replace("\u2009", " ")                       #Clean - or UnicodeEncodeError: 'charmap' codec can't encode character '\u2009'
+            ret = ret.replace("#"," ")
             ret = ret.replace("\n"," ")
             ret = ret.replace(" :",":")
             ret = ret.replace(" ;",";")
