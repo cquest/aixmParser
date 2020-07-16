@@ -233,8 +233,9 @@ class AixmTools:
             outputname = inputname
         value = o.find(inputname, recursive=False)
         if value:
-            #ret = value.string.encode('ascii', 'ignore').decode("utf-8")   #No use this !
-            ret = value.string.replace("\u2009", " ")                       #Clean - or UnicodeEncodeError: 'charmap' codec can't encode character '\u2009'
+            ret = value.string.replace("\u2009", " ")   #for UnicodeEncodeError: 'charmap' codec can't encode character '\u2009'
+            ret = ret.replace("&apos;","'")
+            ret = ret.replace("&quot;",'"')
             ret = ret.replace("#"," ")
             ret = ret.replace("\n"," ")
             ret = ret.replace(" :",":")
@@ -280,12 +281,12 @@ class AixmTools:
             sFill = "#ff8080"
             nFillOpacity = 0.5
         #Purple
-        elif sClass in ["D","D-AMC","R","R-AMC","ZMT","W"]:
+        elif sClass in ["W","D","D-AMC","R","R-AMC","TMZ","RMZ/TMZ","TMZ/RMZ"]:
             sStroke = "#800080"
             sFill = "#ffb9dc"
             nFillOpacity = 0.5
         #Blue
-        elif sClass in ["Q","GP","RMZ","TMZ","RMZ/TMZ","TMZ/RMZ","ZSM","BIRD","PROTECT","D-OTHER"]:
+        elif sClass in ["RMZ","Q","GP","ZSM","BIRD","PROTECT","D-OTHER"]:
             sStroke = "#0000ff"
             sFill = "#80ffff"
             nFillOpacity = 0.3

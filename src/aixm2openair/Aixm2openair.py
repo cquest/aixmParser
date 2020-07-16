@@ -281,13 +281,45 @@ class Aixm2openair:
             self.oCtrl.oAixmTools.writeOpenairFile("airspaces", openair, context, gpsType, exceptDay)
         return
 
+
+
+    #* Rappel: Syntaxe déclarative des Classes dans le format OpenAir
+    #* 	AC <classType>
+    #*   	  <ClassType> = Type of airspace class, see below:
+    #*     		A	Class A
+    #*     		B	Class B
+    #*     		C	Class C
+    #*     		D	Class D
+    #*     		E	Class E
+    #*     		F	Class F
+    #*     		G	Class G
+    #*     		W	Wave Window (espaces réservés aux vélivoles)
+    #*     		R 	Restricted
+    #*     		Q 	Danger
+    #*     		P	Prohibited
+    #*     		GP  Glider Prohibited
+    #*     		CTR	CONTROL TRAFFIC AREAS
+    #*		ZMT	ZONE REGLEMENTE TEMPORAIRE
+    #*		RMZ	Radio Mandatory Zone
+    #*		TMZ	Transponder Mandatory Zone
+    #*		ZSM	Zone de Sensibilité Majeure (Protection Rapaces, Urubus, etc...)
     def makeOpenair(self, oAirspace:dict, gpsType):
         openair = []
         oZone = oAirspace["properties"]
-        openair.append("** UId={0} / Id={1}".format(oZone["UId"], oZone["id"]))
-        openair.append("AC {0}".format(oZone["class"]))
-        #openair.append("AN {0} {1}".format(oZone["nameV"], oZone["altV"]))
-        openair.append("AN {0} {1} {2}".format(oZone["nameV"], oZone["alt"], oZone["altM"]))
+                
+        theClass = oZone["class"]
+        theType = oZone["type"]
+
+        #1/ Specific translations for Openair format
+        if theClass=="D" and theType=="CTR":    theClass="CTR"     #CTR CONTROL TRAFFIC AREAS
+        #2/ Specific translations for Openair format
+        if   theType=="RMZ":                    theClass="RMZ"
+        elif theType=="TMZ":                    theClass="TMZ"
+        
+        openair.append("AC {0}".format(theClass))
+        openair.append("AN {0}".format(oZone["nameV"]))
+        openair.append("*AAlt {0} {1}".format(oZone["alt"], oZone["altM"]))
+        openair.append("*AUID UId={0} - Id={1}".format(oZone["UId"], oZone["id"]))
         if "desc" in oZone:    openair.append("*ADescr {0}".format(oZone["desc"]))
         if "activationCode" in oZone and ("activationDesc" in oZone):       openair.append("*AActiv [{0}] {1}".format(oZone["activationCode"], oZone["activationDesc"]))
         if not("activationCode" in oZone) and "activationDesc" in oZone:    openair.append("*AActiv {0}".format(oZone["activationDesc"]))
@@ -295,6 +327,7 @@ class Aixm2openair:
         if "exceptSAT" in oZone:    openair.append("*AExSAT {0}".format(oZone["exceptSAT"]))
         if "exceptSUN" in oZone:    openair.append("*AExSUN {0}".format(oZone["exceptSUN"]))
         if "exceptHOL" in oZone:    openair.append("*AExHOL {0}".format(oZone["exceptHOL"]))
+        if "seeNOTAM" in oZone:     openair.append("*ASeeNOTAM {0}".format(oZone["seeNOTAM"]))
         openair.append("AH {0}".format(self.parseAlt("AH", gpsType, oZone)))
         openair.append("AL {0}".format(self.parseAlt("AL", gpsType, oZone)))
         openair += oAirspace["geometry"]

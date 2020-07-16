@@ -97,7 +97,7 @@ With:
 
 
 ## Output samples
-![OpenAir_sample](20200614_OpenAir_sample.jpg)
+![OpenAir_sample](20200715_OpenAir_sample)
 ![GeoJSON_sample](20200614_GeoJSON_sample.jpg)
 
 

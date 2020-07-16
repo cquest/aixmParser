@@ -5,7 +5,7 @@ import aixmReader
 
 
 class AixmAirspaces4_5:
-    
+
     def __init__(self, oCtrl=None):
         bpaTools.initEvent(__file__, oCtrl.oLog)
         self.oCtrl = oCtrl                                              #Référence du contrôleur appelant
@@ -24,14 +24,14 @@ class AixmAirspaces4_5:
         self.referentialsPath = self.oCtrl.sOutPath + "referentials/"  #Referentials folder
         bpaTools.createFolder(self.referentialsPath)                    #Init dossier si besoin
         sHeadFileName = "_{0}_".format(self.oCtrl.oAixm.srcOrigin)      #Secific header file
-        
+
         #Referentiel topologique : Nécessaire pour connaissance des hauteurs sols
         self.oUnknownGroundHeight = dict()
         self.sUnknownGroundHeightFile = "{0}{1}{2}".format(self.referentialsPath, self.oCtrl.sOutHeadFile, "refUnknownGroundHeight.json")
         self.oGroundEstimatedHeight = dict()
         self.sGroundEstimatedHeightFile = "{0}{1}{2}{3}".format(self.referentialsPath, sHeadFileName, self.oCtrl.sOutHeadFile, "refGroundEstimatedHeight.json")
         self.oGroundEstimatedHeight = self.loadRefFileData(self.sGroundEstimatedHeightFile)
-        
+
         #Referentiel d'exclusion de zones : Nécessaire pour la réalisation des filtrages spécifique Vol Libre
         self.oPotentialFilter4FreeFlightZone = dict()
         self.sPotentialFilter4FreeFlightZoneFileName = "{0}{1}{2}".format(self.referentialsPath, self.oCtrl.sOutHeadFile, "refPotentialFilter4FreeFlightZone.json")
@@ -40,7 +40,7 @@ class AixmAirspaces4_5:
         self.oExcludeFilter4FreeFlightZone = self.loadRefFileData(self.sExcludeFilter4FreeFlightZoneFileName)
         return
 
-    
+
     def loadRefFileData(self, sFileName:str) -> dict:
         oJson = bpaTools.readJsonFile(sFileName)
         if "referential" in oJson:
@@ -69,12 +69,12 @@ class AixmAirspaces4_5:
                 sMsg = "Referential error: {0} - Unused key {1}".format(self.sExcludeFilter4FreeFlightZoneFileName, sKey)
                 self.oCtrl.oLog.warning(sMsg, outConsole=False)
         return
-    
-    
+
+
     #Recherche de présence d'une zone dans le catalogue par le contenu de propriétés
     def findAirspaceByProps(self, sNameV:str, sAlt:str) -> bool:
         for oProp in self.oAirspaces.values():
-            if (oProp["nameV"]==sNameV) and (oProp["alt"]==sAlt):                
+            if (oProp["nameV"]==sNameV) and (oProp["alt"]==sAlt):
                 return True
 
 
@@ -99,7 +99,7 @@ class AixmAirspaces4_5:
                         self.oIdxAseUid2AseUid2.update({o2["mid"]:o.AseUidBase["mid"]})
                 barre.update(idx)
             barre.reset()
-                
+
         sTitle = "Airspaces Services"
         sXmlTag = "Sae"
         if not self.oCtrl.oAixm.doc.find(sXmlTag):
@@ -116,7 +116,7 @@ class AixmAirspaces4_5:
                 self.oIdxAseUid2UniUid.update({o.SaeUid.AseUid["mid"]:o.SaeUid.SerUid.UniUid["mid"]})
                 barre.update(idx)
             barre.reset()
-        
+
         sTitle = "Organizations"
         sXmlTag = "Uni"
         if not self.oCtrl.oAixm.doc.find(sXmlTag):
@@ -161,9 +161,9 @@ class AixmAirspaces4_5:
         #self.oIdxAseUid2AseUid2.clear()        #No clear for use...
         self.oIdxAseUid2UniUid.clear()
         self.oIdxUniUid2OrgName.clear()
-        return    
-    
-    
+        return
+
+
     def getExcludeAirspace(self, theAirspace:dict) -> bool:
         if not theAirspace["vfrZone"]:
             return False
@@ -184,10 +184,10 @@ class AixmAirspaces4_5:
         if lValue==None:
             lValue = 0
             self.oUnknownGroundHeight.update({theAirspace["UId"]:sKey})                 #Ajoute un point d'entrée attendu
-            self.oCtrl.oLog.warning("Missing Ground Estimated Height {0}".format(sKey), outConsole=False)   
+            self.oCtrl.oLog.warning("Missing Ground Estimated Height {0}".format(sKey), outConsole=False)
         return lValue
-    
-    
+
+
     def createAirspacesCatalog(self, sFilename:str) -> dict:
         ret = {"type":"Aeronautical areas catalog", "headerFile":self.oCtrl.oAixmTools.getJsonPropHeaderFile(sFilename), "catalog":self.oAirspaces}
         return ret
@@ -196,7 +196,7 @@ class AixmAirspaces4_5:
     def saveAirspacesCalalog(self) -> None:
         #Phase 0a: Contrôle de cohérence des référentiels
         self.ctrlReferentialContent()
-        
+
         #Phase 0b: Ecriture des réeferentiels
         header = dict()
         header.update({"srcAixmFile":self.oCtrl.srcFile})
@@ -216,7 +216,7 @@ class AixmAirspaces4_5:
         sFilename = "airspacesCatalog"
         cat = self.createAirspacesCatalog(sFilename)                                #Construct Catalog
         self.oCtrl.oAixmTools.writeJsonFile(self.referentialsPath, sFilename, cat)  #Save Catalog on Json format
-        
+
         #Phase 2 : CSV calatlog
         #Phase 2.1 : Header CSV file
         csv = csvCol = csvVal = ""
@@ -225,39 +225,39 @@ class AixmAirspaces4_5:
             csvCol += '{0};'.format(key)
             csvVal += '{0};'.format(val)
         csv = "<Header file>\n{0}\n{1}\n\n<Content>\n".format(csvCol, csvVal)
-        
+
         #Phase 2.2 : Construct a global index on columns (collect all columns in contents for complete header of CSV file...)
         #oCols avec initialisation d'une table d'index avec imposition de l'ordonnancement de colonnes choisies
-        oCols = {"zoneType":0, "groupZone":0, "vfrZone":0, "freeFlightZone":0, "excludeAirspaceByReferential":0, "potentialFilter4FreeFlightZone":0, "orgName":0, "UId":0, "id":0, "class":0, "type":0, "localType":0, "codeActivity":0, "name":0, "groundEstimatedHeight":0, "ordinalLowerM":0, "lowerM":0, "ordinalUpperM":0, "upperM":0, "nameV":0, "alt":0, "altM":0, "altV":0, "exceptSAT":0, "exceptSUN":0, "exceptHOL":0, "seeNOTAM":0}
+        oCols = {"zoneType":0, "groupZone":0, "vfrZone":0, "freeFlightZone":0, "excludeAirspaceByReferential":0, "potentialFilter4FreeFlightZone":0, "orgName":0, "UId":0, "id":0, "srcClass":0, "srcType":0, "srcName":0, "class":0, "type":0, "localType":0, "codeActivity":0, "name":0, "groundEstimatedHeight":0, "ordinalLowerM":0, "lowerM":0, "ordinalUpperM":0, "upperM":0, "nameV":0, "alt":0, "altM":0, "altV":0, "exceptSAT":0, "exceptSUN":0, "exceptHOL":0, "seeNOTAM":0}
         oCatalog = cat["catalog"]
         for key0,val0 in oCatalog.items():
             for key1,val1 in val0.items():
                 #Ne pas intégrer les colonnes associées au 'ColorProperties'
                 if not key1 in ["stroke", "stroke-width", "stroke-opacity", "fill", "fill-opacity"]:
                     oCols.update({key1:0})
-        #List all columns in order of the global index on columns 
+        #List all columns in order of the global index on columns
         for colKey,colVal in oCols.items():
             csv += '"{0}";'.format(colKey)
-        
+
         #Phase 2.3" : Content CSV file
         for key,val in oCatalog.items():
             csv += "\n"
-            #Extract columns in order of the global index on columns 
+            #Extract columns in order of the global index on columns
             for colKey,colVal in oCols.items():
                 if colKey in val:
                     csv += '"{0}";'.format(val[colKey])
                 else:
                     csv += ';'
-        
+
         csv += "\n\n<EOF>"
         self.oCtrl.oAixmTools.writeTextFile(self.referentialsPath, sFilename, csv, "csv")    #Save Catalog on CSV format
         return
-    
-    
+
+
     def loadAirspacesCatalog(self):
         sTitle = "Airspaces Catalog"
         sXmlTag = "Ase"
-        
+
         sMsg = "Loading {0} - {1}".format(sXmlTag, sTitle)
         self.oCtrl.oLog.info(sMsg)
         oList = self.oCtrl.oAixm.doc.find_all(sXmlTag)
@@ -287,7 +287,7 @@ class AixmAirspaces4_5:
             if sZoneUId in self.oIdxAseUid2AseUid2:                 #Cas d'une sous-zone: <Adg><AseUidBase mid="1561891">
                 sZoneUIdBase = self.oIdxAseUid2AseUid2[sZoneUId]    #Identification de la zone de base (dite classique)
         return sZoneUIdBase
-    
+
     #Détermination du responsable organisationnel de la zone
     def findOrgName(self, sZoneUId):
         #if sZoneUId == "1566057":
@@ -295,7 +295,7 @@ class AixmAirspaces4_5:
         sUniUid = orgName = None
         if sZoneUId in self.oIdxAseUid2UniUid:                      #Cas d'une zone classique
             sUniUid = self.oIdxAseUid2UniUid[sZoneUId]              #Extraction de l'id du Service
-        
+
         if not bool(sUniUid):                                               #Not Found
             if sZoneUId in self.oIdxAseUid2AseUid:                          #Cas d'une sous-zone: <Adg><AseUidSameExtent mid="1561891">
                 sZoneUIdBase = self.oIdxAseUid2AseUid[sZoneUId]             #Identification de la zone de base (dite classique)
@@ -305,19 +305,19 @@ class AixmAirspaces4_5:
                     sZoneUIdBase2 = self.oIdxAseUid2AseUid2[sZoneUIdBase]   #Identification de la zone de base (dite classique)
                     if sZoneUIdBase2 in self.oIdxAseUid2UniUid:
                         sUniUid = self.oIdxAseUid2UniUid[sZoneUIdBase2]     #Extraction de l'id du Service
-        
+
         if not bool(sUniUid):                                               #Not Found
             if sZoneUId in self.oIdxAseUid2AseUid2:                         #Cas d'une sous-zone: <Adg><AseUidBase mid="1561891">
                 sZoneUIdBase = self.oIdxAseUid2AseUid2[sZoneUId]            #Identification de la zone de base (dite classique)
                 if sZoneUIdBase in self.oIdxAseUid2UniUid:
-                    sUniUid = self.oIdxAseUid2UniUid[sZoneUIdBase]          #Extraction de l'id du Service 
-        
+                    sUniUid = self.oIdxAseUid2UniUid[sZoneUIdBase]          #Extraction de l'id du Service
+
         if bool(sUniUid):
             if sUniUid in self.oIdxUniUid2OrgName:
-                orgName = self.oIdxUniUid2OrgName[sUniUid]                  #Extraction du nom de l'organisation  
+                orgName = self.oIdxUniUid2OrgName[sUniUid]                  #Extraction du nom de l'organisation
         return orgName
-        
-        
+
+
     def loadAirspace(self, ase):
         #--------------------------------
         #Identifiant et classification globale de la zone
@@ -329,117 +329,256 @@ class AixmAirspaces4_5:
             theAirspace = self.oCtrl.oAixmTools.initProperty("Airspace Zone")
         theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"groupZone":groupZone})
         theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"UId":sZoneUId})
-        theAirspace = self.oCtrl.oAixmTools.addProperty(theAirspace, ase.AseUid, "codeId", "id")        
-        
+        theAirspace = self.oCtrl.oAixmTools.addProperty(theAirspace, ase.AseUid, "codeId", "id")
+
         #--------------------------------
         #Détermination du responsable organisationnel de la zone
         orgName = self.findOrgName(sZoneUId)
         if bool(orgName):
             theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"orgName":orgName})
-            
+
         #--------------------------------
+        theAirspace = self.oCtrl.oAixmTools.addProperty(theAirspace, ase, "codeClass", "srcClass", optional=True)
+        theAirspace = self.oCtrl.oAixmTools.addProperty(theAirspace, ase.AseUid, "codeType", "srcType", optional=True)
+        
+        if ase.codeActivity:    theCodeActivity = ase.codeActivity.string
+        else:                   theCodeActivity = None
+
+        if ase.txtLocalType:    localTypeZone = ase.txtLocalType.string     #ZIT, TMZ; RMZ ...
+        else:                   localTypeZone = None
+
+        #Map 20200715
+        #if theAirspace["id"] in ["EBBU RMZ","EBBU TMZ"]:
+        #    print(theAirspace["id"])
+
         #Détermination de la Classe de la zone
+        typeZone = ase.AseUid.codeType.string
         if ase.codeClass:
             classZone = ase.codeClass.string
+
+            #Homogénéisation des classe & type de zones aériennes
+            if typeZone=="TMA-P":       #TMA-P [Part of TMA.]
+                typeZone="TMA"
+            elif typeZone=="CTA-P":     #CTA-P [Part of a CTA.]
+                typeZone="CTA"
+            elif typeZone=="CTR-P":     #CTR-P [Part of CTR.]
+                typeZone="CTR"
+            elif typeZone=="CLASS":     #CLASS [Airspace having a specified class.]
+                typeZone=classZone
+
+            if classZone=="G" and theCodeActivity=="GLIDER":
+                classZone = "W"
+                typeZone="R"
+            elif classZone=="G" and typeZone=="D-OTHER":  #D-OTHER [Activities of dangerous nature (other than a Danger Area).] --> BIRD AREA, GLIDER AREA etc../..
+                classZone="Q"           #Q = Danger area in Openair format
+                typeZone="Q"
+                
         else:
             classZone = ase.AseUid.codeType.string
-        typeZone = ase.AseUid.codeType.string
+
+            #Homogénéisation des classe & type de zones aériennes
+            if classZone=="R-AMC":      #R-AMC [AMC Manageable Restricted Area.]
+                classZone="R"
+                typeZone="R"
+            elif classZone=="D":        #D [Danger Area.]
+                classZone="Q"           #Q = Danger area in Openair format
+                typeZone="Q"
+            elif classZone=="D-AMC":    #D-AMC [AMC Manageable Danger Area.]
+                classZone="Q"           #Q = Danger area in Openair format
+                typeZone="Q"
+            elif classZone=="D-OTHER":  #D-OTHER [Activities of dangerous nature (other than a Danger Area).] --> BIRD AREA, GLIDER AREA etc../..
+                classZone="Q"           #Q = Danger area in Openair format
+                typeZone="Q"
+            elif classZone=="A":        #A [Alert Area.]
+                classZone="Q"           #Q = Danger area in Openair format
+                typeZone="Q"
+            elif classZone=="W":        #W [Warning Area.]
+                classZone="Q"           #Q = Danger area in Openair format
+                typeZone="Q"
+            elif classZone in ["TMA","TMA-P"]:      #TMA [Terminal Control Area.] / #TMA-P [Part of TMA.]
+                classZone="C"
+                typeZone="TMA"
+            elif classZone in ["CTA","CTA-P"]:      #CTA [Control Area.] / #CTA-P [Part of a CTA.]
+                classZone="C"
+                typeZone="CTA"
+            elif classZone in ["CTR","CTR-P"]:      #CTR [Control Zone.] / #CTR-P [Part of CTR.]
+                classZone="D"
+                typeZone="CTR"
+            elif classZone=="CBA":      #CBA [Cross Border Area (FUA).]
+                classZone="R"
+                typeZone="CBA"
+            elif classZone=="TRA":      #TRA [Temporary Reserved Area (FUA).]
+                classZone="R"
+                typeZone="TRA"
+            elif classZone=="TSA":      #TSA [Temporary Segregated Area (FUA).]
+                classZone="R"
+                typeZone="TSA"
+            elif classZone=="PROTECT":              #PROTECT [Airspace protected from specific air traffic.]
+                classZone="P"
+                typeZone="PROTECT"
+            elif classZone in ["FIR","FIR-P"]:      #FIR [Flight Information Region.] / #FIR-P [Part of an FIR.]
+                classZone="FIR"
+                typeZone="FIR"
+            elif classZone in ["UTA","UTA-P"]:      #UTA [Upper Control Area.] / #UTA-P [Part of UTA.]
+                classZone="UTA"
+                typeZone="UTA"
+            elif classZone in ["UIR","UIR-P"]:      #UIR [Upper Flight Information Region.] / #UIR-P [Part of a UIR.]
+                classZone="UIR"
+                typeZone="UIR"
+            elif classZone in ["OCA","OCA-P"]:      #OCA [Oceanic Control Area.] / #OCA-P [Partial OCA.]
+                classZone="OCA"
+                typeZone="OCA"
+            elif classZone=="OTA":      #OTA [Oceanic Transition Area.]
+                classZone="OTA"
+                typeZone="OTA"
+            elif classZone=="RAS":      #RAS [Regulated Airspace (not otherwise covered).]
+                classZone="RAS"
+                typeZone="RAS"
+            elif classZone in ["SECTOR","SECTOR-C"]:   #SECTOR [Control Sector.] / #SECTOR-C [Temporarily Consolidated (Collapsed ) Sector.]
+                classZone="SECTOR"
+                typeZone="SECTOR"
+            elif classZone=="PART":     #PART [Part of an airspace (used in airspace aggregations).]
+                classZone="{SpecFilter}"
+                typeZone="PART"
+                
+            if localTypeZone=="ZIT":
+                classZone = "P"
+                typeZone="ZIT"
+            elif localTypeZone=="TMZ":
+                classZone = "P"
+                typeZone="TMZ"
+            elif localTypeZone=="RMZ":
+                classZone = "R"
+                typeZone="RMZ"
+                
+            if theCodeActivity=="GLIDER":
+                classZone = "W"
+                typeZone="R"
+
+
+        #Cas spécifique initialement non précisés (ex: "EBKT RMZ" ou "EBKT TMZ" de 'KORTRIJK')
+        if ase.txtName:     theName = ase.txtName.string.lower()
+        else:               theName = ""
+        if theName.find("RADIO MANDATORY ZONE".lower()) >= 0:
+            classZone="R"
+            typeZone="RMZ"
+        elif (theName.find("RMZ".lower()) >= 0) and (classZone in ["E","F","G"]):
+            classZone="R"
+            typeZone="RMZ"
+        if theName.find("TRANSPONDER MANDATORY ZONE".lower()) >= 0:
+            classZone="P"
+            typeZone="TMZ"
+        elif (theName.find("TMZ".lower()) >= 0) and (classZone in ["E","F","G"]):
+            classZone="P"
+            typeZone="TMZ"
+
+        #ase.AseUid.codeType or CODE_TYPE_ASE Format
+        #-------------------------------------------
+            #P [Prohibited Area.]
+            #PROTECT [Airspace protected from specific air traffic.]
+            #R [Restricted Area.]
+            #R-AMC [AMC Manageable Restricted Area.]
+            #D [Danger Area.]
+            #D-AMC [AMC Manageable Danger Area.]
+            #D-OTHER [Activities of dangerous nature (other than a Danger Area).] --> BIRD AREA, GLIDER AREA etc../..
+            #A [Alert Area.]
+            #W [Warning Area.]
+            #CBA [Cross Border Area (FUA).]
+            #CTA [Control Area.]
+            #CTA-P [Part of a CTA.]
+            #CTR [Control Zone.]
+            #CTR-P [Part of CTR.]
+            #AWY [Airway (corridor)..]
+            #TMA [Terminal Control Area.]
+            #TMA-P [Part of TMA.]
+            #TRA [Temporary Reserved Area (FUA).]
+            #TSA [Temporary Segregated Area (FUA).]
+            #RAS [Regulated Airspace (not otherwise covered).]
+            #CLASS [Airspace having a specified class.]
+            #PART [Part of an airspace (used in airspace aggregations).]
+            #OCA [Oceanic Control Area.]
+            #OCA-P [Partial OCA.]
+            #OTA [Oceanic Transition Area.]
+            #SECTOR [Control Sector.]
+            #SECTOR-C [Temporarily Consolidated (Collapsed ) Sector.]
+            #UIR [Upper Flight Information Region.]
+            #UIR-P [Part of a UIR.]
+            #FIR [Flight Information Region.]
+            #FIR-P [Part of an FIR.]
+            #UTA [Upper Control Area.]
+            #UTA-P [Part of UTA.]
+            #   ICAO DEPRECATED-4.0  [ICAO Region (for example, EUR, NAT, etc).]
+            #   ECAC DEPRECATED-4.0  [ECAC Region.]
+            #   CFMU DEPRECATED-4.0  [CFMU Area.]
+            #   IFPS DEPRECATED-4.0  [IFPS Area.]
+            #   TACT DEPRECATED-4.0  [TACT Area.]
+            #   ATZ DEPRECATED-4.0  [Aerodrome Traffic Zone.]
+            #   ATZ-P DEPRECATED-4.0  [Part of ATZ.]
+            #   MNPSA DEPRECATED-4.0  [Minimum Navigation Performance Specifications Area.]
+            #   MNPSA-P DEPRECATED-4.0  [Part of MNPSA.]
+            #   RTECL DEPRECATED-4.0  [Route Centreline.]
+            #   CDA DEPRECATED-4.0  [Client Defined Airspace.]
+            #   HTZ DEPRECATED-4.0  [Helicopter Traffic Zone.]
+            #   OIL DEPRECATED-4.0  [Oil Field.]
+            #   BIRD DEPRECATED-4.0  [Bird Migration Area.]
+            #   SPORT DEPRECATED-4.0  [Aerial Sporting/Recreational Area.]
+            #   LMA DEPRECATED-4.0  [Limited Airspace (in general).]
+            #   MIL DEPRECATED-4.0  [Military Training/Exercise Area.]
+            #   NAS-P DEPRECATED-4.0  [A part of a National Airspace System.]
+            #NAS [National Airspace System.]
+            #RCA [Reduced Co-ordination Airspace Procedure (FUA).]
+            #ADIZ [Air Defense Identification Zone.]
+            #AMA [Minimum Altitude Area.]
+            #ASR [Altimeter Setting Region.]
+            #NO-FIR [Airspace for which not even an FIR is defined.]
+            #POLITICAL [Political/administrative area.]
+
+        #Classification specifique de zones
+        if classZone=="{SpecFilter}" and typeZone=="PART":
+            if theAirspace["id"] in ["EBR06B"]:
+                classZone="P"
+            else:
+                classZone=typeZone  #PART
+
+
         theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"class":classZone})
         theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"type":typeZone})
-        theAirspace = self.oCtrl.oAixmTools.addProperty(theAirspace, ase, "txtLocalType", "localType", optional=True)       #"ATZ
-        
-        #ase.AseUid.codeType or CODE_TYPE_ASE Format
-        #ICAO DEPRECATED-4.0  [ICAO Region (for example, EUR, NAT, etc).]
-        #ECAC DEPRECATED-4.0  [ECAC Region.]
-        #CFMU DEPRECATED-4.0  [CFMU Area.]
-        #IFPS DEPRECATED-4.0  [IFPS Area.]
-        #TACT DEPRECATED-4.0  [TACT Area.]
-        #NAS [National Airspace System.]
-        #NAS-P DEPRECATED-4.0  [A part of a National Airspace System.]
-        #FIR [Flight Information Region.]
-        #FIR-P [Part of an FIR.]
-        #UIR [Upper Flight Information Region.]
-        #UIR-P [Part of a UIR.]
-        #CTA [Control Area.]
-        #CTA-P [Part of a CTA.]
-        #OCA [Oceanic Control Area.]
-        #OCA-P [Partial OTA.]
-        #UTA [Upper Control Area.]
-        #UTA-P [Part of UTA.]
-        #TMA [Terminal Control Area.]
-        #TMA-P [Part of TMA.]
-        #CTR [Control Zone.]
-        #CTR-P [Part of CTR.]
-        #CLASS [Airspace having a specified class.]
-        #ATZ DEPRECATED-4.0  [Aerodrome Traffic Zone.]
-        #ATZ-P DEPRECATED-4.0  [Part of ATZ.]
-        #MNPSA DEPRECATED-4.0  [Minimum Navigation Performance Specifications Area.]
-        #MNPSA-P DEPRECATED-4.0  [Part of MNPSA.]
-        #OTA [Oceanic Transition Area.]
-        #SECTOR [Control Sector.]
-        #SECTOR-C [Temporarily Consolidated (Collapsed ) Sector.]
-        #TSA [Temporary Segregated Area (FUA).]
-        #TRA [Temporary Reserved Area (FUA).]
-        #CBA [Cross Border Area (FUA).]
-        #RCA [Reduced Co-ordination Airspace Procedure (FUA).]
-        #RAS [Regulated Airspace (not otherwise covered).]
-        #CDA DEPRECATED-4.0  [Client Defined Airspace.]
-        #AWY [Airway (corridor)..]
-        #RTECL DEPRECATED-4.0  [Route Centreline.]
-        #P [Prohibited Area.]
-        #R [Restricted Area.]
-        #R-AMC [AMC Manageable Restricted Area.]
-        #D [Danger Area.]
-        #D-AMC [AMC Manageable Danger Area.]
-        #D-OTHER [Activities of dangerous nature (other than a Danger Area).] --> BIRD AREA, GLIDER AREA etc../..
-        #MIL DEPRECATED-4.0  [Military Training/Exercise Area.]
-        #ADIZ [Air Defense Identification Zone.]
-        #HTZ DEPRECATED-4.0  [Helicopter Traffic Zone.]
-        #OIL DEPRECATED-4.0  [Oil Field.]
-        #BIRD DEPRECATED-4.0  [Bird Migration Area.]
-        #SPORT DEPRECATED-4.0  [Aerial Sporting/Recreational Area.]
-        #LMA DEPRECATED-4.0  [Limited Airspace (in general).]
-        #A [Alert Area.]
-        #W [Warning Area.]
-        #PROTECT [Airspace protected from specific air traffic.]
-        #AMA [Minimum Altitude Area.]
-        #ASR [Altimeter Setting Region.]
-        #NO-FIR [Airspace for which not even an FIR is defined.]
-        #POLITICAL [Political/administrative area.]
-        #PART [Part of an airspace (used in airspace aggregations).]
+        if localTypeZone!=None:
+            theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"localType":localTypeZone})
 
-        #--------------------------------
+
+        #--OLD------------------------------
         #Classification détaillée pour préfiltrage des zones
-        aFreeFlightZone = ["A","B","C","D","R","P","W","CTA","CTA-P","CTR","CTR-P","TMA","TMA-P","RMZ","TMZ","RMZ/TMZ","TMZ/RMZ","ZSM"]   #Pour cartographie Vol-Libre / For FreeFlight map
-        aVfrZone = aFreeFlightZone + ["E","F","G"]                                              #Pour cartographie VFR / For VFR map
+        #aFreeFlightZone = ["A","B","C","D","R","R-AMC","D-AMC","D-OTHER","P","W","CTA","CTA-P","CTR","CTR-P","TMA","TMA-P","RMZ","TMZ","RMZ/TMZ","TMZ/RMZ","ZSM","CBA","TRA","TSA","RAS","OCA","CLASS"]   #Pour cartographie Vol-Libre / For FreeFlight map
+        #aVfrZone = aFreeFlightZone + ["E","F","G"]                                              #Pour cartographie VFR / For VFR map
         #aVfrTypeZone = ["CTA","CTA-P","CTR","CTR-P","TMA","TMA-P"]                                  #Pour cartographie VFR / For VFR map
-        vfrZone = bool((not groupZone) and typeZone in aVfrZone)
-        vfrZone = bool((vfrZone) and classZone in aVfrZone)
-        freeFlightZone = bool((vfrZone) and classZone in aFreeFlightZone)
+        #vfrZone = bool((not groupZone) and typeZone in aVfrZone)
+        #vfrZone = bool((vfrZone) and classZone in aVfrZone)
+        #freeFlightZone = bool((vfrZone) and classZone in aFreeFlightZone)
         #theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"ifrZone":(not vfrZone)})       #No use ../..
+        #--------------------------------
+        #Préfiltrage des zones
+        aExcludeVfrZone = ["PART","SECTOR","FIR","UTA","UIR","OCA","OTA","RAS"]
+        aExcludeFreeFlightZone = ["E","F","G"]
+        vfrZone = bool((not groupZone) and not(classZone in aExcludeVfrZone))
+        freeFlightZone = bool((vfrZone) and not(classZone in aExcludeFreeFlightZone))
         theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"vfrZone":vfrZone})
         theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"freeFlightZone":freeFlightZone})
-
-            #Case of vfrZone=False: Enumeration of <ase.AseUid.codeType.string> values
-            #    SIA-FRA - dict_values(['TMA', 'D-OTHER', 'CTA', 'UTA', 'CTR', 'OCA', 'SECTOR', 'R-AMC', 'SECTOR-C', 'CBA', 'TSA', 'TRA', 'RAS'])
-            #    Eur-FRA - dict_values(['UIR', 'FIR', 'RAS', 'CTR', 'TMA', 'D-AMC', 'SECTOR', 'PART', 'TMA-P', 'D-OTHER', 'CBA', 'OCA', 'CTA', 'PROTECT', 'TSA', 'TRA', 'R-AMC', 'SECTOR-C', 'UTA'])
-            #    Eur-Europe -   dict_values(['PART', 'D-OTHER', 'CTA', 'UIR', 'OCA-P', 'OCA', 'FIR', 'FIR-P', 'RAS', 'SECTOR', 'UTA', 'TMA', 'TMA-P', 'TRA', 'CTR', 'CBA', 'PROTECT', 'TSA', 'R-AMC', 'SECTOR-C', 'D-AMC', 'AMA', 'CTR-P', 'POLITICAL', 'ADIZ', 'CTA-P', 'NO-FIR', 'AWY', 'UIR-P'])
-            #if (not ase.codeClass) and (not ase.AseUid.codeType.string in ["A","B","C","D","E","F","G","R","P","W"]):
-            #    self.oDebug[ase.AseUid.codeType.string] = ase.AseUid.codeType.string
 
         #--------------------------------
         #Détermination du Nommage de la zone
         if ase.txtName:
-            theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"name":ase.txtName.string})
+            theSrcName = ase.txtName.string
+            theName = theSrcName
+            if theName[:len(typeZone)] == typeZone:
+                theName = (theName[len(typeZone):]).strip()
+            if theName[-len(typeZone):] == typeZone:
+                theName = (theName[:-len(typeZone)]).strip()
+            if theName != theSrcName:
+                theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"srcName":theSrcName})
+            theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"name":theName})
         else:
             theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"name":ase.AseUid.codeId.string})
-
-        #Précision d'un libellé complet (type V=Verbose)
-        sLongName = "[{0}]".format(theAirspace["class"])
-        if theAirspace["type"] != theAirspace["class"]:
-            sLongName = "{0} {1}".format(sLongName, theAirspace["type"])
-        sLongName = "{0} {1} ({2})".format(sLongName, theAirspace["name"], theAirspace["id"])
-        theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"nameV":sLongName})
 
         #--------------------------------
         #Décodage des plancher/Plafond avec estimlation des altitudes en mètres (exclusion des regroupement de zones qui n'ont pas ces caractéristiques...)
@@ -456,11 +595,12 @@ class AixmAirspaces4_5:
         #--------------------------------
         #Eventuel filtrage complémentaire pour requalification des zones 'vfrZone' & 'freeFlightZone' (zones spécifiques Vol-Libre Parapente/Delta)
         if (theAirspace["vfrZone"]) and ("lowerValue" in theAirspace) and ("upperValue" in theAirspace):
-            bFilter0 = bool(low>=3505)                           #Filtrer toutes les zones dont le plancher débute au dessus FL115/3505m
+            bFilter0 = bool(low>=3600)                           #Filtrer toutes les zones dont le plancher débute au dessus de 3600m FL115/3505m
             if bFilter0:
+                theAirspace.update({"filterAlt":True})
                 theAirspace.update({"vfrZone":False})
 
-            bPotentialFilter = bool(low==0 and up>=3505)        #Filtre potentiel de zones qui portent sur tous les étages
+            bPotentialFilter = bool(low==0 and up>=3600)        #Filtre potentiel de zones qui portent sur tous les étages
             if bPotentialFilter:
                 theAirspace.update({"potentialFilter4FreeFlightZone":True})
 
@@ -474,11 +614,11 @@ class AixmAirspaces4_5:
             elif bPotentialFilter:
                 self.oPotentialFilter4FreeFlightZone.update({sKey:False})           #Ajoute une zone potentiellement filtrable
                 self.oCtrl.oLog.info("Potential Filter for Free-Flight-Zone {0}".format(sKey), outConsole=False)
-            
+
             if theAirspace["freeFlightZone"] and (bFilter0 or bFilter1):
                 theAirspace.update({"freeFlightZone":False})
-            
-            #NE JAMAIS FILTRER: les éventuelles extensions de vol classées "E"; dont le planfond va au delà de FL115/3505m               
+
+            #NE JAMAIS FILTRER: les éventuelles extensions de vol classées "E"; dont le planfond va au delà de FL115/3505m
             if classZone=="E" and up>3505:
                 #theAirspace.update({"altAddE":True})
                 if not theAirspace["vfrZone"]:
@@ -486,7 +626,7 @@ class AixmAirspaces4_5:
                 if not theAirspace["freeFlightZone"]:
                     theAirspace.update({"freeFlightZone":True})
 
-        
+
         #--------------------------------
         #Verification des eventuels declages d'altitudes
         if theAirspace["freeFlightZone"]:
@@ -500,16 +640,15 @@ class AixmAirspaces4_5:
                     low, up = self.setAltitudeZone(sZoneUId, ase, theAirspace, lGroundEstimatedHeight)
             else:
                 del theAirspace["groundEstimatedHeight"]  #Suppression de la propriété qui est inutile
-            
+
             if ase.codeDistVerLower in ["W84", "QFE"]:
-                self.oCtrl.oLog.critical("codeDistVerLower calculation: id={0} NameV={1} Lower={2}".format(sZoneUId, theAirspace["nameV"], ase.codeDistVerLower.string), outConsole=True)
+                self.oCtrl.oLog.critical("codeDistVerLower calculation: id={0} name={1} Lower={2}".format(sZoneUId, theAirspace["name"], ase.codeDistVerLower.string), outConsole=True)
             if ase.codeDistVerUpper in ["W84", "QFE"]:
-                self.oCtrl.oLog.critical("codeDistVerUpper calculation: id={0} NameV={1} Upper={2}".format(sZoneUId, theAirspace["nameV"], ase.codeDistVerUpper.string), outConsole=True)
-        
-        
+                self.oCtrl.oLog.critical("codeDistVerUpper calculation: id={0} name={1} Upper={2}".format(sZoneUId, theAirspace["name"], ase.codeDistVerUpper.string), outConsole=True)
+
+
         #--------------------------------
         #Zones complémentaire avec remarques et description des activations
-        theAirspace = self.oCtrl.oAixmTools.addProperty(theAirspace, ase, "codeActivity", "codeActivity", optional=True)    #TFC-AD, BALLOON, MILOPS, ULM
         theAirspace = self.oCtrl.oAixmTools.addProperty(theAirspace, ase, "codeLocInd", "codeLocInd", optional=True)        #LFFF, LIMM
         theAirspace = self.oCtrl.oAixmTools.addProperty(theAirspace, ase, "codeMil", "codeMil", optional=True)              #CIVL
         if ase.Att:
@@ -531,86 +670,106 @@ class AixmAirspaces4_5:
         bExcept = False
         if not bExcept:
             #Non activation = Sauf SAM, DIM et JF // except SAT, SUN and public HOL
-            bExcept = bExcept or bool(activationDesc.find("sauf SAM,DIM et JF".lower()) > 0)
-            bExcept = bExcept or bool(activationDesc.find("sauf WE et JF".lower()) > 0)
-            bExcept = bExcept or bool(activationDesc.find("except SAT,SUN and HOL".lower()) > 0)
-            bExcept = bExcept or bool(activationDesc.find("except SAT,SUN and public HOL".lower()) > 0)
-            bExcept = bExcept or bool(activationDesc.find("MON-TUE except HOL".lower()) > 0)
-            bExcept = bExcept or bool(activationDesc.find("MON-WED except HOL".lower()) > 0)
-            bExcept = bExcept or bool(activationDesc.find("MON-THU except HOL".lower()) > 0)
-            bExcept = bExcept or bool(activationDesc.find("MON-FRI except HOL".lower()) > 0)
-            bExcept = bExcept or bool(activationDesc.find("MON-FRI except public HOL".lower()) > 0)
+            bExcept = bExcept or bool(activationDesc.find("sauf SAM,DIM et JF".lower()) >= 0)
+            bExcept = bExcept or bool(activationDesc.find("sauf WE et JF".lower()) >= 0)
+            bExcept = bExcept or bool(activationDesc.find("except SAT,SUN and HOL".lower()) >= 0)
+            bExcept = bExcept or bool(activationDesc.find("except SAT,SUN and public HOL".lower()) >= 0)
+            bExcept = bExcept or bool(activationDesc.find("MON-TUE except HOL".lower()) >= 0)
+            bExcept = bExcept or bool(activationDesc.find("MON-WED except HOL".lower()) >= 0)
+            bExcept = bExcept or bool(activationDesc.find("MON-THU except HOL".lower()) >= 0)
+            bExcept = bExcept or bool(activationDesc.find("MON-FRI except HOL".lower()) >= 0)
+            bExcept = bExcept or bool(activationDesc.find("MON-FRI except public HOL".lower()) >= 0)
             bExcept = bExcept or bool(activationDesc.find("MON-FRI possible activation H24 Except public HOL".lower()) > 0)
-            bExcept = bExcept or bool(activationDesc.find("MON to FRI except HOL".lower()) > 0)
+            bExcept = bExcept or bool(activationDesc.find("MON to FRI except HOL".lower()) >= 0)
             if bExcept:
-                self.oCtrl.oLog.info("except-SDJF: id={0} NameV={1}".format(sZoneUId, theAirspace["nameV"]))
+                self.oCtrl.oLog.info("except-SDJF: id={0} name={1}".format(sZoneUId, theAirspace["name"]))
                 theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"exceptSAT":"Yes"})
                 theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"exceptSUN":"Yes"})
                 theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"exceptHOL":"Yes"})
         if not bExcept:
             #Non activation = Sauf SAM, DIM // Except SAT and SUN
-            bExcept = bool(activationDesc.find("sauf SAM,DIM".lower()) > 0)
-            bExcept = bExcept or bool(activationDesc.find("sauf WE".lower()) > 0)
-            bExcept = bExcept or bool(activationDesc.find("except SAT,SUN".lower()) > 0)
-            bExcept = bExcept or bool(activationDesc.find("except SAT and SUN".lower()) > 0)
+            bExcept = bool(activationDesc.find("sauf SAM,DIM".lower()) >= 0)
+            bExcept = bExcept or bool(activationDesc.find("sauf WE".lower()) >= 0)
+            bExcept = bExcept or bool(activationDesc.find("except SAT,SUN".lower()) >= 0)
+            bExcept = bExcept or bool(activationDesc.find("except SAT and SUN".lower()) >= 0)
             if bExcept:
-                self.oCtrl.oLog.info("except-SD: id={0} NameV={1}".format(sZoneUId, theAirspace["nameV"]))
+                self.oCtrl.oLog.info("except-SD: id={0} name={1}".format(sZoneUId, theAirspace["name"]))
                 theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"exceptSAT":"Yes"})
                 theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"exceptSUN":"Yes"})
         if not bExcept:
             #Non activation = Sauf DIM et JF // except SUN and public HOL
-            bExcept = bool(activationDesc.find("sauf DIM et JF".lower()) > 0)
-            bExcept = bExcept or bool(activationDesc.find("except SUN and HOL".lower()) > 0)
-            bExcept = bExcept or bool(activationDesc.find("except SUN and public HOL".lower()) > 0)
-            bExcept = bExcept or bool(activationDesc.find("MON-SAT except HOL".lower()) > 0)
+            bExcept = bool(activationDesc.find("sauf DIM et JF".lower()) >= 0)
+            bExcept = bExcept or bool(activationDesc.find("except SUN and HOL".lower()) >= 0)
+            bExcept = bExcept or bool(activationDesc.find("except SUN and public HOL".lower()) >= 0)
+            bExcept = bExcept or bool(activationDesc.find("MON-SAT except HOL".lower()) >= 0)
             if bExcept:
-                self.oCtrl.oLog.info("except-DJF: id={0} NameV={1}".format(sZoneUId, theAirspace["nameV"]))
+                self.oCtrl.oLog.info("except-DJF: id={0} name={1}".format(sZoneUId, theAirspace["name"]))
                 theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"exceptSUN":"Yes"})
-                theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"exceptHOL":"Yes"})                   
+                theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"exceptHOL":"Yes"})
         if not bExcept:
             #Non activation = Sauf SAM // Except SAT
-            bExcept = bool(activationDesc.find("sauf SAM".lower()) > 0)
-            bExcept = bExcept or bool(activationDesc.find("except SAT".lower()) > 0)
+            bExcept = bool(activationDesc.find("sauf SAM".lower()) >= 0)
+            bExcept = bExcept or bool(activationDesc.find("except SAT".lower()) >= 0)
             if bExcept:
-                self.oCtrl.oLog.info("except-S: id={0} NameV={1}".format(sZoneUId, theAirspace["nameV"]))
+                self.oCtrl.oLog.info("except-S: id={0} name={1}".format(sZoneUId, theAirspace["name"]))
                 theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"exceptSAT":"Yes"})
             #Non activation = Sauf DIM // Except SUN
-            bExcept = bool(activationDesc.find("sauf DIM".lower()) > 0)
-            bExcept = bExcept or bool(activationDesc.find("except SUN".lower()) > 0)
+            bExcept = bool(activationDesc.find("sauf DIM".lower()) >= 0)
+            bExcept = bExcept or bool(activationDesc.find("except SUN".lower()) >= 0)
             if bExcept:
-                self.oCtrl.oLog.info("except-D: id={0} NameV={1}".format(sZoneUId, theAirspace["nameV"]))
-                theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"exceptSUN":"Yes"})           
+                self.oCtrl.oLog.info("except-D: id={0} name={1}".format(sZoneUId, theAirspace["name"]))
+                theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"exceptSUN":"Yes"})
             #Non activation = Sauf JF // Except HOL
-            bExcept = bool(activationDesc.find("sauf JF".lower()) > 0)
-            bExcept = bExcept or bool(activationDesc.find("except HOL".lower()) > 0)
-            bExcept = bExcept or bool(activationDesc.find("except public HOL".lower()) > 0)
-            bExcept = bExcept or bool(activationDesc.find("EXC HOL".lower()) > 0)
+            bExcept = bool(activationDesc.find("sauf JF".lower()) >= 0)
+            bExcept = bExcept or bool(activationDesc.find("except HOL".lower()) >= 0)
+            bExcept = bExcept or bool(activationDesc.find("except public HOL".lower()) >= 0)
+            bExcept = bExcept or bool(activationDesc.find("EXC HOL".lower()) >= 0)
             if bExcept:
-                self.oCtrl.oLog.info("except-JF: id={0} NameV={1}".format(sZoneUId, theAirspace["nameV"]))
-                theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"exceptHOL":"Yes"})   
-        
+                self.oCtrl.oLog.info("except-JF: id={0} name={1}".format(sZoneUId, theAirspace["name"]))
+                theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"exceptHOL":"Yes"})
+
         #--------------------------------
         #Traitement spécifique pour signaler les zones activable par NOTAM
-        bNotam = bool(activationDesc.find("NOTAM".lower()) > 0)
+        bNotam = bool(activationDesc.find("NOTAM".lower()) >= 0)
         if bNotam:
-            self.oCtrl.oLog.info("See NOTAM: id={0} NameV={1}".format(sZoneUId, theAirspace["nameV"]))
+            self.oCtrl.oLog.info("See NOTAM: id={0} name={1}".format(sZoneUId, theAirspace["name"]))
             theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"seeNOTAM":"Yes"})
-        
-        #--------------------------------    
+
+        #--------------------------------
+        #Finalisation avec un libellé complet (type V=Verbose)
+        if theAirspace["type"] != theAirspace["class"]:
+                finalType = theAirspace["type"]
+        else:   finalType = ""
+        if ase.codeActivity:
+                theCodeActivity = ase.codeActivity.string
+                theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"codeActivity":theCodeActivity})
+        else:   theCodeActivity = ""
+        finalLongName = "[{0}] {1} (".format(theAirspace["class"], theAirspace["name"])
+        if finalType:
+            finalLongName += finalType + " / "
+        if theCodeActivity:
+            finalLongName += theCodeActivity + " / "
+        if bNotam:
+            finalLongName += "SeeNotam / "
+        finalLongName +=  "id=" + theAirspace["id"] + ")"
+        theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"nameV":finalLongName})
+
+        #--------------------------------
         #Ajout des propriétés pour colorisation de la zone uniquement en mode Draft (car la version finale sous navigateur integre la techno CSS)
         #if self.oCtrl.Draft:
         self.oCtrl.oAixmTools.addColorProperties(theAirspace)
-        
+
+        #--------------------------------
         self.oAirspaces[sZoneUId] = theAirspace         #Store new item in global collection
         return
 
-    
+
     def setAltitudeZone(self, sZoneUId, ase, theAirspace, lGroundEstimatedHeight=0):
-            
+
         #ase.uomDistVerLower, ase.uomDistVerUpper or UOM_DIST_VER format:
-        #    FT [Feet.]  
+        #    FT [Feet.]
         #    M [Metres.]
-        #    FL [Flight level in hundreds of feet..]  
+        #    FL [Flight level in hundreds of feet..]
         #    SM [Standard metres (tens of metres).]
         #ase.codeDistVerLower, ase.codeDistVerUpper or CODE_DIST_VER_UPPER/LOWER format:
         #   Real distance
@@ -686,7 +845,7 @@ class AixmAirspaces4_5:
             if low is None:
                self.oCtrl.oLog.error("low is None: id={0} NameV={1} Lower={2}".format(sZoneUId, theAirspace["nameV"], ase.valDistVerLower.string), outConsole=True)
                low=0
-              
+
         sZoneAlt   += "/"
         sZoneAlt_m += "/"
         sZoneAlt_a += "/"
@@ -755,5 +914,5 @@ class AixmAirspaces4_5:
         theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"alt"  :sZoneAlt})
         theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"altM":sZoneAlt_m})
         theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"altV":sZoneAlt_a})      #Altitute complète (type V=Verbose)
-        
+
         return low, up

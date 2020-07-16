@@ -115,6 +115,80 @@ Use	<xsd:element name="Uni" type="UnitType"/>
 
 
 ########################## Use in AixmParser ##################
+<xsd:element name="Uni" type="UnitType"/>
+	Ase.AseUid.codeType or CODE_TYPE_AS
+	
+	ICAO DEPRECATED-4.0  [ICAO Region (for example, EUR, NAT, etc).]  
+	ECAC DEPRECATED-4.0  [ECAC Region.]  
+	CFMU DEPRECATED-4.0  [CFMU Area.]  
+	IFPS DEPRECATED-4.0  [IFPS Area.]  
+	TACT DEPRECATED-4.0  [TACT Area.]  
+	NAS [National Airspace System.]  
+	[note:The airspace within which a State provides Air Traffic Services is usually composed of:1) the territories over which the State has jurisdiction;2) those portions of the airspace over the high seas or in airspace of undetermined sovereignty where the provision of ATS are provided as determined by regional agreements.It can usually be determined by the UNION of FIRs (including, where appropriate, NO-FIRs) of the UNION of NAS-P..]  
+	NAS-P DEPRECATED-4.0  [A part of a National Airspace System.]  
+	[note:It might be necessary to define 'parts' of NAS. An example might be the division of the conterminous US into smaller 'airspaces' (K1, K2...) for a number of reasons..]  
+	FIR [Flight Information Region.]  
+	FIR-P [Part of an FIR.]  
+	[note:Might, for example, be used if service provided by more than one unit..]  
+	UIR [Upper Flight Information Region.]  
+	UIR-P [Part of a UIR.]  
+	[note:Might, for example, be used if more than one unites provide service in different parts of a UIR.]  
+	CTA [Control Area.]  
+	CTA-P [Part of a CTA.]  
+	OCA [Oceanic Control Area.]  
+	OCA-P [Partial OTA.]  
+	UTA [Upper Control Area.]  
+	UTA-P [Part of UTA.]  
+	TMA [Terminal Control Area.]  
+	TMA-P [Part of TMA.]  
+	CTR [Control Zone.]  
+	CTR-P [Part of CTR.]  
+	CLASS [Airspace having a specified class.]  
+	ATZ DEPRECATED-4.0  [Aerodrome Traffic Zone.]  
+	ATZ-P DEPRECATED-4.0  [Part of ATZ.]  
+	MNPSA DEPRECATED-4.0  [Minimum Navigation Performance Specifications Area.]  
+	MNPSA-P DEPRECATED-4.0  [Part of MNPSA.]  
+	OTA [Oceanic Transition Area.]  
+	SECTOR [Control Sector.]  
+	SECTOR-C [Temporarily Consolidated (Collapsed ) Sector.]  
+	TSA [Temporary Segregated Area (FUA).]  
+	TRA [Temporary Reserved Area (FUA).]  
+	CBA [Cross Border Area (FUA).]  
+	RCA [Reduced Co-ordination Airspace Procedure (FUA).]  
+	RAS [Regulated Airspace (not otherwise covered).]  
+	CDA DEPRECATED-4.0  [Client Defined Airspace.]  
+	AWY [Airway (corridor)..]  
+	[note:(ICAO) A control area or portion thereof established in the form of a corridor equipped with radio navigation aids..]  
+	RTECL DEPRECATED-4.0  [Route Centreline.]  
+	[note:(EURO) A route segment that is not in the form of a corridor but a centreline yet is controlled and is equipped with a series of radio navigation aids..]  
+	P [Prohibited Area.]  
+	R [Restricted Area.]  
+	R-AMC [AMC Manageable Restricted Area.]  
+	D [Danger Area.]  
+	D-AMC [AMC Manageable Danger Area.]  
+	D-OTHER [Activities of dangerous nature (other than a Danger Area).]  
+	MIL DEPRECATED-4.0  [Military Training/Exercise Area.]  
+	ADIZ [Air Defense Identification Zone.]  
+	HTZ DEPRECATED-4.0  [Helicopter Traffic Zone.]  
+	OIL DEPRECATED-4.0  [Oil Field.]  
+	BIRD DEPRECATED-4.0  [Bird Migration Area.]  
+	SPORT DEPRECATED-4.0  [Aerial Sporting/Recreational Area.]  
+	LMA DEPRECATED-4.0  [Limited Airspace (in general).]  
+	A [Alert Area.]  
+	W [Warning Area.]  
+	PROTECT [Airspace protected from specific air traffic.]  
+	AMA [Minimum Altitude Area.]  
+	ASR [Altimeter Setting Region.]  
+	NO-FIR [Airspace for which not even an FIR is defined.]  
+	[note:There are parts in the world for which there is neither an FIR nor any other airspace-type is defined. These airspaces will be marked as NO-FIR.]  
+	POLITICAL [Political/administrative area.]  
+	PART [Part of an airspace (used in airspace aggregations).]  
+	
+	
+	
+	
+	
+	
 
 <xsd:element name="Uni" type="UnitType"/>
 	Uni.codeType or CODE_TYPE_UNIT:

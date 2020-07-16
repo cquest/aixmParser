@@ -17,8 +17,8 @@ if __name__ == '__main__':
     
     
     ####  Source test file  ####
-    srcFile = "../tst/aixm4.5_SIA-FR_map-Airspaces.xml"
-    #srcFile = "../../poaff/input/EuCtrl/20200326_aixm4.5_Eurocontrol-FR.xml"
+    #srcFile = "../tst/aixm4.5_SIA-FR_map-Airspaces.xml"
+    srcFile = "../../poaff/input/EuCtrl/20200618_aixm4.5_Eurocontrol-FR.xml"
     #srcFile = "../../poaff/input/FFVP/20200704_FFVP_ParcsNat_BPa_aixm45.xml"
     
     
