@@ -286,7 +286,7 @@ class AixmTools:
             sFill = "#ffb9dc"
             nFillOpacity = 0.5
         #Blue
-        elif sClass in ["RMZ","Q","GP","ZSM","BIRD","PROTECT","D-OTHER"]:
+        elif sClass in ["RMZ","Q","GP","ZSM","BIRD","PROTECT","D-OTHER","SUR","AER","TRPLA","TRVL","VOL"]:
             sStroke = "#0000ff"
             sFill = "#80ffff"
             nFillOpacity = 0.3
@@ -522,12 +522,12 @@ class AixmTools:
         return LineString(vertex_list)
 
 
+    def getAirspaceFunctionalKeyName(self, airspaceProperties:dict) -> str:
+        sKey = "{0}.{1}.{2}".format(airspaceProperties["srcClass"], airspaceProperties["srcType"], airspaceProperties["srcName"])
+        return sKey
+
     def getAirspaceFunctionalKey(self, airspaceProperties:dict) -> str:
-        if ("nameV" in airspaceProperties) and \
-            ("alt" in airspaceProperties):
-            sKey = "{0}@{1}".format(airspaceProperties["nameV"], airspaceProperties["alt"])
-        else:
-            sKey = None
+        sKey = "{0}@{1}".format(self.getAirspaceFunctionalKeyName(airspaceProperties), airspaceProperties["alt"])
         return sKey
 
 

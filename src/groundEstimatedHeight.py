@@ -74,6 +74,10 @@ class GroundEstimatedHeight:
 
     def getGroundEstimatedHeight(self, oZone):
         oCoordinates = self.getCoordinates(oZone)
+        if type(oCoordinates) != "list":
+            #self.oLog.critical("float err: No coordinates found {}".format(oZone))
+            return 0,{}
+        
         lon = []
         lat = []
         for o in oCoordinates:
@@ -222,11 +226,12 @@ class GroundEstimatedHeight:
                 oZone = self.findZone(sZoneUId, oFeatures)
                 if oZone:
                     lGroundEstimatedHeight, objJSON = self.getGroundEstimatedHeight(oZone)   #Détermine la hauteur sol moyenne (dessous la zone)
-                    oGroundEstimatedHeight.update({sDestKey:lGroundEstimatedHeight})         #Ajoute un point d'entrée attendu
-                    #sMsg = "Update Reference Data: sZoneUId={0} - key={1} - {2}m".format(sZoneUId, sDestKey, lGroundEstimatedHeight)
-                    #self.oLog.info(sMsg, outConsole=False)
-                    for g in objJSON:
-                        geoJSON.append(g)
+                    if objJSON!={}:
+                        oGroundEstimatedHeight.update({sDestKey:lGroundEstimatedHeight})         #Ajoute un point d'entrée attendu
+                        #sMsg = "Update Reference Data: sZoneUId={0} - key={1} - {2}m".format(sZoneUId, sDestKey, lGroundEstimatedHeight)
+                        #self.oLog.info(sMsg, outConsole=False)
+                        for g in objJSON:
+                            geoJSON.append(g)
                 barre.update(idx)
             barre.reset()
         

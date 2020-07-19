@@ -6,22 +6,22 @@ import aixmReader
 
 
 class Aixm2openair:
-    
-    def __init__(self, oCtrl):
+
+    def __init__(self, oCtrl) -> None:
         bpaTools.initEvent(__file__, oCtrl.oLog)
         self.oCtrl = oCtrl
         self.oAirspacesCatalog = None
         self.geoBorders = None                    #Geographic borders dictionary
         self.geoAirspaces = None                  #Geographic airspaces dictionary
-        return        
+        return
 
-    def parseGeographicBorders(self):
+    def parseGeographicBorders(self) -> None:
         sTitle = "Geographic borders"
         sXmlTag = "Gbr"
-        
+
         sMsg = "Parsing {0} to OpenAir - {1}".format(sXmlTag, sTitle)
         self.oCtrl.oLog.info(sMsg)
-        
+
         if self.geoBorders == None:
             self.geoBorders = dict()
             oList = self.oCtrl.oAixm.doc.find_all(sXmlTag)
@@ -38,7 +38,7 @@ class Aixm2openair:
         self.oCtrl.oAixmTools.writeOpenairFile("borders", openair)
         return
 
-    def gbr2openair(self, gbr):
+    def gbr2openair(self, gbr) -> list:
         openair = []
         l = []
         sName = list(self.oCtrl.oAixmTools.getField(gbr.GbrUid, "txtName").values())[0]
@@ -56,30 +56,30 @@ class Aixm2openair:
             openair.append("DP {0} {1}".format(lat1, lon1))
         return openair, l
 
-    def findOpenairObjectAirspacesBorders(self, sAseUid):
+    def findOpenairObjectAirspacesBorders(self, sAseUid) -> dict:
         for o in self.geoAirspaces:
             if o["properties"]["UId"]==sAseUid:
                 return o["geometry"]
         return None
-    
-    def parseAirspacesBorders(self, airspacesCatalog):
+
+    def parseAirspacesBorders(self, airspacesCatalog) -> None:
         self.oAirspacesCatalog = airspacesCatalog
-        
+
         #Controle de prerequis
         if self.geoBorders == None:
             self.parseGeographicBorders()
-            
+
         sTitle = "Airspaces Borders"
         sXmlTag = "Abd"
-        
+
         if not self.oCtrl.oAixm.doc.find(sXmlTag):
             sMsg = "Missing tags {0} - {1}".format(sXmlTag, sTitle)
             self.oCtrl.oLog.warning(sMsg, outConsole=True)
             return
-        
+
         sMsg = "Parsing {0} to OpenAir - {1}".format(sXmlTag, sTitle)
         self.oCtrl.oLog.info(sMsg)
-        
+
         barre = bpaTools.ProgressBar(len(self.oAirspacesCatalog.oAirspaces), 20, title=sMsg, isSilent=self.oCtrl.oLog.isSilent)
         idx = 0
         self.geoAirspaces = []                #Réinitialisation avant traitement global
@@ -105,23 +105,23 @@ class Aixm2openair:
                             else:
                                 self.parseAirspaceBorder(oZone, oBorder)
             barre.update(idx)
-            
+
         barre.reset()
         return
 
-    def parseAirspaceBorder(self, oZone, oBorder):
+    def parseAirspaceBorder(self, oZone, oBorder) -> None:
         g = []          #in memory
         openair = []    #geometry
-        
+
         if oBorder.Circle:
             #Openair sample
             #V X=48:55:37 N 002:50:02 E
             #DC 2
-            
+
             lon_c, lat_c = self.oCtrl.oAixmTools.geo2coordinates(oBorder.Circle,
                                            latitude=oBorder.Circle.geoLatCen.string,
                                            longitude=oBorder.Circle.geoLongCen.string)
-            
+
             lat1, lon1 = bpaTools.GeoCoordinates.geoDd2dms(lat_c,"lat", lon_c,"lon", ":"," ")
             openair.append("V X={0} {1}".format(lat1, lon1))
             radius = float(oBorder.Circle.valRadius.string)
@@ -136,12 +136,12 @@ class Aixm2openair:
         for avx_cur in range(0,len(avx_list)):
             avx = avx_list[avx_cur]
             codeType = avx.codeType.string
-            
+
             # 'Great Circle' or 'Rhumb Line' segment
             if codeType in ["GRC", "RHL"]:
                 #Openair sample
                 #DP 48:51:25 N 002:33:26 E
-                
+
                 lon, lat = self.oCtrl.oAixmTools.geo2coordinates(avx)
                 g.append([lon, lat])
                 lat1, lon1 = bpaTools.GeoCoordinates.geoDd2dms(lat,"lat", lon,"lon", ":"," ")
@@ -160,19 +160,19 @@ class Aixm2openair:
                 #V X=48:22:52 N 002:04:26 E
                 #DB 48:24:15 N 002:07:55 E,48:21:26 N 002:00:59 E
                 #DP 48:21:26 N 002:00:59 E
-                
-                start = self.oCtrl.oAixmTools.geo2coordinates(avx, recurse=False)  
+
+                start = self.oCtrl.oAixmTools.geo2coordinates(avx, recurse=False)
                 g.append(start)
-                
+
                 if avx_cur+1 == len(avx_list):
                     stop = g[0]
                 else:
                     stop = self.oCtrl.oAixmTools.geo2coordinates(avx_list[avx_cur+1], recurse=False)
-                
+
                 center = self.oCtrl.oAixmTools.geo2coordinates(avx,
                                          latitude=avx.geoLatArc.string,
                                          longitude=avx.geoLongArc.string)
-                
+
                 if codeType=="CCA":             #'Counter clockWise Arc'
                     openair.append("V D=-")
                 else:
@@ -184,7 +184,7 @@ class Aixm2openair:
                 lat1c, lon1c = bpaTools.GeoCoordinates.geoDd2dms(latc,"lat", lonc,"lon", ":"," ")
                 lat1s, lon1s = bpaTools.GeoCoordinates.geoDd2dms(lats,"lat", lons,"lon", ":"," ")
                 lat1e, lon1e = bpaTools.GeoCoordinates.geoDd2dms(late,"lat", lone,"lon", ":"," ")
-                
+
                 sPoint = "DP {0} {1}".format(lat1s, lon1s)
                 firstPoint = self.pointMemory(firstPoint, sPoint)
                 if sPoint != lastPoint:
@@ -204,7 +204,7 @@ class Aixm2openair:
                     stop = g[0]
                 else:
                     stop = self.oCtrl.oAixmTools.geo2coordinates(avx_list[avx_cur+1])
-                    
+
                 if avx.GbrUid["mid"] in self.geoBorders:
                     fnt = self.geoBorders[avx.GbrUid["mid"]]
                     start_d = fnt.project(Point(start[0], start[1]), normalized=True)
@@ -240,7 +240,7 @@ class Aixm2openair:
         else:
             return memory
 
-    def saveAirspacesFilter(self, aContext):
+    def saveAirspacesFilter(self, aContext) -> None:
         context = aContext[0]
         if context=="ff":
             self.saveAirspacesFilter2(aContext, "-gpsWithTopo")
@@ -255,7 +255,7 @@ class Aixm2openair:
             self.saveAirspacesFilter2(aContext, "-gpsWithTopo")
         return
 
-    def saveAirspacesFilter2(self, aContext, gpsType="", exceptDay=""):
+    def saveAirspacesFilter2(self, aContext, gpsType="", exceptDay="") -> None:
         context = aContext[0]
         sMsg = "Prepare Openair file - {0} / {1} / {2}".format(aContext[1], gpsType, exceptDay)
         self.oCtrl.oLog.info(sMsg)
@@ -276,12 +276,10 @@ class Aixm2openair:
                 if include==True:
                     openair.append(self.makeOpenair(o, gpsType))
             barre.update(idx)
-        barre.reset()        
+        barre.reset()
         if openair:
             self.oCtrl.oAixmTools.writeOpenairFile("airspaces", openair, context, gpsType, exceptDay)
         return
-
-
 
     #* Rappel: Syntaxe déclarative des Classes dans le format OpenAir
     #* 	AC <classType>
@@ -303,10 +301,9 @@ class Aixm2openair:
     #*		RMZ	Radio Mandatory Zone
     #*		TMZ	Transponder Mandatory Zone
     #*		ZSM	Zone de Sensibilité Majeure (Protection Rapaces, Urubus, etc...)
-    def makeOpenair(self, oAirspace:dict, gpsType):
+    def makeOpenair(self, oAirspace:dict, gpsType) -> list:
         openair = []
         oZone = oAirspace["properties"]
-                
         theClass = oZone["class"]
         theType = oZone["type"]
 
@@ -315,7 +312,7 @@ class Aixm2openair:
         #2/ Specific translations for Openair format
         if   theType=="RMZ":                    theClass="RMZ"
         elif theType=="TMZ":                    theClass="TMZ"
-        
+
         openair.append("AC {0}".format(theClass))
         openair.append("AN {0}".format(oZone["nameV"]))
         openair.append("*AAlt {0} {1}".format(oZone["alt"], oZone["altM"]))
@@ -332,7 +329,6 @@ class Aixm2openair:
         openair.append("AL {0}".format(self.parseAlt("AL", gpsType, oZone)))
         openair += oAirspace["geometry"]
         return openair
-        
 
     def parseAlt(self, altRef, gpsType, oZone:dict) -> str:
         if altRef=="AH":
@@ -355,8 +351,8 @@ class Aixm2openair:
                 return ret
             sType = oZone["lowerType"]
             sValue =  oZone["lowerValue"]
-            sUnit = oZone["lowerUnit"]        
-        
+            sUnit = oZone["lowerUnit"]
+
         ret = "???"
         if   sValue=="0":
             ret = "SFC"                         #sample AH SFC
@@ -373,12 +369,42 @@ class Aixm2openair:
                 ret += " AGL"                    #sample AH 2500FT AGL     (or ASFC)
             else:
                 ret += " AMSL"                   #sample AH 2500FT AMSL
-        else:   
+        else:
             self.oCtrl.oLog.error("parseAlt() error sType={0} sValue={1} sUnit={2}".format(sType, sValue, sUnit), outConsole=False)
 
         return ret
 
+    #Nétoyage du catalogue de zones pour desactivation des éléments qui ne sont constitués que d'un ou deux 'Point' uniquement
+    #Ces simples 'Point remarquable' sont supprimés de la cartographie freefligth (ex: un VOR, un émmzteur radio, un centre de piste)
+    #Idem, suppression des 'lignes' (ex: Axe d'approche d'un aérodrome ou autres...)
+    def cleanAirspacesCalalog4FreeFlight(self, airspacesCatalog) -> None:
+        self.oAirspacesCatalog = airspacesCatalog
+        if self.oAirspacesCatalog.cleanAirspacesCalalog4FreeFlight:     #Contrôle si l'optimisation est déjà réalisée
+            return
 
+        sMsg = "Epuration du Calalogue (only for FreeFlight tags)"
+        self.oCtrl.oLog.info(sMsg)
+        barre = bpaTools.ProgressBar(len(self.geoAirspaces), 20, title=sMsg, isSilent=self.oCtrl.oLog.isSilent)
+        idx = 0
+        lNbChange = 0
+        for o in self.geoAirspaces:
+            oZone = o["properties"]
+            idx+=1
+            if oZone["freeFlightZone"]:
+                oGeom:dict = o["geometry"]          #Sample - "geometry": ['V X=45:41:17 N 006:40:56 E', 'DC 0.04']
+                if len(oGeom)==1:                               exclude=True
+                elif len(oGeom)==2 and oGeom[0][:4]!="V X=":    exclude=True
+                else:                                           exclude=False
+                if exclude:
+                    #self.oAirspacesCatalog.changePropertyInAirspacesCalalog(oZone["UId"], "freeFlightZone", False)  #Change in global repository
+                    oZone.update({"freeFlightZone":False})              #Change value in catalog
+                    oZone.update({"excludeAirspaceNotArea":True})       #Flag this change in catalog
+                    lNbChange+=1
+            barre.update(idx)
+        barre.reset()
 
-    
-    
+        if lNbChange>0:
+            self.oAirspacesCatalog.saveAirspacesCalalog()               #Save the new catalogs
+
+        self.oAirspacesCatalog.cleanAirspacesCalalog4FreeFlight = True  #Marqueur de traitement réalisé
+        return

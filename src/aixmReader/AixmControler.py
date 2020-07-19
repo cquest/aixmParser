@@ -250,6 +250,7 @@ class AixmControler:
             oAs.initAirspacesCatalogIdx()       #Initialisation des index pour construction du catalogue
             oAs.initAirspacesBordersIdx()       #Initialisation de l'index des bordures de zones
             oAs.loadAirspacesCatalog()          #Lecture/Chargement de toutes les zones aériennes (classification & Propriétés)
+            oAs.ctrlReferentialContent()        #Contrôle de cohérence des référentiels
             oAs.saveAirspacesCalalog()          #Construction des catalogues
             oAs.clearAirspaceIdx()              #Libération de mémoire
 
@@ -261,6 +262,7 @@ class AixmControler:
                 if o2json == None:
                     o2json = self.getFactory("parser", "geojson")       #Récupération dynamique du parser aixm/geojson associé au format du fichier source
                 o2json.parseAirspacesBorders(oAs)
+                o2json.cleanAirspacesCalalog4FreeFlight(oAs)
                 self.saveAirspaces(o2json, criticalErrCatalog)
                 bExec = True
 
@@ -268,6 +270,7 @@ class AixmControler:
             if found:
                 o2openair = self.getFactory("parser", "openair")        #Récupération dynamique du parser aixm/openair associé au format du fichier source
                 o2openair.parseAirspacesBorders(oAs)
+                o2openair.cleanAirspacesCalalog4FreeFlight(oAs)
                 self.saveAirspaces(o2openair, criticalErrCatalog)
                 bExec = True
 
