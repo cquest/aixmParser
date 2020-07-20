@@ -79,7 +79,7 @@ class AixmAirspaces4_5:
         sXmlTag = "Adg"
         if not self.oCtrl.oAixm.doc.find(sXmlTag):
             sMsg = "Missing tags {0} - {1}".format(sXmlTag, sTitle)
-            self.oCtrl.oLog.warning(sMsg, outConsole=True)
+            self.oCtrl.oLog.info(sMsg, outConsole=False)
         else:
             sMsg = "Indexing {0} - {1}".format(sXmlTag, sTitle)
             self.oCtrl.oLog.info(sMsg)
@@ -100,7 +100,7 @@ class AixmAirspaces4_5:
         sXmlTag = "Sae"
         if not self.oCtrl.oAixm.doc.find(sXmlTag):
             sMsg = "Missing tags {0} - {1}".format(sXmlTag, sTitle)
-            self.oCtrl.oLog.warning(sMsg, outConsole=True)
+            self.oCtrl.oLog.info(sMsg, outConsole=False)
         else:
             sMsg = "Indexing {0} - {1}".format(sXmlTag, sTitle)
             self.oCtrl.oLog.info(sMsg)
@@ -117,7 +117,7 @@ class AixmAirspaces4_5:
         sXmlTag = "Uni"
         if not self.oCtrl.oAixm.doc.find(sXmlTag):
             sMsg = "Missing tags {0} - {1}".format(sXmlTag, sTitle)
-            self.oCtrl.oLog.warning(sMsg, outConsole=True)
+            self.oCtrl.oLog.info(sMsg, outConsole=False)
         else:
             sMsg = "Indexing {0} - {1}".format(sXmlTag, sTitle)
             self.oCtrl.oLog.info(sMsg)
@@ -130,7 +130,6 @@ class AixmAirspaces4_5:
                 barre.update(idx)
             barre.reset()
         return
-
 
     def initAirspacesBordersIdx(self):
         sTitle = "Airspaces Borders"
@@ -151,14 +150,12 @@ class AixmAirspaces4_5:
             barre.reset()
         return
 
-
     def clearAirspaceIdx(self):
         #self.oIdxAseUid2AseUid.clear()         #No clear for use...
         #self.oIdxAseUid2AseUid2.clear()        #No clear for use...
         self.oIdxAseUid2UniUid.clear()
         self.oIdxUniUid2OrgName.clear()
         return
-
 
     def getExcludeAirspace(self, theAirspace:dict) -> bool:
         if not theAirspace["vfrZone"]:
@@ -168,7 +165,6 @@ class AixmAirspaces4_5:
             return True
         else:
             return False
-
 
     def getGroundEstimatedHeight(self, theAirspace:dict) -> int:
         if not theAirspace["vfrZone"]:
@@ -183,7 +179,6 @@ class AixmAirspaces4_5:
             if theAirspace["freeFlightZone"]:
                 self.oCtrl.oLog.warning("Missing Ground Estimated Height {0}".format(sKey), outConsole=False)
         return lValue
-
 
     def createAirspacesCatalog(self, sFilename:str) -> dict:
         ret = {"type":"Aeronautical areas catalog", "headerFile":self.oCtrl.oAixmTools.getJsonPropHeaderFile(sFilename), "catalog":self.oAirspaces}
@@ -209,7 +204,7 @@ class AixmAirspaces4_5:
         if len(self.oPotentialFilter4FreeFlightZone)>0:
             out = {"headerFile":header, "referential":self.oPotentialFilter4FreeFlightZone}
             bpaTools.writeJsonFile(self.sPotentialFilter4FreeFlightZoneFileName, out)
-            self.oCtrl.oLog.warning("Potential Filter for Free Flight Zone: {0} in file {1}".format(len(self.oPotentialFilter4FreeFlightZone), self.sPotentialFilter4FreeFlightZoneFileName), outConsole=True)
+            self.oCtrl.oLog.info("Potential Filter for Free Flight Zone: {0} in file {1}".format(len(self.oPotentialFilter4FreeFlightZone), self.sPotentialFilter4FreeFlightZoneFileName), outConsole=False)
 
         #Phase 1 : JSON calatlog
         sFilename = "airspacesCatalog"
