@@ -419,10 +419,10 @@ class Aixm2json4_5:
             oZone = o["properties"]
             idx+=1
             if oZone["freeFlightZone"]:
-                oGeom:dict = o["geometry"]          #Sample - "geometry": {"type": "Polygon", "coordinates": [[[3.069444, 45.943611], [3.539167, 45.990556], ../..
-                if oGeom["type"]=="Point":              exclude=True
-                elif len(oGeom["coordinates"][0])<3:    exclude=True
-                else:                                   exclude=False
+                oGeom:dict = o["geometry"]                      #Sample - "geometry": {"type": "Polygon", "coordinates": [[[3.069444, 45.943611], [3.539167, 45.990556], ../..
+                if oGeom["type"] in ["Point","LineString"]:     exclude=True
+                elif len(oGeom["coordinates"][0])<3:            exclude=True
+                else:                                           exclude=False
                 if exclude:
                     #self.oAirspacesCatalog.changePropertyInAirspacesCalalog(oZone["UId"], "freeFlightZone", False)  #Change in global repository
                     oZone.update({"freeFlightZone":False})              #Change value in catalog
