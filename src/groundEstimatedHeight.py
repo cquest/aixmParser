@@ -74,7 +74,7 @@ class GroundEstimatedHeight:
 
     def getGroundEstimatedHeight(self, oZone):
         oCoordinates = self.getCoordinates(oZone)
-        if type(oCoordinates) != "list":
+        if not isinstance(oCoordinates, list):
             #self.oLog.critical("float err: No coordinates found {}".format(oZone))
             return 0,{}
         
