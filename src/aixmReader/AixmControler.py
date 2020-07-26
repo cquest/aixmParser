@@ -262,7 +262,7 @@ class AixmControler:
                 if o2json == None:
                     o2json = self.getFactory("parser", "geojson")       #Récupération dynamique du parser aixm/geojson associé au format du fichier source
                 o2json.parseAirspacesBorders(oAs)
-                o2json.cleanAirspacesCalalog4FreeFlight(oAs)
+                o2json.cleanAirspacesCalalog(oAs)
                 self.saveAirspaces(o2json, criticalErrCatalog)
                 bExec = True
 
@@ -270,7 +270,7 @@ class AixmControler:
             if found:
                 o2openair = self.getFactory("parser", "openair")        #Récupération dynamique du parser aixm/openair associé au format du fichier source
                 o2openair.parseAirspacesBorders(oAs)
-                o2openair.cleanAirspacesCalalog4FreeFlight(oAs)
+                o2openair.cleanAirspacesCalalog(oAs)
                 self.saveAirspaces(o2openair, criticalErrCatalog)
                 bExec = True
 

@@ -4,6 +4,49 @@ import bpaTools
 import aixmReader
 
 
+#Sauvegarde du catalogue de zones sous forme de CSV
+def convertJsonCalalogToCSV(cat) -> str:
+
+    #Phase 2.1 : Header CSV file
+    csv = csvCol = csvVal = ""
+    oHeader = cat["headerFile"]
+    for key,val in oHeader.items():
+        if isinstance(val, dict):
+            for key2,val2 in val.items():
+                csvCol += '{0};'.format(key2)
+                csvVal += '{0};'.format(val2)            
+        else:
+            csvCol += '{0};'.format(key)
+            csvVal += '{0};'.format(val)
+    csv = "<Header file>\n{0}\n{1}\n\n<Content>\n".format(csvCol, csvVal)
+
+    #Phase 2.2 : Construct a global index on columns (collect all columns in contents for complete header of CSV file...)
+    #oCols avec initialisation d'une table d'index avec imposition de l'ordonnancement de colonnes choisies
+    oCols = {"zoneType":0, "groupZone":0, "vfrZone":0, "freeFlightZone":0, "excludeAirspaceNotCoord":0, "excludeAirspaceNotFfArea":0, "excludeAirspaceByFilter":0, "excludeAirspaceByAlt":0, "excludeAirspaceByRef":0, "potentialFilter4FreeFlightZone":0, "orgName":0, "UId":0, "id":0, "srcClass":0, "srcType":0, "srcName":0, "class":0, "type":0, "localType":0, "codeActivity":0, "name":0, "groundEstimatedHeight":0, "ordinalLowerM":0, "lowerM":0, "ordinalUpperM":0, "upperM":0, "nameV":0, "alt":0, "altM":0, "altV":0, "exceptSAT":0, "exceptSUN":0, "exceptHOL":0, "seeNOTAM":0}
+    oCatalog = cat["catalog"]
+    for key0,val0 in oCatalog.items():
+        for key1,val1 in val0.items():
+            #Ne pas intégrer les colonnes associées au 'ColorProperties'
+            if not key1 in ["stroke", "stroke-width", "stroke-opacity", "fill", "fill-opacity"]:
+                oCols.update({key1:0})
+    #List all columns in order of the global index on columns
+    for colKey,colVal in oCols.items():
+        csv += '"{0}";'.format(colKey)
+
+    #Phase 2.3" : Content CSV file
+    for key,val in oCatalog.items():
+        csv += "\n"
+        #Extract columns in order of the global index on columns
+        for colKey,colVal in oCols.items():
+            if colKey in val:
+                csv += '"{0}";'.format(val[colKey])
+            else:
+                csv += ';'
+
+    csv += "\n\n<EOF>"
+    return csv
+
+
 class AixmAirspaces4_5:
 
     def __init__(self, oCtrl=None):
@@ -17,7 +60,7 @@ class AixmAirspaces4_5:
         self.oIdxAseUid2AseUid = dict()
         self.oIdxAseUid2AseUid2 = dict()
         self.loadRefFiles()                 #Referentials
-        self.cleanAirspacesCalalog4FreeFlight=False
+        self.cleanAirspacesCalalog=False
         return
 
 
@@ -69,6 +112,8 @@ class AixmAirspaces4_5:
     #Recherche de présence d'une zone dans le catalogue par le contenu de propriétés
     def findAirspaceByFunctionalKey(self, sFindKey:str) -> bool:
         for oProp in self.oAirspaces.values():
+            if oProp["groupZone"]==True:
+                return True
             sKey = self.oCtrl.oAixmTools.getAirspaceFunctionalKey(oProp)
             if sKey == sFindKey:
                 return True
@@ -177,7 +222,7 @@ class AixmAirspaces4_5:
             lValue = 0
             self.oUnknownGroundHeight.update({theAirspace["UId"]:sKey})                 #Ajoute un point d'entrée attendu
             if theAirspace["freeFlightZone"]:
-                self.oCtrl.oLog.warning("Missing Ground Estimated Height {0}".format(sKey), outConsole=False)
+                self.oCtrl.oLog.warning("Missing Ground Estimated Height UId={0} - Key={1}".format(theAirspace["UId"], sKey), outConsole=False)
         return lValue
 
     def createAirspacesCatalog(self, sFilename:str) -> dict:
@@ -212,38 +257,7 @@ class AixmAirspaces4_5:
         self.oCtrl.oAixmTools.writeJsonFile(self.referentialsPath, sFilename, cat)  #Save Catalog on Json format
 
         #Phase 2 : CSV calatlog
-        #Phase 2.1 : Header CSV file
-        csv = csvCol = csvVal = ""
-        oHeader = cat["headerFile"]
-        for key,val in oHeader.items():
-            csvCol += '{0};'.format(key)
-            csvVal += '{0};'.format(val)
-        csv = "<Header file>\n{0}\n{1}\n\n<Content>\n".format(csvCol, csvVal)
-
-        #Phase 2.2 : Construct a global index on columns (collect all columns in contents for complete header of CSV file...)
-        #oCols avec initialisation d'une table d'index avec imposition de l'ordonnancement de colonnes choisies
-        oCols = {"zoneType":0, "groupZone":0, "vfrZone":0, "freeFlightZone":0, "excludeAirspaceByFilter":0, "excludeAirspaceByAlt":0, "excludeAirspaceNotArea":0, "excludeAirspaceByRef":0, "potentialFilter4FreeFlightZone":0, "orgName":0, "UId":0, "id":0, "srcClass":0, "srcType":0, "srcName":0, "class":0, "type":0, "localType":0, "codeActivity":0, "name":0, "groundEstimatedHeight":0, "ordinalLowerM":0, "lowerM":0, "ordinalUpperM":0, "upperM":0, "nameV":0, "alt":0, "altM":0, "altV":0, "exceptSAT":0, "exceptSUN":0, "exceptHOL":0, "seeNOTAM":0}
-        oCatalog = cat["catalog"]
-        for key0,val0 in oCatalog.items():
-            for key1,val1 in val0.items():
-                #Ne pas intégrer les colonnes associées au 'ColorProperties'
-                if not key1 in ["stroke", "stroke-width", "stroke-opacity", "fill", "fill-opacity"]:
-                    oCols.update({key1:0})
-        #List all columns in order of the global index on columns
-        for colKey,colVal in oCols.items():
-            csv += '"{0}";'.format(colKey)
-
-        #Phase 2.3" : Content CSV file
-        for key,val in oCatalog.items():
-            csv += "\n"
-            #Extract columns in order of the global index on columns
-            for colKey,colVal in oCols.items():
-                if colKey in val:
-                    csv += '"{0}";'.format(val[colKey])
-                else:
-                    csv += ';'
-
-        csv += "\n\n<EOF>"
+        csv = convertJsonCalalogToCSV(cat)
         self.oCtrl.oAixmTools.writeTextFile(self.referentialsPath, sFilename, csv, "csv")    #Save Catalog on CSV format
         return
 
@@ -320,6 +334,7 @@ class AixmAirspaces4_5:
         groupZone = bool(not ase.valDistVerLower)
         if groupZone:
             theAirspace = self.oCtrl.oAixmTools.initProperty("Grouping zone")
+            theAirspace.update({"excludeAirspaceNotCoord":True})
         else:
             theAirspace = self.oCtrl.oAixmTools.initProperty("Airspace Zone")
         theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"groupZone":groupZone})
@@ -621,7 +636,7 @@ class AixmAirspaces4_5:
                 theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"lowerType":"ALT"})      #Default fixed at 'AMSL'
             theAirspace = self.oCtrl.oAixmTools.addProperty(theAirspace, ase, "valDistVerLower", "lowerValue", optional=True)
             theAirspace = self.oCtrl.oAixmTools.addProperty(theAirspace, ase, "uomDistVerLower", "lowerUnit", optional=True)
-            theAirspace.update({"groundEstimatedHeight": "?"})
+            #theAirspace.update({"groundEstimatedHeight": "?"})
             low, up = self.setAltitudeZone(sZoneUId, ase, theAirspace)
 
         #--------------------------------
@@ -645,7 +660,7 @@ class AixmAirspaces4_5:
                     self.oCtrl.oLog.info("Exclude airspace for Free-Flight-Zone {0}".format(sKey), outConsole=False)
             elif bPotentialFilter:
                 self.oPotentialFilter4FreeFlightZone.update({sKey:False})           #Ajoute une zone potentiellement filtrable
-                self.oCtrl.oLog.info("Potential Filter for Free-Flight-Zone {0}".format(sKey), outConsole=False)
+                #self.oCtrl.oLog.info("Potential Filter for Free-Flight-Zone {0}".format(sKey), outConsole=False)
 
             if theAirspace["freeFlightZone"] and (bFilter0 or bFilter1):
                 theAirspace.update({"freeFlightZone":False})
@@ -659,7 +674,7 @@ class AixmAirspaces4_5:
 
 
         #--------------------------------
-        #Verification des eventuels declages d'altitudes
+        #Verification des eventuels decalages d'altitudes
         if theAirspace["freeFlightZone"]:
             #Necessité de connaître l'altitude-moyenne du sol
             bFlag = False
@@ -672,8 +687,8 @@ class AixmAirspaces4_5:
                 if lGroundEstimatedHeight>0:
                     theAirspace.update({"groundEstimatedHeight": lGroundEstimatedHeight})
                     low, up = self.setAltitudeZone(sZoneUId, ase, theAirspace, lGroundEstimatedHeight)
-            else:
-                del theAirspace["groundEstimatedHeight"]  #Suppression de la propriété qui est inutile
+            #else:
+            #    del theAirspace["groundEstimatedHeight"]  #Suppression de la propriété qui est inutile
 
             if ase.codeDistVerLower in ["W84", "QFE"]:
                 self.oCtrl.oLog.critical("codeDistVerLower calculation: id={0} name={1} Lower={2}".format(sZoneUId, theAirspace["name"], ase.codeDistVerLower.string), outConsole=True)

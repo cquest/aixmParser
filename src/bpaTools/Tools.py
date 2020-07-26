@@ -67,6 +67,7 @@ def readJsonFile(sFile:str) -> dict:
     if os.path.exists(sFile):
         jsonFile = open(sFile, "rt", encoding="utf-8")
         jdata = json.load(jsonFile)
+        jsonFile.close()
     else:
         jdata = {}
     return jdata
@@ -75,6 +76,14 @@ def readJsonFile(sFile:str) -> dict:
 def writeJsonFile(sFile:str, jdata:dict) -> None:
     jsonFile = open(sFile, "w", encoding="utf-8")
     json.dump(jdata, jsonFile)
+    jsonFile.close()
+    return
+
+
+def writeTextFile(sFile:str, stext:str):
+    textFile = open(sFile, "w", encoding="utf-8")
+    textFile.write(stext)
+    textFile.close()
     return
 
 

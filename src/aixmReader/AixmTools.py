@@ -34,12 +34,12 @@ class AixmTools:
         sOutFile = self.oCtrl.sOutHeadFile + sFileName + ".geojson"
         sizeMap = len(oGeojson)
         if sizeMap:
-            headMsg = "W"
+            headMsg = "Write"
             with open(self.oCtrl.sOutPath + sOutFile, "w", encoding=self.oCtrl.sEncoding) as output:
                 output.write(json.dumps({"type":"FeatureCollection", "headerFile":self.getJsonPropHeaderFile(sFileName, context, sizeMap), "features":oGeojson}, ensure_ascii=False))
         else:
-            headMsg = "Dont' w"
-        self.oCtrl.oLog.info("{0}rite file {1} - {2} areas in map".format(headMsg, sOutFile, sizeMap), outConsole=True)
+            headMsg = "Unwritten"
+        self.oCtrl.oLog.info("{0} file {1} - {2} areas in map".format(headMsg, sOutFile, sizeMap), outConsole=True)
         return
 
 
@@ -54,7 +54,7 @@ class AixmTools:
         sOutFile = self.oCtrl.sOutHeadFile + sFileName + gpsType + ext4exceptDay + ".txt"
         sizeMap = len(oOpenair)
         if sizeMap:
-            headMsg = "W"
+            headMsg = "Written"
             with open(self.oCtrl.sOutPath + sOutFile, "w", encoding=self.oCtrl.sEncoding) as output:
                 oHeader = self.getJsonPropHeaderFile(sFileName, context, sizeMap)
                 output.write("*"*50 +"\n")
@@ -95,15 +95,16 @@ class AixmTools:
                     output.write("\n".join(airspace))
                     output.write("\n\n")
         else:
-            headMsg = "Dont' w"
-            self.oCtrl.oLog.info("{0}rite file {1} - {2} areas in map".format(headMsg, sOutFile, sizeMap), outConsole=True)
+            headMsg = "Unwritten"
+            
+        self.oCtrl.oLog.info("{0} file {1} - {2} areas in map".format(headMsg, sOutFile, sizeMap), outConsole=True)
         return
 
 
     def writeJsonFile(self, sPath="", sFileName="", oJson=None):
         if sFileName!="":
             sOutFile = self.oCtrl.sOutHeadFile + sFileName + ".json"
-            self.oCtrl.oLog.info("Write file {0}".format(sOutFile), outConsole=True)
+            self.oCtrl.oLog.info("Written file {0}".format(sOutFile), outConsole=True)
             if sPath=="":
                 sPath = self.oCtrl.sOutPath
             with open(sPath + sOutFile, "w", encoding=self.oCtrl.sEncoding) as output:
@@ -114,7 +115,7 @@ class AixmTools:
     def writeTextFile(self, sPath="", sFileName="", oText=None, fileExtention="txt"):
         if sFileName!="":
             sOutFile = self.oCtrl.sOutHeadFile + sFileName + "." + fileExtention
-            self.oCtrl.oLog.info("Write file {0}".format(sOutFile), outConsole=True)
+            self.oCtrl.oLog.info("Written file {0}".format(sOutFile), outConsole=True)
             if sPath=="":
                 sPath = self.oCtrl.sOutPath        
             with open(sPath + sOutFile, "w", encoding=self.oCtrl.sEncoding) as output:

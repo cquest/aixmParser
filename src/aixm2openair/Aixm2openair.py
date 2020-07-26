@@ -374,15 +374,15 @@ class Aixm2openair:
 
         return ret
 
-    #Nétoyage du catalogue de zones pour desactivation des éléments qui ne sont constitués que d'un ou deux 'Point' uniquement
+    #Nétoyage du catalogue de zones pour desactivation des éléments qui ne sont pas valides ; ou constitués que d'un ou deux 'Point' a exclure uniquement pour le freefligth
     #Ces simples 'Point remarquable' sont supprimés de la cartographie freefligth (ex: un VOR, un émmzteur radio, un centre de piste)
     #Idem, suppression des 'lignes' (ex: Axe d'approche d'un aérodrome ou autres...)
-    def cleanAirspacesCalalog4FreeFlight(self, airspacesCatalog) -> None:
+    def cleanAirspacesCalalog(self, airspacesCatalog) -> None:
         self.oAirspacesCatalog = airspacesCatalog
-        if self.oAirspacesCatalog.cleanAirspacesCalalog4FreeFlight:     #Contrôle si l'optimisation est déjà réalisée
+        if self.oAirspacesCatalog.cleanAirspacesCalalog:     #Contrôle si l'optimisation est déjà réalisée
             return
 
-        sMsg = "Epuration du Calalogue (only for FreeFlight tags)"
+        sMsg = "Clean catalog"
         self.oCtrl.oLog.info(sMsg)
         barre = bpaTools.ProgressBar(len(self.geoAirspaces), 20, title=sMsg, isSilent=self.oCtrl.oLog.isSilent)
         idx = 0
@@ -390,15 +390,21 @@ class Aixm2openair:
         for o in self.geoAirspaces:
             oZone = o["properties"]
             idx+=1
+            
+            #Flag all not valid area
+            oGeom:dict = o["geometry"]                                  #Sample - "geometry": {"type": "Polygon", "coordinates": [[[3.069444, 45.943611], [3.539167, 45.990556], ../..
+            if len(oGeom)==0:
+                oZone.update({"excludeAirspaceNotCoord":True})          #Flag this change in catalog
+                lNbChange+=1
+            
             if oZone["freeFlightZone"]:
-                oGeom:dict = o["geometry"]          #Sample - "geometry": ['V X=45:41:17 N 006:40:56 E', 'DC 0.04']
                 if len(oGeom)==1:                               exclude=True
                 elif len(oGeom)==2 and oGeom[0][:4]!="V X=":    exclude=True
                 else:                                           exclude=False
                 if exclude:
                     #self.oAirspacesCatalog.changePropertyInAirspacesCalalog(oZone["UId"], "freeFlightZone", False)  #Change in global repository
                     oZone.update({"freeFlightZone":False})              #Change value in catalog
-                    oZone.update({"excludeAirspaceNotArea":True})       #Flag this change in catalog
+                    oZone.update({"excludeAirspaceNotFfArea":True})       #Flag this change in catalog
                     lNbChange+=1
             barre.update(idx)
         barre.reset()
@@ -406,5 +412,5 @@ class Aixm2openair:
         if lNbChange>0:
             self.oAirspacesCatalog.saveAirspacesCalalog()               #Save the new catalogs
 
-        self.oAirspacesCatalog.cleanAirspacesCalalog4FreeFlight = True  #Marqueur de traitement réalisé
+        self.oAirspacesCatalog.cleanAirspacesCalalog = True  #Marqueur de traitement réalisé
         return
