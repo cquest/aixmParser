@@ -101,7 +101,7 @@ class Logger:
     
     def default(self) -> logging:
         return self.log
-    
+
     ### Fermeture du/des fichiers de logs
     def closeFile(self) -> None:
         if self.log!=None:
@@ -113,7 +113,7 @@ class Logger:
                 self.log.removeHandler(oHandler)
             self.log=None
         return
-    
+
     def resetFile(self) -> None:
         self.closeFile()
         if not self.isSilent:

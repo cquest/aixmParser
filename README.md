@@ -53,7 +53,7 @@ pip install -r requirements.txt
 Selon le choix des options de génération; le programme produira un log et les fichiers dans le dossier ./out/  
 Les options d'utilisations s'auto décrivent avec l'aide en ligne "aixmParser -h":  
 ```
-aixmParser v2.9.3  
+aixmParser v2.12.1  
 -----------------  
 Aeronautical Information Exchange Model (AIXM) Converter  
 Call: aixmParser <[drive:][path]filename> <Format> <Type> [<Type2> ... <TypeN>] [<Option(s)>]  
@@ -86,8 +86,8 @@ With:
     -FreeFlight     Specific Paragliding/Hanggliding maps (out E,F,G,W areas and others...)  
     -Draft          Size limitation for geojson output  
 
-  Samples: aixmParser ../tst/aixm4.5_SIA-FR_2019-12-05.xml -Fall -Tall -CleanLog  
-           aixmParser ../tst/aixm4.5_SIA-FR_2019-12-05.xml -Fgeojson -Airspaces -Obstacles -ControlTowers -CleanLog  
+  Samples: aixmParser ../tst/aixm4.5_SIA-FR_2019-12-05.xml -Fall -Tall -ALL -CleanLog  
+           aixmParser ../tst/aixm4.5_SIA-FR_2019-12-05.xml -Fgeojson -Obstacles -ControlTowers -Airspaces -ALL -CleanLog  
            aixmParser ../tst/aixm4.5_SIA-FR_2019-12-05.xml -Fall -Airspaces -FreeFlight -CleanLog  
 
   Resources  

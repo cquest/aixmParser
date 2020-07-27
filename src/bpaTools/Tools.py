@@ -31,12 +31,12 @@ def initEvent(sFile:str, oLog:logging=None, isSilent:bool=False) -> None:
         print(msg)
     return
 
-def getFileName(sFile:str) -> str:
+def getFileName(sFile) -> str:
     return os.path.basename(sFile).split(".")[0]
     
-
-def getFilePath(sFile:str) -> str:
-    return os.path.dirname(sFile) + "/"
+def getFilePath(sFile) -> str:
+    #return os.path.dirname(sFile) + "/"                  #Non-Fonctionnel sous Linux
+    return os.path.dirname(os.path.abspath(sFile)) + "/"  #Fonctionnel sous Linux
 
 def getNow() -> datetime:
     return datetime.datetime.now()
