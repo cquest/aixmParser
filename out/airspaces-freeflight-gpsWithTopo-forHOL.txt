@@ -1,9 +1,9 @@
 **************************************************
 *     software - (aixmParser v2.12.0) Paragliding-OpenAir-FrenchFiles - http://pascal.bazile.free.fr/paraglidingFolder/divers/GPS/OpenAir-Format/
-*     created - 2020-07-26T22:00:47.883166
+*     created - 2020-07-26T22:00:47.936535
 *     content - airspaces-freeflight
 *     freeFlightMap - True
-*     numberOfAreas - 31
+*     numberOfAreas - 27
 *     srcAixmFile - ../tst/aixm4.5_SIA-FR_map-Airspaces.xml
 *     srcAixmOrigin - BPa
 *     srcAixmVersion - 4.5
@@ -12,47 +12,8 @@
 *     --------------------------------------------
 *     /!\Warning - 'Free Flight Map' - Version VFR spécifique Parapente/Deltaplane (zones situées en dessous le niveau FL115 avec filtrage des zones de type 'E, F, G et W')
 *     /!\Warning - 'gpsWithTopo' - Cartographie pour XCsoar / LK8000 / XCTrack / FlyMe / Compass / Syride ; et tout autres appareils/logiciels AVEC Carte-Topographique (en capacité de connaître les altitudes terrain)
+*     /!\Warning - 'forHOL' - Fichier spécifiquement utilisable les 'HOLiday/Jours-Fériés' (dépourvu des zones non-activables 'exceptHOL')
 **************************************************
-
-AC R
-AN [R] 506 A (id=LFR506A)
-*AAlt [SFC/FL115] [0m/3505m]
-*AUID UId=1613148-tst - Id=LFR506A
-*ADescr Administrator: camp de Coëtquidan TEL: 02 97 70 73 85 Except for LF-R 239 COETQUIDAN SUD when active. Sauf SAM, DIM et JF OAT/GAT: Avoidance mandatory throughout activity, except for ACFT flying for Coëtquidan camp. Activity known on: -ARMOR (CCMAR): 124.725 MHz -RAKI INFO: 317.5 MHz, 143.550 MHz - RENNES APP/INFO: 134.0 MHz
-*AActiv [HX] Possible activation H24 except SUN and public HOL
-*AExSAT Yes
-*AExSUN Yes
-*AExHOL Yes
-AH FL115
-AL SFC
-V X=47:57:10 N 002:12:32 W
-DC 3.24
-
-AC R
-AN [R] 506 A (id=LFR506A)
-*AAlt [SFC/3500FT] [0m/1066m]
-*AUID UId=1613148-1 - Id=LFR506A
-*ADescr Administrator: camp de Coëtquidan TEL: 02 97 70 73 85 Except for LF-R 239 COETQUIDAN SUD when active. Sauf SAM, DIM et JF OAT/GAT: Avoidance mandatory throughout activity, except for ACFT flying for Coëtquidan camp. Activity known on: -ARMOR (CCMAR): 124.725 MHz -RAKI INFO: 317.5 MHz, 143.550 MHz - RENNES APP/INFO: 134.0 MHz
-*AActiv [HX] Possible activation H24 except SUN and public HOL
-*AExSAT Yes
-*AExSUN Yes
-*AExHOL Yes
-AH 3500FT AMSL
-AL SFC
-V X=47:57:10 N 002:12:32 W
-DC 3.24
-
-AC R
-AN [R] 506 A (id=LFR506A)
-*AAlt [3500FT ASFC/FL75] [1066m/2286m]
-*AUID UId=1613148-2 - Id=LFR506A
-*ADescr Administrator: camp de Coëtquidan TEL: 02 97 70 73 85 Except for LF-R 239 COETQUIDAN SUD when active. OAT/GAT: Avoidance mandatory throughout activity, except for ACFT flying for Coëtquidan camp. Activity known on: -ARMOR (CCMAR): 124.725 MHz -RAKI INFO: 317.5 MHz, 143.550 MHz - RENNES APP/INFO: 134.0 MHz
-*AActiv [HX] Possible activation H24 except public HOL
-*AExHOL Yes
-AH FL75
-AL 3500FT AGL
-V X=47:57:10 N 002:12:32 W
-DC 5.0
 
 AC R
 AN [R] 239 (SeeNotam / id=LFR239)
@@ -217,26 +178,6 @@ DP 48:25:47 N 004:35:16 E
 V X=48:25:47 N 004:28:56 E
 DB 48:25:47 N 004:35:16 E, 48:25:47 N 004:22:36 E
 DP 48:25:47 N 004:22:36 E
-
-AC R
-AN [R] 164 A2 (id=LFR164A2)
-*AAlt [SFC/6500FT AMSL] [0m/1981m]
-*AUID UId=1563013 - Id=LFR164A2
-*ADescr Except for Alsace LF- R 152 when active. Administrator: OCHEY INFO 130.275 or 03 83 52 64 46. GAT IFR/VFR: Authorised after radio contact, follow instructions. Activity known on OCHEY INFO or RAI 130.275.
-*AActiv [HX] Possible activation MON-THU except HOL: 0800-2300 FRI except HOL: 0800-1700 SUM: - 1HR
-*AExSAT Yes
-*AExSUN Yes
-*AExHOL Yes
-AH 6500FT AMSL
-AL SFC
-V D=+
-DP 48:36:49 N 006:36:19 E
-V X=48:31:55 N 006:37:51 E
-DB 48:36:49 N 006:36:19 E, 48:33:19 N 006:30:36 E
-DP 48:33:19 N 006:30:36 E
-V D=-
-V X=48:35:41 N 006:32:36 E
-DB 48:33:19 N 006:30:36 E, 48:36:49 N 006:36:19 E
 
 AC D
 AN [D] BEAUVAIS 1 (TMA / id=LFOB1)

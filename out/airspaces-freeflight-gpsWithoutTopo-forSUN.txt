@@ -1,9 +1,9 @@
 **************************************************
 *     software - (aixmParser v2.12.0) Paragliding-OpenAir-FrenchFiles - http://pascal.bazile.free.fr/paraglidingFolder/divers/GPS/OpenAir-Format/
-*     created - 2020-07-26T22:00:47.883166
+*     created - 2020-07-26T22:00:47.983403
 *     content - airspaces-freeflight
 *     freeFlightMap - True
-*     numberOfAreas - 31
+*     numberOfAreas - 27
 *     srcAixmFile - ../tst/aixm4.5_SIA-FR_map-Airspaces.xml
 *     srcAixmOrigin - BPa
 *     srcAixmVersion - 4.5
@@ -11,36 +11,9 @@
 *     srcAixmEffective - 2019-12-05T00:00:00.000+01:00
 *     --------------------------------------------
 *     /!\Warning - 'Free Flight Map' - Version VFR spécifique Parapente/Deltaplane (zones situées en dessous le niveau FL115 avec filtrage des zones de type 'E, F, G et W')
-*     /!\Warning - 'gpsWithTopo' - Cartographie pour XCsoar / LK8000 / XCTrack / FlyMe / Compass / Syride ; et tout autres appareils/logiciels AVEC Carte-Topographique (en capacité de connaître les altitudes terrain)
+*     /!\Warning - 'gpsWithoutTopo' - Cartographie pour Flytec ou Brauniger ; et tout autres appareils/logiciels SANS Carte-Topographique (n'ayant pas la capacité de connaître les altitudes terrain)
+*     /!\Warning - 'forSUN' - Fichier spécifiquement utilisable les 'SUNday/Dimanches' (dépourvu des zones non-activables 'exceptSUN')
 **************************************************
-
-AC R
-AN [R] 506 A (id=LFR506A)
-*AAlt [SFC/FL115] [0m/3505m]
-*AUID UId=1613148-tst - Id=LFR506A
-*ADescr Administrator: camp de Coëtquidan TEL: 02 97 70 73 85 Except for LF-R 239 COETQUIDAN SUD when active. Sauf SAM, DIM et JF OAT/GAT: Avoidance mandatory throughout activity, except for ACFT flying for Coëtquidan camp. Activity known on: -ARMOR (CCMAR): 124.725 MHz -RAKI INFO: 317.5 MHz, 143.550 MHz - RENNES APP/INFO: 134.0 MHz
-*AActiv [HX] Possible activation H24 except SUN and public HOL
-*AExSAT Yes
-*AExSUN Yes
-*AExHOL Yes
-AH FL115
-AL SFC
-V X=47:57:10 N 002:12:32 W
-DC 3.24
-
-AC R
-AN [R] 506 A (id=LFR506A)
-*AAlt [SFC/3500FT] [0m/1066m]
-*AUID UId=1613148-1 - Id=LFR506A
-*ADescr Administrator: camp de Coëtquidan TEL: 02 97 70 73 85 Except for LF-R 239 COETQUIDAN SUD when active. Sauf SAM, DIM et JF OAT/GAT: Avoidance mandatory throughout activity, except for ACFT flying for Coëtquidan camp. Activity known on: -ARMOR (CCMAR): 124.725 MHz -RAKI INFO: 317.5 MHz, 143.550 MHz - RENNES APP/INFO: 134.0 MHz
-*AActiv [HX] Possible activation H24 except SUN and public HOL
-*AExSAT Yes
-*AExSUN Yes
-*AExHOL Yes
-AH 3500FT AMSL
-AL SFC
-V X=47:57:10 N 002:12:32 W
-DC 3.24
 
 AC R
 AN [R] 506 A (id=LFR506A)
@@ -50,23 +23,9 @@ AN [R] 506 A (id=LFR506A)
 *AActiv [HX] Possible activation H24 except public HOL
 *AExHOL Yes
 AH FL75
-AL 3500FT AGL
+AL 3169FT AMSL
 V X=47:57:10 N 002:12:32 W
 DC 5.0
-
-AC R
-AN [R] 239 (SeeNotam / id=LFR239)
-*AAlt [500FT ASFC/5000FT AMSL] [152m/1524m]
-*AUID UId=17782506 - Id=LFR239
-*ADescr Administrator and NOTAM requester: Flights director (TEL published in the activation NOTAM). GAT/OAT: avoidance mandatory except for aircraft carrying out assistance, rescue or public safety missions, when avoidance is not compatible with the proper execution of these missions, upon flights director's authorisation. Lighting by day: - of the cable by fluorescent red flags every 50 m;  - of the hot air balloon by high intensity flashing lights (1 white, 1 red) Lighting by night of the hot air balloon: - by high intensity flashing lights (1 white, 1 red) - by a DCA spotlight of 1° aperture beam, white coloured. Detection/Identification: - RADAR reflector, transponder 3/A and C (distress code: 7700 in case of cable rupture) Activity known on: - RENNES INFO: 134.000 MHz - ARMOR: 124.725 MHz
-*AActiv [HX] Possible activation H24 by NOTAM PN 24 HR. According to protocol. Sauf SAM, DIM
-*AExSAT Yes
-*AExSUN Yes
-*ASeeNOTAM Yes
-AH 5000FT AMSL
-AL 500FT AGL
-V X=47:56:30 N 002:10:24 W
-DC 1.6
 
 AC R
 AN [R] 278 (id=LFR278)
@@ -74,7 +33,7 @@ AN [R] 278 (id=LFR278)
 *AUID UId=13555652 - Id=LFR278
 *ADescr Administrator: VANNES MEUCON AD operator. Defined except for the interfering part of the LF-R 94 A MEUCON, when active. Radio contact mandatory with VANNES INFO or A/A if no AFIS. Users' information on: - VANNES INFO - NANTES INFO
 *AActiv [H24] H24
-AH 2500FT AGL
+AH 2828FT AMSL
 AL SFC
 DP 47:46:30 N 002:49:14 W
 DP 47:44:28 N 002:34:07 W
@@ -217,26 +176,6 @@ DP 48:25:47 N 004:35:16 E
 V X=48:25:47 N 004:28:56 E
 DB 48:25:47 N 004:35:16 E, 48:25:47 N 004:22:36 E
 DP 48:25:47 N 004:22:36 E
-
-AC R
-AN [R] 164 A2 (id=LFR164A2)
-*AAlt [SFC/6500FT AMSL] [0m/1981m]
-*AUID UId=1563013 - Id=LFR164A2
-*ADescr Except for Alsace LF- R 152 when active. Administrator: OCHEY INFO 130.275 or 03 83 52 64 46. GAT IFR/VFR: Authorised after radio contact, follow instructions. Activity known on OCHEY INFO or RAI 130.275.
-*AActiv [HX] Possible activation MON-THU except HOL: 0800-2300 FRI except HOL: 0800-1700 SUM: - 1HR
-*AExSAT Yes
-*AExSUN Yes
-*AExHOL Yes
-AH 6500FT AMSL
-AL SFC
-V D=+
-DP 48:36:49 N 006:36:19 E
-V X=48:31:55 N 006:37:51 E
-DB 48:36:49 N 006:36:19 E, 48:33:19 N 006:30:36 E
-DP 48:33:19 N 006:30:36 E
-V D=-
-V X=48:35:41 N 006:32:36 E
-DB 48:33:19 N 006:30:36 E, 48:36:49 N 006:36:19 E
 
 AC D
 AN [D] BEAUVAIS 1 (TMA / id=LFOB1)
