@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
 import bpaTools
+import groundEstimatedHeight
 from groundEstimatedHeight import GroundEstimatedHeight
-
 
 if __name__ == '__main__':
     ### Context applicatif
@@ -10,12 +10,14 @@ if __name__ == '__main__':
     linkContext         = "http://pascal.bazile.free.fr/paraglidingFolder/divers/GPS/OpenAir-Format/"
     appName             = "groundEstimatedHeight"                   #or your app name
     appPath             = bpaTools.getFilePath(__file__)            #or your app path
-    appVersion          = "1.2.0"                                   #or your app version
+    appVersion          = groundEstimatedHeight.appVersion          #or your app version
     appId               = appName + " v" + appVersion
     
     if True:            #For map only 
-        outPath         = appPath + "../../poaff/output/SIA/"          
-        headFileName    = "SIA@"
+        #outPath         = appPath + "../../poaff/output/SIA/"
+        #headFileName    = "SIA@"
+        outPath         = appPath + "../../poaff/output/Tests/"         
+        headFileName    = "BPa-Test4Clean@"
     else:
         outPath         = appPath + "../out/"
         headFileName    = ""

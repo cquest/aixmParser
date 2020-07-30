@@ -9,11 +9,14 @@ import srtm
 #from copy import deepcopy
 
 
+errNoArea = [-999, -999, -999, -999]
+
+
 ### Context applicatif
 bpaTools.ctrlPythonVersion()
 appName     = bpaTools.getFileName(__file__)
 appPath     = bpaTools.getFilePath(__file__)
-appVersion  = "1.4.0"
+appVersion  = "1.5.0"
 appId       = appName + " v" + appVersion
 outPath     = appPath + "../out/"
 srcPath     = outPath
@@ -74,7 +77,7 @@ class GroundEstimatedHeight:
         return oZone[self.sGeom][self.sCoor][0]
 
 
-    def getGroundEstimatedHeight(self, oZone):
+    def getGroundEstimatedHeight(self, oZone) -> list:
         oCoordinates = self.getCoordinates(oZone)
         if not isinstance(oCoordinates, list):
             #self.oLog.critical("float err: No coordinates found {}".format(oZone))
@@ -165,7 +168,7 @@ class GroundEstimatedHeight:
         geoJSON.append({"type":"Feature", "properties":prop, "geometry":{"type":"LineString", "coordinates":line}})
         #self.oLog.info("geoJSON=\n{}".format(str(geoJSON).replace(chr(39),chr(34))), outConsole=False)
         
-        return lAltRet, geoJSON
+        return [lAltMin,lAltMed,lAltRet,lAltMax], geoJSON
 
 
     def parseUnknownGroundHeightRef(self) -> None:
@@ -244,12 +247,12 @@ class GroundEstimatedHeight:
                     #Valid area control (exclude the single point or line)
                     if oZone[self.sGeom]["type"] in ["Point","LineString"]:
                         #del oNewUnknownContent[sZoneUId]                                           #Remove area in new repositoy
-                        oGroundEstimatedHeight.update({sDestKey:-99})
+                        oGroundEstimatedHeight.update({sDestKey:errNoArea})
                     else:
-                        lGroundEstimatedHeight, objJSON = self.getGroundEstimatedHeight(oZone)      #Détermine la hauteur sol moyenne (dessous la zone)
+                        aGroundEstimatedHeight, objJSON = self.getGroundEstimatedHeight(oZone)      #Détermine la hauteur sol moyenne (dessous la zone)
                         if objJSON!={}:
-                            oGroundEstimatedHeight.update({sDestKey:lGroundEstimatedHeight})         #Ajoute un point d'entrée attendu
-                            #sMsg = "Update Reference Data: sZoneUId={0} - key={1} - {2}m".format(sZoneUId, sDestKey, lGroundEstimatedHeight)
+                            oGroundEstimatedHeight.update({sDestKey:aGroundEstimatedHeight})         #Ajoute un point d'entrée attendu
+                            #sMsg = "Update Reference Data: sZoneUId={0} - key={1} - {2}m".format(sZoneUId, sDestKey, aGroundEstimatedHeight)
                             #self.oLog.info(sMsg, outConsole=False)
                             for g in objJSON:
                                 geoJSON.append(g)
