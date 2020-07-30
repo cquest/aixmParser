@@ -177,7 +177,6 @@ class Aixm2json4_5:
         geom = {"type":"Point", "coordinates":self.oCtrl.oAixmTools.geo2coordinates(gsd)}
         return {"type":"Feature", "properties":prop, "geometry":geom}
 
-
     def parseGeographicBorders(self) -> None:
         sTitle = "Geographic borders"
         sXmlTag = "Gbr"
@@ -217,13 +216,11 @@ class Aixm2json4_5:
         geom = {"type":"LineString", "coordinates":g}
         return ({"type":"Feature", "properties":prop, "geometry":geom}, l)
 
-
     def findJsonObjectAirspacesBorders(self, sAseUid) -> dict:
         for o in self.geoAirspaces:
             if o["properties"]["UId"]==sAseUid:
                 return o["geometry"]
         return None
-
 
     def parseAirspacesBorders(self, airspacesCatalog) -> None:
         self.oAirspacesCatalog = airspacesCatalog
@@ -392,8 +389,8 @@ class Aixm2json4_5:
             oZone = o["properties"]
             idx+=1
             include = not oZone["groupZone"]                         #Ne pas traiter les zones de type 'Regroupement'
-            if include and ("excludeAirspaceNotCoord" in oZone):     #Ne pas traiter les zones qui n'ont pas de coordonnées geometriques
-                include = not oZone["excludeAirspaceNotCoord"]
+            #if include and ("excludeAirspaceNotCoord" in oZone):     #Ne pas traiter les zones qui n'ont pas de coordonnées geometriques
+            #    include = not oZone["excludeAirspaceNotCoord"]
             if include:
                 include = False
                 if   context=="all":                              include = True
@@ -427,20 +424,18 @@ class Aixm2json4_5:
 
             #Flag all not valid area
             oGeom:dict = o["geometry"]                              #Sample - "geometry": {"type": "Polygon", "coordinates": [[[3.069444, 45.943611], [3.539167, 45.990556], ../..
-            if oGeom["type"] in ["Point"]:
-                if len(oGeom["coordinates"])==0:
-                    oZone.update({"excludeAirspaceNotCoord":True})       #Flag this change in catalog
-                    lNbChange+=1
+            if oGeom["type"] in ["Point"] and oGeom["coordinates"]==errLocalisationPoint:
+                oZone.update({"excludeAirspaceNotCoord":True})       #Flag this change in catalog
+                lNbChange+=1
 
-            if oZone["freeFlightZone"]:
-                if oGeom["type"] in ["Point","LineString"]:     exclude=True
-                elif len(oGeom["coordinates"][0])<3:            exclude=True
-                else:                                           exclude=False
-                if exclude:
-                    #self.oAirspacesCatalog.changePropertyInAirspacesCalalog(oZone["UId"], "freeFlightZone", False)  #Change in global repository
-                    oZone.update({"freeFlightZone":False})            #Change value in catalog
-                    oZone.update({"excludeAirspaceNotFfArea":True})     #Flag this change in catalog
-                    lNbChange+=1
+            #if oZone["freeFlightZone"]:
+            if oGeom["type"] in ["Point","LineString"]:     exclude=True
+            elif len(oGeom["coordinates"][0])<3:            exclude=True
+            else:                                           exclude=False
+            if exclude:
+                oZone.update({"freeFlightZone":False})            #Change value in catalog
+                oZone.update({"excludeAirspaceNotFfArea":True})     #Flag this change in catalog
+                lNbChange+=1
             barre.update(idx)
         barre.reset()
 

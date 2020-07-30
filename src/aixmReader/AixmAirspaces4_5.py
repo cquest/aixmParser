@@ -14,7 +14,7 @@ def convertJsonCalalogToCSV(cat) -> str:
         if isinstance(val, dict):
             for key2,val2 in val.items():
                 csvCol += '{0};'.format(key2)
-                csvVal += '{0};'.format(val2)            
+                csvVal += '{0};'.format(val2)
         else:
             csvCol += '{0};'.format(key)
             csvVal += '{0};'.format(val)
@@ -22,7 +22,7 @@ def convertJsonCalalogToCSV(cat) -> str:
 
     #Phase 2.2 : Construct a global index on columns (collect all columns in contents for complete header of CSV file...)
     #oCols avec initialisation d'une table d'index avec imposition de l'ordonnancement de colonnes choisies
-    oCols = {"zoneType":0, "groupZone":0, "vfrZone":0, "freeFlightZone":0, "excludeAirspaceNotCoord":0, "excludeAirspaceNotFfArea":0, "excludeAirspaceByFilter":0, "excludeAirspaceByAlt":0, "excludeAirspaceByRef":0, "potentialFilter4FreeFlightZone":0, "orgName":0, "UId":0, "id":0, "srcClass":0, "srcType":0, "srcName":0, "class":0, "type":0, "localType":0, "codeActivity":0, "name":0, "groundEstimatedHeight":0, "ordinalLowerM":0, "lowerM":0, "ordinalUpperM":0, "upperM":0, "nameV":0, "alt":0, "altM":0, "altV":0, "exceptSAT":0, "exceptSUN":0, "exceptHOL":0, "seeNOTAM":0}
+    oCols = {"zoneType":0, "groupZone":0, "vfrZone":0, "freeFlightZone":0, "excludeAirspaceNotCoord":0, "excludeAirspaceNotFfArea":0, "excludeAirspaceByFilter":0, "excludeAirspaceByAlt":0, "excludeAirspaceByRef":0, "potentialFilter4FreeFlightZone":0, "orgName":0, "keySrcFile":0, "GUId":0, "UId":0, "id":0, "srcClass":0, "srcType":0, "srcName":0, "class":0, "type":0, "localType":0, "codeActivity":0, "name":0, "groundEstimatedHeight":0, "ordinalLowerM":0, "lowerM":0, "ordinalUpperM":0, "upperM":0, "nameV":0, "alt":0, "altM":0, "altV":0, "exceptSAT":0, "exceptSUN":0, "exceptHOL":0, "seeNOTAM":0}
     oCatalog = cat["catalog"]
     for key0,val0 in oCatalog.items():
         for key1,val1 in val0.items():
@@ -63,7 +63,6 @@ class AixmAirspaces4_5:
         self.cleanAirspacesCalalog=False
         return
 
-
     def loadRefFiles(self) -> None:
         self.referentialsPath = self.oCtrl.sOutPath + "referentials/"  #Referentials folder
         bpaTools.createFolder(self.referentialsPath)                    #Init dossier si besoin
@@ -84,7 +83,6 @@ class AixmAirspaces4_5:
         self.oExcludeFilter4FreeFlightZone = self.loadRefFileData(self.sExcludeFilter4FreeFlightZoneFileName)
         return
 
-
     def loadRefFileData(self, sFileName:str) -> dict:
         oJson = bpaTools.readJsonFile(sFileName)
         if "referential" in oJson:
@@ -94,7 +92,6 @@ class AixmAirspaces4_5:
             return dstObject
         else:
             return {}
-
 
     #Controle de cohérence croisée des contenus de référentiels dans le catalogue généré
     def ctrlReferentialContent(self) -> None:
@@ -108,7 +105,6 @@ class AixmAirspaces4_5:
                 self.oCtrl.oLog.warning(sMsg, outConsole=False)
         return
 
-
     #Recherche de présence d'une zone dans le catalogue par le contenu de propriétés
     def findAirspaceByFunctionalKey(self, sFindKey:str) -> bool:
         for oProp in self.oAirspaces.values():
@@ -117,7 +113,6 @@ class AixmAirspaces4_5:
             sKey = self.oCtrl.oAixmTools.getAirspaceFunctionalKey(oProp)
             if sKey == sFindKey:
                 return True
-
 
     def initAirspacesCatalogIdx(self):
         sTitle = "Airspaces Groups"
@@ -211,19 +206,19 @@ class AixmAirspaces4_5:
         else:
             return False
 
-    def getGroundEstimatedHeight(self, theAirspace:dict) -> int:
+    def getGroundEstimatedHeight(self, theAirspace:dict) -> list:
         if not theAirspace["vfrZone"]:
-            return 0
+            return [0,0,0,0]
         sKey = self.oCtrl.oAixmTools.getAirspaceFunctionalKey(theAirspace)
-        lValue = None
+        aValue:list = None
         if sKey in self.oGroundEstimatedHeight:
-            lValue = self.oGroundEstimatedHeight[sKey]                                  #Extract value of Ground Estimated Height
-        if lValue==None:
-            lValue = 0
+            aValue = self.oGroundEstimatedHeight[sKey]                                  #Extract value of Ground Estimated Height
+        if aValue==None:
+            aValue = [0,0,0,0]
             self.oUnknownGroundHeight.update({theAirspace["UId"]:sKey})                 #Ajoute un point d'entrée attendu
             if theAirspace["freeFlightZone"]:
                 self.oCtrl.oLog.warning("Missing Ground Estimated Height UId={0} - Key={1}".format(theAirspace["UId"], sKey), outConsole=False)
-        return lValue
+        return aValue
 
     def createAirspacesCatalog(self, sFilename:str) -> dict:
         ret = {"type":"Aeronautical areas catalog", "headerFile":self.oCtrl.oAixmTools.getJsonPropHeaderFile(sFilename), "catalog":self.oAirspaces}
@@ -362,7 +357,7 @@ class AixmAirspaces4_5:
             theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"srcName":ase.txtName.string})
         else:
             theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"srcName":""})
-            
+
         if ase.codeActivity:    theCodeActivity = ase.codeActivity.string
         else:                   theCodeActivity = None
 
@@ -394,7 +389,7 @@ class AixmAirspaces4_5:
             elif classZone=="G" and typeZone=="D-OTHER":  #D-OTHER [Activities of dangerous nature (other than a Danger Area).] --> BIRD AREA, GLIDER AREA etc../..
                 classZone="Q"           #Q = Danger area in Openair format
                 typeZone=classZone
-                
+
         else:
             classZone = ase.AseUid.codeType.string
 
@@ -471,11 +466,11 @@ class AixmAirspaces4_5:
         elif localTypeZone=="AER" and (typeZone in ["Q"]):
             typeZone=localTypeZone
         elif localTypeZone=="TRPLA" and (typeZone in ["Q"]):
-            typeZone=localTypeZone      
+            typeZone=localTypeZone
         elif localTypeZone=="BAL" and theCodeActivity==None:
             theCodeActivity="BALLOON"
         elif localTypeZone=="TRVL" and (typeZone in ["Q"]):
-        #    classZone="{SpecFilter}"     
+        #    classZone="{SpecFilter}"
             typeZone=localTypeZone
         elif localTypeZone=="SUR" and (typeZone in ["Q"]):
         #    classZone="{SpecFilter}"
@@ -683,10 +678,10 @@ class AixmAirspaces4_5:
             if ase.codeDistVerUpper:         #Parfois non précisé dans les fichiers aixm du SIA
                 bFlag = bFlag or bool(ase.codeDistVerUpper.string == "HEI")
             if bFlag:
-                lGroundEstimatedHeight = self.getGroundEstimatedHeight(theAirspace)
-                if lGroundEstimatedHeight>0:
-                    theAirspace.update({"groundEstimatedHeight": lGroundEstimatedHeight})
-                    low, up = self.setAltitudeZone(sZoneUId, ase, theAirspace, lGroundEstimatedHeight)
+                aGroundEstimatedHeight:list = self.getGroundEstimatedHeight(theAirspace)
+                if aGroundEstimatedHeight[3]>0:    #Ctrl lAltMax
+                    theAirspace.update({"groundEstimatedHeight": aGroundEstimatedHeight})
+                    low, up = self.setAltitudeZone(sZoneUId, ase, theAirspace, aGroundEstimatedHeight)
             #else:
             #    del theAirspace["groundEstimatedHeight"]  #Suppression de la propriété qui est inutile
 
@@ -809,7 +804,7 @@ class AixmAirspaces4_5:
         return
 
 
-    def setAltitudeZone(self, sZoneUId, ase, theAirspace, lGroundEstimatedHeight=0):
+    def setAltitudeZone(self, sZoneUId, ase, theAirspace, aGroundEstimatedHeight=[0,0,0,0]):
 
         #ase.uomDistVerLower, ase.uomDistVerUpper or UOM_DIST_VER format:
         #    FT [Feet.]
@@ -824,10 +819,10 @@ class AixmAirspaces4_5:
         #   Pressure difference
         #       STD [The altimeter setting is set to standard atmosphere]
         #       QFE [The pressure corrected to the official station/aerodrome elevation]
-        sZoneAlt = sZoneAlt_m = sZoneAlt_a = "["
-
+        
         #Détermination du plancher de la zone
-        low=0
+        sZoneAltL = sZoneAltL_m = sZoneAltL_a = ""
+        low = orgLow = 0
         if ase.uomDistVerLower is not None:
             if ase.codeDistVerLower is None:
                 if ase.valDistVerLower.string == "0":
@@ -844,58 +839,59 @@ class AixmAirspaces4_5:
             if ase.uomDistVerLower.string == "FL":
                 low = int(float(ase.valDistVerLower.string) * aixmReader.CONST.ft * 100)
                 if low == 0:
-                    sTmp = "SFC"
+                    sTmpLow = "SFC"
                 else:
                     if lowType == "":
-                        sTmp = "{0}{1}".format(ase.uomDistVerLower.string, ase.valDistVerLower.string)
+                        sTmpLow = "{0}{1}".format(ase.uomDistVerLower.string, ase.valDistVerLower.string)
                     else:
-                        sTmp = "{0}{1} {2}".format(ase.uomDistVerLower.string, ase.valDistVerLower.string, lowType)
+                        sTmpLow = "{0}{1} {2}".format(ase.uomDistVerLower.string, ase.valDistVerLower.string, lowType)
                     if ase.codeDistVerLower.string == "HEI":
-                        theAirspace.update({"ordinalLowerM": low})
-                        low += lGroundEstimatedHeight
-                sZoneAlt   +=  "{0}".format(sTmp)
-                sZoneAlt_m += "{0}m".format(low)
-                sZoneAlt_a += "{0}({1}m)".format(sTmp, low)
+                        orgLow = low
+                        theAirspace.update({"ordinalLowerM": orgLow})
+                        low += aGroundEstimatedHeight[1]    #=lAltMed
+                sZoneAltL   =  "{0}".format(sTmpLow)
+                sZoneAltL_m = "{0}m".format(low)
+                sZoneAltL_a = "{0}({1}m)".format(sTmpLow, low)
             elif ase.uomDistVerLower.string == "FT":
                 low = int(float(ase.valDistVerLower.string) * aixmReader.CONST.ft)
                 if low == 0:
-                    sTmp = "SFC"
+                    sTmpLow = "SFC"
                 else:
                     if lowType == "":
-                        sTmp = "{0}{1}".format(ase.valDistVerLower.string, ase.uomDistVerLower.string)
+                        sTmpLow = "{0}{1}".format(ase.valDistVerLower.string, ase.uomDistVerLower.string)
                     else:
-                        sTmp = "{0}{1} {2}".format(ase.valDistVerLower.string, ase.uomDistVerLower.string, lowType)
+                        sTmpLow = "{0}{1} {2}".format(ase.valDistVerLower.string, ase.uomDistVerLower.string, lowType)
                     if ase.codeDistVerLower.string == "HEI":
-                        theAirspace.update({"ordinalLowerM": low})
-                        low += lGroundEstimatedHeight
-                sZoneAlt   += "{0}".format(sTmp)
-                sZoneAlt_m += "{0}m".format(low)
-                sZoneAlt_a += "{0}({1}m)".format(sTmp, low)
+                        orgLow = low
+                        theAirspace.update({"ordinalLowerM": orgLow})
+                        low += aGroundEstimatedHeight[1]    #=lAltMed
+                sZoneAltL   = "{0}".format(sTmpLow)
+                sZoneAltL_m = "{0}m".format(low)
+                sZoneAltL_a = "{0}({1}m)".format(sTmpLow, low)
             elif ase.uomDistVerLower.string in ["M", "SM"]:
                 low = int(ase.valDistVerLower.string)
                 if low == 0:
-                    sTmp = "SFC"
+                    sTmpLow = "SFC"
                 else:
                     if lowType == "":
-                        sTmp = "{0}M".format(ase.valDistVerLower.string)
+                        sTmpLow = "{0}M".format(ase.valDistVerLower.string)
                     else:
-                        sTmp = "{0}M {1}".format(ase.valDistVerLower.string, lowType)
+                        sTmpLow = "{0}M {1}".format(ase.valDistVerLower.string, lowType)
                     if ase.codeDistVerLower.string == "HEI":
-                        theAirspace.update({"ordinalLowerM": low})
-                        low += lGroundEstimatedHeight
-                        sZoneAlt_m += "{0}m".format(low)
-                sZoneAlt   += "{0}".format(sTmp)
-                sZoneAlt_m += "{0}m".format(low)
-                sZoneAlt_a += "{0}({1}m)".format(sTmp, low)
+                        orgLow = low
+                        theAirspace.update({"ordinalLowerM": orgLow})
+                        low += aGroundEstimatedHeight[1]    #=lAltMed
+                        sZoneAltL_m += "{0}m".format(low)
+                sZoneAltL   = "{0}".format(sTmpLow)
+                sZoneAltL_m = "{0}m".format(low)
+                sZoneAltL_a = "{0}({1}m)".format(sTmpLow, low)
             if low is None:
                self.oCtrl.oLog.error("low is None: id={0} NameV={1} Lower={2}".format(sZoneUId, theAirspace["nameV"], ase.valDistVerLower.string), outConsole=True)
                low=0
 
-        sZoneAlt   += "/"
-        sZoneAlt_m += "/"
-        sZoneAlt_a += "/"
-
         #Détermination du plafond de la zone
+        sZoneAltU = sZoneAltU_m = sZoneAltU_a = ""
+        up = orgUp = 0
         if ase.uomDistVerUpper is not None:
             if ase.codeDistVerUpper is None:
                 if ase.valDistVerUpper.string == "0":
@@ -912,52 +908,85 @@ class AixmAirspaces4_5:
             if ase.uomDistVerUpper.string == "FL":
                 up = int(float(ase.valDistVerUpper.string) * aixmReader.CONST.ft * 100)
                 if upType == "":
-                    sTmp = "{0}{1}".format(ase.uomDistVerUpper.string, ase.valDistVerUpper.string)
+                    sTmpUp = "{0}{1}".format(ase.uomDistVerUpper.string, ase.valDistVerUpper.string)
                 else:
-                    sTmp = "{0}{1} {2}".format(ase.uomDistVerUpper.string, ase.valDistVerUpper.string, upType)
+                    sTmpUp = "{0}{1} {2}".format(ase.uomDistVerUpper.string, ase.valDistVerUpper.string, upType)
                 if ase.codeDistVerUpper.string == "HEI":
-                    theAirspace.update({"ordinalUpperM": up})
-                    up += lGroundEstimatedHeight
-                sZoneAlt   += sTmp
-                sZoneAlt_m += "{0}m".format(up)
-                sZoneAlt_a += "{0}({1}m)".format(sTmp, up)
+                    orgUp = up
+                    theAirspace.update({"ordinalUpperM": orgUp})
+                    up += aGroundEstimatedHeight[2]    #=lAltRet
+                sZoneAltU   = sTmpUp
+                sZoneAltU_m = "{0}m".format(up)
+                sZoneAltU_a = "{0}({1}m)".format(sTmpUp, up)
             elif ase.uomDistVerUpper.string == "FT":
                 up = int(float(ase.valDistVerUpper.string) * aixmReader.CONST.ft)
                 if upType == "":
-                    sTmp = "{0}{1}".format(ase.valDistVerUpper.string, ase.uomDistVerUpper.string)
+                    sTmpUp = "{0}{1}".format(ase.valDistVerUpper.string, ase.uomDistVerUpper.string)
                 else:
-                    sTmp = "{0}{1} {2}".format(ase.valDistVerUpper.string, ase.uomDistVerUpper.string, upType)
+                    sTmpUp = "{0}{1} {2}".format(ase.valDistVerUpper.string, ase.uomDistVerUpper.string, upType)
                 if ase.codeDistVerUpper.string == "HEI":
-                    theAirspace.update({"ordinalUpperM": up})
-                    up += lGroundEstimatedHeight
-                sZoneAlt   += sTmp
-                sZoneAlt_m += "{0}m".format(up)
-                sZoneAlt_a += "{0}({1}m)".format(sTmp, up)
+                    orgUp = up
+                    theAirspace.update({"ordinalUpperM": orgUp})
+                    up += aGroundEstimatedHeight[2]    #=lAltRet
+                sZoneAltU   = sTmpUp
+                sZoneAltU_m = "{0}m".format(up)
+                sZoneAltU_a = "{0}({1}m)".format(sTmpUp, up)
             elif ase.uomDistVerUpper.string in ["M", "SM"]:
                 up = int(ase.valDistVerUpper.string)
                 if upType == "":
-                    sTmp = "{0}M".format(ase.valDistVerUpper.string)
+                    sTmpUp = "{0}M".format(ase.valDistVerUpper.string)
                 else:
-                    sTmp = "{0}M {2}".format(ase.valDistVerUpper.string, upType)
+                    sTmpUp = "{0}M {2}".format(ase.valDistVerUpper.string, upType)
                 if ase.codeDistVerUpper.string == "HEI":
-                    theAirspace.update({"ordinalUpperM": up})
-                    up += lGroundEstimatedHeight
-                sZoneAlt   += "{0}".format(sTmp)
-                sZoneAlt_m += "{0}m".format(up)
-                sZoneAlt_a += "{0}({1}m)".format(sTmp, up)
+                    orgUp = up
+                    theAirspace.update({"ordinalUpperM": orgUp})
+                    up += aGroundEstimatedHeight[2]    #=lAltRet
+                sZoneAltU   = "{0}".format(sTmpUp)
+                sZoneAltU_m = "{0}m".format(up)
+                sZoneAltU_a = "{0}({1}m)".format(sTmpUp, up)
             if up is None:
                 self.oCtrl.oLog.error("up is None: id={0} NameV={1} Upper={2}".format(sZoneUId, theAirspace["nameV"], ase.valDistVerUpper.string), outConsole=True)
                 up=99999
 
-        sZoneAlt   += "]"
-        sZoneAlt_m += "]"
-        sZoneAlt_a += "]"
+        #Verrification de conformité des altitudes
+        if up <= low:
+            #Correction de l'altitude après analyse via référentiel
+            if       ("ordinalLowerM" in theAirspace) and     ("ordinalUpperM" in theAirspace):
+                low = orgLow + aGroundEstimatedHeight[0]    #=lAltMin
+                if up <= low:
+                    up = orgUp + aGroundEstimatedHeight[3]    #=lAltMax
+                if up <= low:
+                    low=0
+                    self.oCtrl.oLog.warning("Forced height reset: Upper <= Lower; up={0} low={1} for id={2} NameV={3}".format(up, low, sZoneUId, theAirspace["name"]), outConsole=False)
+                sZoneAltL_m = "{0}m".format(low)
+                sZoneAltL_a = "{0}({1}m)".format(sTmpLow, low)
+                sZoneAltU_m = "{0}m".format(up)
+                sZoneAltU_a = "{0}({1}m)".format(sTmpUp, up)
+            elif     ("ordinalLowerM" in theAirspace) and not ("ordinalUpperM" in theAirspace):
+                low = orgLow + aGroundEstimatedHeight[0]    #=lAltMin
+                if up <= low:
+                    low=0
+                    self.oCtrl.oLog.warning("Forced height reset: Upper <= Lower; up={0} low={1} for id={2} NameV={3}".format(up, low, sZoneUId, theAirspace["name"]), outConsole=False)
+                sZoneAltL_m = "{0}m".format(low)
+                sZoneAltL_a = "{0}({1}m)".format(sTmpLow, low)
+            else:
+                self.oCtrl.oLog.error("Height error: Upper <= Lower; up={0} low={1} for id={2} NameV={3}".format(up, low, sZoneUId, theAirspace["name"]), outConsole=True)
 
+        sZoneAlt    = "[" + sZoneAltL   + "/" + sZoneAltU   + "]"
+        sZoneAlt_m  = "[" + sZoneAltL_m + "/" + sZoneAltU_m + "]"
+        sZoneAlt_a  = "[" + sZoneAltL_a + "/" + sZoneAltU_a + "]"
+        
         #Formatage des Plancher/Plafonnd de zone
+        if ("ordinalUpperM" in theAirspace):
+            theAirspace.update({"ordinalUpperM": theAirspace["ordinalUpperM"]})
+        if ("ordinalLowerM" in theAirspace):
+            theAirspace.update({"ordinalLowerM": theAirspace["ordinalLowerM"]})
+        if ("ordinalLowerM" in theAirspace) or ("ordinalUpperM" in theAirspace):
+            theAirspace.update({"groundEstimatedHeight": aGroundEstimatedHeight})
         theAirspace.update({"upperM": up})
         theAirspace.update({"lowerM": low})
         theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"alt"  :sZoneAlt})
         theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"altM":sZoneAlt_m})
         theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"altV":sZoneAlt_a})      #Altitute complète (type V=Verbose)
-
+        
         return low, up

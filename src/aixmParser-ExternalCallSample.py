@@ -15,9 +15,10 @@ if __name__ == '__main__':
     logFile             = outPath + "_" + appName + ".log"
     bpaTools.createFolder(outPath)                                  #Init dossier de sortie
     
-    
+
     ####  Source test file  ####
     srcFile = "../tst/aixm4.5_SIA-FR_map-Airspaces.xml"
+    srcFile = "../../poaff/input/BPa/99999999_BPa_Test4CleaningCatalog_aixm45.xml"
     #srcFile = "../../poaff/input/EuCtrl/20200618_aixm4.5_Eurocontrol-FR.xml"
     #srcFile = "../../poaff/input/FFVP/20200704_FFVP_ParcsNat_BPa_aixm45.xml"
     

@@ -4,6 +4,7 @@ import bpaTools
 from shapely.geometry import LineString, Point
 import aixmReader
 
+errLocalisationPoint:list = ["DP 45:00:00 N 005:00:00 W"]
 
 class Aixm2openair:
 
@@ -94,6 +95,7 @@ class Aixm2openair:
                     sAseUidBase = self.oAirspacesCatalog.findZoneUIdBase(sAseUid)           #Identifier la zone de base (de référence)
                     if sAseUidBase==None:
                         self.oCtrl.oLog.warning("Missing Airspaces Borders AseUid={0} of {1}".format(sAseUid, oZone["nameV"]), outConsole=False)
+                        self.geoAirspaces.append({"type":"Openair", "properties":oZone, "geometry":errLocalisationPoint})
                     else:
                         openair = self.findOpenairObjectAirspacesBorders(sAseUidBase)       #Recherche si la zone de base a déjà été parsé
                         if openair:
@@ -102,6 +104,7 @@ class Aixm2openair:
                             oBorder = self.oAirspacesCatalog.findAixmObjectAirspacesBorders(sAseUidBase)
                             if oBorder==None:
                                 self.oCtrl.oLog.warning("Missing Airspaces Borders AseUid={0} AseUidBase={1} of {2}".format(sAseUid, sAseUidBase, oZone["nameV"]), outConsole=False)
+                                self.geoAirspaces.append({"type":"Openair", "properties":oZone, "geometry":errLocalisationPoint})
                             else:
                                 self.parseAirspaceBorder(oZone, oBorder)
             barre.update(idx)
@@ -240,7 +243,7 @@ class Aixm2openair:
         else:
             return memory
 
-    def saveAirspacesFilter(self, aContext) -> None:
+    def saveAirspacesFilter(self, aContext:list) -> None:
         context = aContext[0]
         if context=="ff":
             self.saveAirspacesFilter2(aContext, "-gpsWithTopo")
@@ -255,7 +258,7 @@ class Aixm2openair:
             self.saveAirspacesFilter2(aContext, "-gpsWithTopo")
         return
 
-    def saveAirspacesFilter2(self, aContext, gpsType="", exceptDay="") -> None:
+    def saveAirspacesFilter2(self, aContext:list, gpsType:str="", exceptDay:str="") -> None:
         context = aContext[0]
         sMsg = "Prepare Openair file - {0} / {1} / {2}".format(aContext[1], gpsType, exceptDay)
         self.oCtrl.oLog.info(sMsg)
@@ -265,14 +268,24 @@ class Aixm2openair:
         for o in self.geoAirspaces:
             oZone = o["properties"]
             idx+=1
-            include = False
-            if not oZone["groupZone"]:                          #Ne pas traiter les zones de type 'Regroupement'
-                if context=="all":                              include = True
-                if context=="ifr" and not oZone["vfrZone"]:     include = True
-                if context=="vfr" and oZone["vfrZone"]:         include = True
-                if context=="ff" and oZone["freeFlightZone"]:   include = True
+            include = not oZone["groupZone"]                            #Ne pas traiter les zones de type 'Regroupement'
+            if include and ("excludeAirspaceNotCoord" in oZone):        #Ne pas traiter les zones qui n'ont pas de coordonnées geometriques
+                include = not oZone["excludeAirspaceNotCoord"]
+            if include:
+                if len(o["geometry"])==1:
+                    #Exclure tout les points fixes - or (oAs.oBorder[0]!=errLocalisationPoint)
+                    include = False
+                elif len(o["geometry"])==2 and o["geometry"][0][:4]!="V X=":
+                    #Exclure les doubles points fixes (DP.. + DP..) mais autoriser les cercles (V X=.. + DP..)
+                   include = False
+                else:
+                    include = False
+                    if context=="all":                                  include = True
+                    elif context=="ifr" and not oZone["vfrZone"]:       include = True
+                    elif context=="vfr" and oZone["vfrZone"]:           include = True
+                    elif context=="ff" and oZone["freeFlightZone"]:     include = True
                 if include==True and exceptDay!="":
-                    if exceptDay in oZone:                      include = False
+                    if exceptDay in oZone:                              include = False
                 if include==True:
                     openair.append(self.makeOpenair(o, gpsType))
             barre.update(idx)
@@ -301,7 +314,7 @@ class Aixm2openair:
     #*		RMZ	Radio Mandatory Zone
     #*		TMZ	Transponder Mandatory Zone
     #*		ZSM	Zone de Sensibilité Majeure (Protection Rapaces, Urubus, etc...)
-    def makeOpenair(self, oAirspace:dict, gpsType) -> list:
+    def makeOpenair(self, oAirspace:dict, gpsType:str) -> list:
         openair = []
         oZone = oAirspace["properties"]
         theClass = oZone["class"]
@@ -316,11 +329,11 @@ class Aixm2openair:
         openair.append("AC {0}".format(theClass))
         openair.append("AN {0}".format(oZone["nameV"]))
         openair.append("*AAlt {0} {1}".format(oZone["alt"], oZone["altM"]))
-        openair.append("*AUID UId={0} - Id={1}".format(oZone["UId"], oZone["id"]))
+        openair.append("*AUID GUId=! UId={0} Id={1}".format(oZone["UId"], oZone["id"]))
         if "desc" in oZone:    openair.append("*ADescr {0}".format(oZone["desc"]))
-        if "activationCode" in oZone and ("activationDesc" in oZone):       openair.append("*AActiv [{0}] {1}".format(oZone["activationCode"], oZone["activationDesc"]))
-        if not("activationCode" in oZone) and "activationDesc" in oZone:    openair.append("*AActiv {0}".format(oZone["activationDesc"]))
-        if "activationCode" in oZone and not ("activationDesc" in oZone):   openair.append("*AActiv [{0}]".format(oZone["activationCode"]))
+        if ("activationCode" in oZone) and ("activationDesc" in oZone):       openair.append("*AActiv [{0}] {1}".format(oZone["activationCode"], oZone["activationDesc"]))
+        if ("activationCode" in oZone) and not ("activationDesc" in oZone):   openair.append("*AActiv [{0}]".format(oZone["activationCode"]))
+        if not("activationCode" in oZone) and ("activationDesc" in oZone):    openair.append("*AActiv {0}".format(oZone["activationDesc"]))
         if "exceptSAT" in oZone:    openair.append("*AExSAT {0}".format(oZone["exceptSAT"]))
         if "exceptSUN" in oZone:    openair.append("*AExSUN {0}".format(oZone["exceptSUN"]))
         if "exceptHOL" in oZone:    openair.append("*AExHOL {0}".format(oZone["exceptHOL"]))
@@ -330,7 +343,7 @@ class Aixm2openair:
         openair += oAirspace["geometry"]
         return openair
 
-    def parseAlt(self, altRef, gpsType, oZone:dict) -> str:
+    def parseAlt(self, altRef:str, gpsType:str, oZone:dict) -> str:
         if altRef=="AH":
             if gpsType=="-gpsWithoutTopo" and ("ordinalUpperM" in oZone):
                 altM = oZone["upperM"]
@@ -390,22 +403,21 @@ class Aixm2openair:
         for o in self.geoAirspaces:
             oZone = o["properties"]
             idx+=1
-            
+
             #Flag all not valid area
             oGeom:dict = o["geometry"]                                  #Sample - "geometry": {"type": "Polygon", "coordinates": [[[3.069444, 45.943611], [3.539167, 45.990556], ../..
             if len(oGeom)==0:
                 oZone.update({"excludeAirspaceNotCoord":True})          #Flag this change in catalog
                 lNbChange+=1
-            
-            if oZone["freeFlightZone"]:
-                if len(oGeom)==1:                               exclude=True
-                elif len(oGeom)==2 and oGeom[0][:4]!="V X=":    exclude=True
-                else:                                           exclude=False
-                if exclude:
-                    #self.oAirspacesCatalog.changePropertyInAirspacesCalalog(oZone["UId"], "freeFlightZone", False)  #Change in global repository
-                    oZone.update({"freeFlightZone":False})              #Change value in catalog
-                    oZone.update({"excludeAirspaceNotFfArea":True})       #Flag this change in catalog
-                    lNbChange+=1
+
+            #if oZone["freeFlightZone"]:
+            if len(oGeom)==1:                               exclude=True
+            elif len(oGeom)==2 and oGeom[0][:4]!="V X=":    exclude=True
+            else:                                           exclude=False
+            if exclude:
+                oZone.update({"freeFlightZone":False})              	#Change value in catalog
+                oZone.update({"excludeAirspaceNotFfArea":True})       	#Flag this change in catalog
+                lNbChange+=1
             barre.update(idx)
         barre.reset()
 

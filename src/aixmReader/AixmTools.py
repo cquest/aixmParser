@@ -13,14 +13,13 @@ from pyproj import Proj, transform
 
 
 class AixmTools:
-    
+
     def __init__(self, oCtrl):
-        bpaTools.initEvent(__file__, oCtrl.oLog)
+        if oCtrl:  bpaTools.initEvent(__file__, oCtrl.oLog)
         self.oCtrl = oCtrl
         #self.pLocal = Proj("epsg:2154")         # EPSG:2154 = RGF93 / Lambert-93 - Projected coordinate system for France) :: Deprecated format --> Proj(init="epsg:2154")
         self.pWGS = Proj("epsg:4326")            # EPSG:4326 = WGS84 / Geodetic coordinate system for World  :: Deprecated format --> Proj(init="epsg:4326")
         return
-
 
     def writeGeojsonFile(self, sFileName, oGeojson, context=""):
         assert(isinstance(sFileName, str))
@@ -42,14 +41,66 @@ class AixmTools:
         self.oCtrl.oLog.info("{0} file {1} - {2} areas in map".format(headMsg, sOutFile, sizeMap), outConsole=True)
         return
 
+    def makeHeaderOpenairFile(self, oHeader, oOpenair, context="", gpsType="", exceptDay="", sAreaKey="") -> str:
+        lLeftMargin:int=3
+        sRet:str=""
+        sizeMap = len(oOpenair)
+        if sizeMap:
+            sRet += "*"*50 + "\n"
+            for oKey, oVal in oHeader.items():
+                if isinstance(oVal, dict):
+                    sRet += "*" + " "*lLeftMargin + "{0}:\n".format(oKey)
+                    for oKey2, oVal2 in oVal.items():
+                        sRet += "*" + " "*2*lLeftMargin + "{0} - {1}\n".format(oKey2, oVal2)
+                else:
+                    sRet += "*" + " "*lLeftMargin + "{0} - {1}\n".format(oKey, oVal)
 
-    def writeOpenairFile(self, sFileName, oOpenair, context="", gpsType="", exceptDay=""):
+            sRet += "*" + " "*lLeftMargin + "-"*44 + "\n"
+
+            if sAreaKey:
+                sRet += "*" + " "*lLeftMargin + "(i)Information - '{0}' - Cartographie avec filtrage géographique des zones aériennes\n".format(sAreaKey, exceptDay)
+                
+            if context=="ifr":
+                sRet += "*" + " "*lLeftMargin + "/!\Warning - 'IFR Map' - Cartographie de l'espace aérien IFR (zones majotitairement situées au dessus du niveau FL115)\n"
+            elif context=="vfr":
+                sRet += "*" + " "*lLeftMargin + "/!\Warning - 'VFR Map' - Cartographie de l'espace aérien VFR (zones situées en dessous le niveau FL115)\n"
+            elif context=="ff":
+                sRet += "*" + " "*lLeftMargin + "/!\Warning - 'Free Flight Map' - Version VFR spécifique Parapente/Deltaplane (zones situées en dessous le niveau FL115 avec filtrage des zones de type 'E, F, G et W')\n"
+            else:
+                sRet += "*" + " "*lLeftMargin + "(i)Information - 'ALL Map' - Cartographie complète de l'espace aérien (IFR + VFR)\n"
+
+            if gpsType=="-gpsWithTopo":
+                gpsSample = "XCsoar / LK8000 / XCTrack / FlyMe / Compass / Syride ; et tout autres appareils/logiciels AVEC Carte-Topographique (en capacité de connaître les altitudes terrain)"
+            elif gpsType=="-gpsWithoutTopo":
+                gpsSample = "Flytec ou Brauniger ; et tout autres appareils/logiciels SANS Carte-Topographique (n'ayant pas la capacité de connaître les altitudes terrain)"
+            else:
+                gpsSample = "???"
+            sRet += "*" + " "*lLeftMargin + "/!\Warning - '{0}' - Cartographie pour {1}\n".format(gpsType[1:], gpsSample)
+
+            if exceptDay:
+                if exceptDay=="exceptSAT":
+                    sDay1 = "SATerday"
+                    sDay2 = "Samedis"
+                elif exceptDay=="exceptSUN":
+                    sDay1 = "SUNday"
+                    sDay2 = "Dimanches"
+                elif exceptDay=="exceptHOL":
+                    sDay1 = "HOLiday"
+                    sDay2 = "Jours-Fériés"
+                ext4exceptDay = exceptDay.replace("except","-for")
+                sRet += "*" + " "*lLeftMargin + "/!\Warning - '{0}' - Fichier spécifiquement utilisable les '{1}/{2}' (dépourvu des zones non-activables '{3}')\n".format(ext4exceptDay[1:], sDay1, sDay2, exceptDay)
+
+            sRet += "*"*50 + "\n\n"
+        return sRet
+
+    def writeOpenairFile(self, sFileName, oOpenair, context="", gpsType="-gpsWithTopo", exceptDay=""):
         assert(isinstance(sFileName, str))
         if sFileName=="airspaces":
             if context=="all":              sFileName = sFileName + "-all"            #Suffixe pour fichier toutes zones
             if context=="ifr":              sFileName = sFileName + "-ifr"            #Suffixe pour fichier Instrument-Fligth-Rules
             if context=="vfr":              sFileName = sFileName + "-vfr"            #Suffixe pour fichier Visual-Fligth-Rules
             if context=="ff":               sFileName = sFileName + "-freeflight"     #Suffixe pour fichier Vol-Libre (Paraglinding/Hanggliding)
+
         ext4exceptDay = exceptDay.replace("except","-for")
         sOutFile = self.oCtrl.sOutHeadFile + sFileName + gpsType + ext4exceptDay + ".txt"
         sizeMap = len(oOpenair)
@@ -57,49 +108,16 @@ class AixmTools:
             headMsg = "Written"
             with open(self.oCtrl.sOutPath + sOutFile, "w", encoding=self.oCtrl.sEncoding) as output:
                 oHeader = self.getJsonPropHeaderFile(sFileName, context, sizeMap)
-                output.write("*"*50 +"\n")
-                for head in oHeader:
-                    output.write("*" + " "*5 + "{0} - {1}\n".format(head, oHeader[head]))
-                output.write("*" + " "*5 + "-"*44 + "\n")
-                
-                if context=="all":
-                    output.write("*" + " "*5 + "(i)Information - 'ALL Map' - Cartographie complète de l'espace aérien (IFR + VFR)\n")
-                elif context=="ifr":
-                    output.write("*" + " "*5 + "/!\Warning - 'IFR Map' - Cartographie de l'espace aérien IFR (zones majotitairement situées au dessus du niveau FL115)\n")
-                elif context=="vfr":
-                    output.write("*" + " "*5 + "/!\Warning - 'VFR Map' - Cartographie de l'espace aérien VFR (zones situées en dessous le niveau FL115)\n")
-                elif context=="ff":
-                    output.write("*" + " "*5 + "/!\Warning - 'Free Flight Map' - Version VFR spécifique Parapente/Deltaplane (zones situées en dessous le niveau FL115 avec filtrage des zones de type 'E, F, G et W')\n")   
-                
-                if gpsType=="-gpsWithTopo":
-                    gpsSample = "XCsoar / LK8000 / XCTrack / FlyMe / Compass / Syride ; et tout autres appareils/logiciels AVEC Carte-Topographique (en capacité de connaître les altitudes terrain)"
-                else:
-                    gpsSample = "Flytec ou Brauniger ; et tout autres appareils/logiciels SANS Carte-Topographique (n'ayant pas la capacité de connaître les altitudes terrain)"
-                output.write("*" + " "*5 + "/!\Warning - '{0}' - Cartographie pour {1}\n".format(gpsType[1:], gpsSample))
-
-                if exceptDay!="":
-                    if exceptDay=="exceptSAT":
-                        sDay1 = "SATerday"
-                        sDay2 = "Samedis"
-                    elif exceptDay=="exceptSUN":
-                        sDay1 = "SUNday"
-                        sDay2 = "Dimanches"
-                    elif exceptDay=="exceptHOL":
-                        sDay1 = "HOLiday"
-                        sDay2 = "Jours-Fériés"                    
-                    output.write("*" + " "*5 + "/!\Warning - '{0}' - Fichier spécifiquement utilisable les '{1}/{2}' (dépourvu des zones non-activables '{3}')\n".format(ext4exceptDay[1:], sDay1, sDay2, exceptDay))
-
-                output.write("*"*50 + "\n\n")
-
+                sHeader:str = self.makeHeaderOpenairFile(oHeader, oOpenair, context, gpsType, exceptDay)
+                output.write(sHeader)
                 for airspace in oOpenair:
                     output.write("\n".join(airspace))
                     output.write("\n\n")
         else:
             headMsg = "Unwritten"
-            
+
         self.oCtrl.oLog.info("{0} file {1} - {2} areas in map".format(headMsg, sOutFile, sizeMap), outConsole=True)
         return
-
 
     def writeJsonFile(self, sPath="", sFileName="", oJson=None):
         if sFileName!="":
@@ -117,13 +135,13 @@ class AixmTools:
             sOutFile = self.oCtrl.sOutHeadFile + sFileName + "." + fileExtention
             self.oCtrl.oLog.info("Written file {0}".format(sOutFile), outConsole=True)
             if sPath=="":
-                sPath = self.oCtrl.sOutPath        
+                sPath = self.oCtrl.sOutPath
             with open(sPath + sOutFile, "w", encoding=self.oCtrl.sEncoding) as output:
                 output.write(oText)
         return
 
-    
-    def getJsonPropHeaderFile(self, sFileName="", context="", sizeMap=0):
+
+    def getJsonPropHeaderFile(self, sFileName="", context="", sizeMap=0) -> dict:
         prop = dict()
         prop.update({"software": self.oCtrl.oLog.getLongName()})
         prop.update({"created": datetime.datetime.now().isoformat()})
@@ -140,43 +158,45 @@ class AixmTools:
             prop.update({"numberOfAreas": sizeMap})
         if "airspaces" in sFileName:
             if self.oCtrl.Draft:
-                prop.update({"draftMode": True})   
+                prop.update({"draftMode": True})
             if self.oCtrl.MakePoints4map:
                 prop.update({"makePoints4map": True})
         if self.oCtrl.oAixm:
-            prop.update({"srcAixmFile":self.oCtrl.srcFile})
-            prop.update({"srcAixmOrigin":self.oCtrl.oAixm.srcOrigin})
-            prop.update({"srcAixmVersion":self.oCtrl.oAixm.srcVersion})
-            prop.update({"srcAixmCreated":self.oCtrl.oAixm.srcCreated})
-            prop.update({"srcAixmEffective":self.oCtrl.oAixm.srcEffective})
+            oFiles:dict = {}
+            oFiles.update({"srcAixmFile":self.oCtrl.srcFile})
+            oFiles.update({"srcAixmOrigin":self.oCtrl.oAixm.srcOrigin})
+            oFiles.update({"srcAixmVersion":self.oCtrl.oAixm.srcVersion})
+            oFiles.update({"srcAixmCreated":self.oCtrl.oAixm.srcCreated})
+            oFiles.update({"srcAixmEffective":self.oCtrl.oAixm.srcEffective})
+            prop.update({"srcFiles":{"1":oFiles}})
         return prop
 
-        
+
     def geo2coordinates(self, o, latitude=None, longitude=None, recurse=True):
         """ codeDatum or CODE_DATUM Format:
-            WGE [WGS-84 (GRS-80).] 
-            WGC [WGS-72.] 
-            EUS [European 1950 (ED 50).] 
-            EUT [European 1979 (ED 79).] 
-            ANS [Austria NS.] 
-            BEL [Belgium 50.] 
-            BRN [Berne 1873.] 
-            CHI [CH-1903.] 
-            DGI [Danish GI 1934.] 
-            IGF [Nouvelle Triangulation de France (Greenwich Zero Meridian).] 
-            POT [Potsdam.] 
-            GRK [GGRS 87 (Greece).] 
-            HJO [Hjorsey 55 (Iceland).] 
-            IRL [Ireland 65.] 
-            ROM [Rome (Italy) 1940.] 
-            IGL [Nouvelle Triangulation de Luxembourg.] 
-            OGB [Ordnance Survey of Great Britain 36.] 
-            DLX [Portugal DLX.] 
-            PRD [Portugal 1973.] 
-            RNB [RNB 72 (Belgium).] 
-            STO [RT90 (Sweden).] 
-            NAS [North American 1927.] 
-            NAW [North American 1983.] 
+            WGE [WGS-84 (GRS-80).]
+            WGC [WGS-72.]
+            EUS [European 1950 (ED 50).]
+            EUT [European 1979 (ED 79).]
+            ANS [Austria NS.]
+            BEL [Belgium 50.]
+            BRN [Berne 1873.]
+            CHI [CH-1903.]
+            DGI [Danish GI 1934.]
+            IGF [Nouvelle Triangulation de France (Greenwich Zero Meridian).]
+            POT [Potsdam.]
+            GRK [GGRS 87 (Greece).]
+            HJO [Hjorsey 55 (Iceland).]
+            IRL [Ireland 65.]
+            ROM [Rome (Italy) 1940.]
+            IGL [Nouvelle Triangulation de Luxembourg.]
+            OGB [Ordnance Survey of Great Britain 36.]
+            DLX [Portugal DLX.]
+            PRD [Portugal 1973.]
+            RNB [RNB 72 (Belgium).]
+            STO [RT90 (Sweden).]
+            NAS [North American 1927.]
+            NAW [North American 1983.]
             U [Other datum or unknown..]
         """
         #Ctrl du référentiel des coordonnées
@@ -188,12 +208,12 @@ class AixmTools:
             sLat = latitude
         else:
             sLat = o.find("geoLat", recursive=recurse).string
-            
+
         if longitude:
             sLon = longitude
         else:
             sLon = o.find("geoLong", recursive=recurse).string
-            
+
         lat, lon = bpaTools.GeoCoordinates.geoStr2dd(sLat, sLon, self.oCtrl.digit4roundPoint)
         return([lon, lat])
 
@@ -205,7 +225,7 @@ class AixmTools:
         if not dstRef in ["NM","M"]:                raise Exception("Invalid input - dstRef")
         if srcRef == dstRef:
             return length
-        
+
         if   dstRef=="M" and srcRef=="NM":
             length = length * aixmReader.CONST.nm
         elif dstRef=="M" and srcRef=="KM":
@@ -220,7 +240,7 @@ class AixmTools:
             length = (length * aixmReader.CONST.ft) / aixmReader.CONST.ft
         else:
             self.oCtrl.oLog.critical("convertLength() error value={0} srcRef={1} srcRef={2}}".format(length, srcRef, dstRef), outConsole=False)
-        
+
         return length
 
 
@@ -247,7 +267,7 @@ class AixmTools:
             return {outputname:ret}
         else:
             if (not optional) and (not self.oCtrl.oLog is None):
-                self.oCtrl.oLog.error("Field not Found in={0} out={1}\n{2}".format(inputname, outputname, o), outConsole=True)    
+                self.oCtrl.oLog.error("Field not Found in={0} out={1}\n{2}".format(inputname, outputname, o), outConsole=True)
         return None
 
 
@@ -307,7 +327,7 @@ class AixmTools:
         prop = self.addField(prop, {"fill-opacity": nFillOpacity})
         return
 
-    
+
     """
     Transformation d'un objet shapely.Point en un tableau simple de coordonnées
     """
@@ -320,7 +340,7 @@ class AixmTools:
     """
     def _getNbrSegment(self, radius):
         assert(isinstance(radius, float))
-        
+
         nbSegments = (2*radius*aixmReader.CONST.pi)/100              #Nombre de segments de 100 mètres (Circonférence/100)
         if nbSegments<40:                           nbSegments = 10 if self.oCtrl.Draft else 40
         elif nbSegments>=40 and nbSegments<300:     nbSegments = nbSegments/4 if self.oCtrl.Draft else nbSegments
@@ -328,7 +348,7 @@ class AixmTools:
         else:                                       nbSegments = nbSegments/10 if self.oCtrl.Draft else nbSegments/2
         return int(nbSegments)
 
-    
+
     """
     Construct array of coords for make Arc or Circle
         Pcenter: center-point of arc = Point([lon,lat]) in float values
@@ -346,7 +366,7 @@ class AixmTools:
             start_angle = start_angle+360
         if (not clockwiseArc) and (stop_angle < start_angle):
             stop_angle  = stop_angle+360
-        
+
         g = []
         numsegments = self._getNbrSegment(radius)
         angles = np.linspace(start_angle, stop_angle, numsegments)
@@ -356,7 +376,7 @@ class AixmTools:
         for o in polygon:
             g.append([round(o[0],self.oCtrl.digit4roundArc), round(o[1],self.oCtrl.digit4roundArc)])
         return g
-    
+
     """
     Construct array of coords for make Arc or Circle
         Pcenter, Pstart and Pstop : Points of arc = Point([lon,lat]) in float values
@@ -368,14 +388,14 @@ class AixmTools:
         assert(isinstance(Pstart, Point))
         assert(isinstance(Pstop, Point))
         assert(isinstance(radius, float))
-        
+
         lonC = Pcenter.x
         latC = Pcenter.y
         lonS = Pstart.x
         latS = Pstart.y
         lonE = Pstop.x
         latE = Pstop.y
-        
+
         # Convert to local meters
         srs = Proj(proj="ortho", lat_0=latC, lon_0=lonC)
         center_x, center_y = transform(p1=self.pWGS, p2=srs, x=latC, y=lonC)
@@ -388,17 +408,17 @@ class AixmTools:
         #Calcul des angles de départ et d'arrivées en degrés
         degStart = math.degrees(math.atan2(start_y-center_y, start_x-center_x))
         degStop  = math.degrees(math.atan2(stop_y-center_y, stop_x-center_x))
-        
+
         g = self.make_arc(Pcenter, radius, degStart, degStop, clockwiseArc)
-        
+
         #Ajout complémentaire des points Start et Stop afin de que "le Polygon" finale se referme parfaitement
         if g[0][0]!=Pstart.x or g[0][1]!=Pstart.y:
             g.insert(0, [Pstart.x, Pstart.y])
         if g[-1][0]!=Pstop.x or g[-1][1]!=Pstop.y:
             g.append([Pstop.x, Pstop.y])
 
-        return g    
-    
+        return g
+
     """
     Construct array of coords for make Arc or Circle
         Pcenter and Pstart : Points of arc = Point([lon,lat]) in float values
@@ -411,7 +431,7 @@ class AixmTools:
         assert(isinstance(radius, float))
         assert(isinstance(start_angle, float))
         assert(isinstance(stop_angle, float))
-        
+
         if radius==0:
             lonC = Pcenter.x
             latC = Pcenter.y
@@ -422,15 +442,15 @@ class AixmTools:
             center_x, center_y = transform(p1=self.pWGS, p2=srs, x=latC, y=lonC)
             start_x, start_y = transform(p1=self.pWGS, p2=srs, x=latS, y=lonS)
             radius = math.sqrt(start_x**2+start_y**2)
-            
+
         g = self.make_arc(Pcenter, radius, start_angle, stop_angle)
-        
+
         #Ajout complémentaire du point Start afin de que le Polygon soit parfaitement fermer
         if g[0][0]!=Pstart.x or g[0][1]!=Pstart.y:
             g.insert(0, [Pstart.x, Pstart.y])
 
-        return g   
-        
+        return g
+
     """
     Construction d'un Point sous geojson
     """
@@ -445,7 +465,7 @@ class AixmTools:
         #ret = {"type":"FeatureCollection", "features":geom}
         #print(str(ret).replace(chr(39),chr(34)))
         return geom
-    
+
     """
     Construction des axes x/y pour marquer le positionnement d'un Point sous geojson
     """
@@ -465,7 +485,7 @@ class AixmTools:
         g = {"type":"LineString", "coordinates":g}
         geom.append({"type":"Feature", "properties":{"name": "lineY"}, "geometry":g})
         return
-    
+
     """
     Return a line segment between specified distances along a linear geometry.
     Negative distance values are taken as measured in the reverse
@@ -476,32 +496,32 @@ class AixmTools:
     fraction of the geometry's length.
     from shapely 1.7
     """
-    def substring(self, geom, start_dist, end_dist, normalized=False): 
+    def substring(self, geom, start_dist, end_dist, normalized=False):
         assert(isinstance(geom, LineString))
         assert(isinstance(start_dist, float))
         assert(isinstance(end_dist, float))
-        
+
         # Filter out cases in which to return a point
         if start_dist == end_dist:
             return geom.interpolate(start_dist, normalized)
         elif not normalized and start_dist >= geom.length and end_dist >= geom.length:
             return geom.interpolate(geom.length, normalized)
         elif not normalized and -start_dist >= geom.length and -end_dist >= geom.length:
-            return geom.interpolate(0, normalized)                    
+            return geom.interpolate(0, normalized)
         elif normalized and start_dist >= 1 and end_dist >= 1:
-            return geom.interpolate(1, normalized)  
+            return geom.interpolate(1, normalized)
         elif normalized and -start_dist >= 1 and -end_dist >= 1:
             return geom.interpolate(0, normalized)
-    
+
         start_point = geom.interpolate(start_dist, normalized)
         end_point = geom.interpolate(end_dist, normalized)
-        
+
         min_dist = min(start_dist, end_dist)
         max_dist = max(start_dist, end_dist)
         if normalized:
             min_dist *= geom.length
             max_dist *= geom.length
-        
+
         if start_dist < end_dist:
             vertex_list = [(start_point.x, start_point.y)]
         else:
@@ -519,7 +539,7 @@ class AixmTools:
             vertex_list.append((start_point.x, start_point.y))
             # reverse direction result
             vertex_list = reversed(vertex_list)
-    
+
         return LineString(vertex_list)
 
 
