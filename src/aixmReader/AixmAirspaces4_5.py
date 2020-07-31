@@ -365,8 +365,8 @@ class AixmAirspaces4_5:
         else:                   localTypeZone = None
 
         #Map 20200715
-        if theAirspace["id"] in ["EBS02"]:
-            print(theAirspace["id"])
+        #if theAirspace["id"] in ["EBS02"]:
+        #    print(theAirspace["id"])
 
         #Homogénéisation des Classes et Types de zones
         typeZone = ase.AseUid.codeType.string

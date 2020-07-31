@@ -258,6 +258,8 @@ class Aixm2json4_5:
                     else:
                         geom = self.findJsonObjectAirspacesBorders(sAseUidBase)         #Recherche si la zone de base a déjà été parsé
                         if geom:
+                            if geom["coordinates"]==errLocalisationPoint:
+                                self.oCtrl.oLog.warning("Missing Airspaces Borders sAseUidBase={0} used by AseUid={1} of {2}".format(sAseUidBase, sAseUid, oZone["nameV"]), outConsole=False)
                             self.geoAirspaces.append({"type":"Feature", "properties":oZone, "geometry":geom})
                         else:
                             oBorder = self.oAirspacesCatalog.findAixmObjectAirspacesBorders(sAseUidBase)
