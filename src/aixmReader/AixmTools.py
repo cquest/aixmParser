@@ -41,7 +41,7 @@ class AixmTools:
         self.oCtrl.oLog.info("{0} file {1} - {2} areas in map".format(headMsg, sOutFile, sizeMap), outConsole=True)
         return
 
-    def makeHeaderOpenairFile(self, oHeader, oOpenair, context="", gpsType="", exceptDay="", sAreaKey="") -> str:
+    def makeHeaderOpenairFile(self, oHeader, oOpenair, context="", gpsType="", exceptDay="", sAreaKey="", sAreaDesc="") -> str:
         lLeftMargin:int=3
         sRet:str=""
         sizeMap = len(oOpenair)
@@ -58,7 +58,7 @@ class AixmTools:
             sRet += "*" + " "*lLeftMargin + "-"*44 + "\n"
 
             if sAreaKey:
-                sRet += "*" + " "*lLeftMargin + "(i)Information - '{0}' - Cartographie avec filtrage géographique des zones aériennes\n".format(sAreaKey, exceptDay)
+                sRet += "*" + " "*lLeftMargin + "(i)Information - '{0}' - Cartographie avec filtrage géographique des zones aériennes : {1}\n".format(sAreaKey, sAreaDesc)
                 
             if context=="ifr":
                 sRet += "*" + " "*lLeftMargin + "/!\Warning - 'IFR Map' - Cartographie de l'espace aérien IFR (zones majotitairement situées au dessus du niveau FL115)\n"

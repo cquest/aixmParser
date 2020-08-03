@@ -247,6 +247,11 @@ class Aixm2json4_5:
             idx+=1
             if not oZone["groupZone"]:          #Ne pas traiter les zones de type 'Regroupement'
                 sAseUid = oZone["UId"]
+
+                #Map 20200801
+                #if oZone["id"] in ["EBS27"]:  #[W] LOW FLYING AREA GOLF ONE
+                #    self.oCtrl.oLog.critical("just for bug {0}".format(oZone["id"]), outConsole=False)
+
                 oBorder = self.oAirspacesCatalog.findAixmObjectAirspacesBorders(sAseUid)
                 if oBorder:
                     self.parseAirspaceBorder(oZone, oBorder)

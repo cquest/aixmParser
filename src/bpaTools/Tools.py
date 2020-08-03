@@ -3,23 +3,24 @@
 import os, sys, re, traceback, logging, datetime
 import json
 
-
-#def raiseErrorSample(Att1, Att2):
-#    sHeader = "[" + bpaTools.getFileName(__file__) + "." + raiseErrorSample.__name__ + "()] "
-#    sMsg = "/!\ Parsing Line Error - {}".format(Att2)
-#    raise Exception(sHeader + sMsg)
-#    return
-
 def theQuit():
     sys.exit()
+    return
+
+def sysExit():
+    sys.exit()
+    return
+
+def sysExitError(sError:str) -> None:
+    sys.stderr.write(sError)
+    traceback.print_exc(file=sys.stdout)
+    sys.exit(sError)
     return
 
 def ctrlPythonVersion() -> None:
     pyMajorVersion, pyMinorVersion = sys.version_info[:2]
     if not (pyMajorVersion==3 and pyMinorVersion>=5):
-        sys.stderr.write("Sorry, only Python 3.5 or and higher are supported at this time.\n")
-        traceback.print_exc(file=sys.stdout)
-        sys.exit()
+        sysExitError("Sorry, only Python 3.5 or and higher are supported at this time.\n")
     return
 
 #Use: bpaTools.initEvent(__file__)
@@ -33,7 +34,7 @@ def initEvent(sFile:str, oLog:logging=None, isSilent:bool=False) -> None:
 
 def getFileName(sFile) -> str:
     return os.path.basename(sFile).split(".")[0]
-    
+
 def getFilePath(sFile) -> str:
     #return os.path.dirname(sFile) + "/"                  #Non-Fonctionnel sous Linux
     return os.path.dirname(os.path.abspath(sFile)) + "/"  #Fonctionnel sous Linux
@@ -43,7 +44,7 @@ def getNow() -> datetime:
 
 def getNowISO() -> str:
     return datetime.datetime.now().isoformat()
-    
+
 def getDateNow(sep:str="") -> str:
     return getDate(datetime.datetime.now(), sep)
 
