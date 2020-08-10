@@ -176,11 +176,6 @@ class Aixm2openair:
                                          latitude=avx.geoLatArc.string,
                                          longitude=avx.geoLongArc.string)
 
-                if codeType=="CCA":             #'Counter clockWise Arc'
-                    openair.append("V D=-")
-                else:
-                    openair.append("V D=+")
-
                 lonc, latc = center
                 lons, lats = start
                 lone, late = stop
@@ -192,8 +187,14 @@ class Aixm2openair:
                 firstPoint = self.pointMemory(firstPoint, sPoint)
                 if sPoint != lastPoint:
                     openair.append(sPoint)
+
                 openair.append("V X={0} {1}".format(lat1c, lon1c))
+                if codeType=="CCA":             #'Counter clockWise Arc'
+                    openair.append("V D=-")
+                else:
+                    openair.append("V D=+")
                 openair.append("DB {0} {1}, {2} {3}".format(lat1s, lon1s, lat1e, lon1e))
+                
                 sPoint = "DP {0} {1}".format(lat1e, lon1e)
                 lastPoint = sPoint
                 if sPoint != firstPoint:

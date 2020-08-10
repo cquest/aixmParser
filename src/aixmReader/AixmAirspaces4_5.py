@@ -22,7 +22,7 @@ def convertJsonCalalogToCSV(cat:dict) -> str:
 
     #Phase 2.2 : Construct a global index on columns (collect all columns in contents for complete header of CSV file...)
     #oCols avec initialisation d'une table d'index avec imposition de l'ordonnancement de colonnes choisies
-    oCols = {"zoneType":0, "groupZone":0, "vfrZone":0, "freeFlightZone":0, "excludeAirspaceNotCoord":0, "excludeAirspaceNotFfArea":0, "excludeAirspaceByFilter":0, "excludeAirspaceByAlt":0, "excludeAirspaceByRef":0, "potentialFilter4FreeFlightZone":0, "orgName":0, "keySrcFile":0, "GUId":0, "UId":0, "id":0, "srcClass":0, "srcType":0, "srcName":0, "class":0, "type":0, "localType":0, "codeActivity":0, "name":0, "groundEstimatedHeight":0, "ordinalLowerM":0, "lowerM":0, "ordinalUpperM":0, "upperM":0, "nameV":0, "alt":0, "altM":0, "altV":0, "exceptSAT":0, "exceptSUN":0, "exceptHOL":0, "seeNOTAM":0}
+    oCols = {"zoneType":0, "groupZone":0, "vfrZone":0, "vfrZoneExt":0, "freeFlightZone":0, "freeFlightZoneExt":0,"excludeAirspaceNotCoord":0, "excludeAirspaceNotFfArea":0, "excludeAirspaceByFilter":0, "excludeAirspaceByAlt":0, "excludeAirspaceByRef":0, "potentialFilter4FreeFlightZone":0, "orgName":0, "keySrcFile":0, "GUId":0, "UId":0, "id":0, "srcClass":0, "srcType":0, "srcName":0, "class":0, "type":0, "localType":0, "codeActivity":0, "name":0, "groundEstimatedHeight":0, "ordinalLowerM":0, "lowerM":0, "ordinalUpperM":0, "upperM":0, "nameV":0, "alt":0, "altM":0, "altV":0, "exceptSAT":0, "exceptSUN":0, "exceptHOL":0, "seeNOTAM":0}
     oCatalog = cat["catalog"]
     for key0,val0 in oCatalog.items():
         for key1,val1 in val0.items():
@@ -383,7 +383,7 @@ class AixmAirspaces4_5:
         else:                   localTypeZone = None
 
         #Map 20200801
-        #if theAirspace["id"] in ["EBS27"]:  #[W] LOW FLYING AREA GOLF ONE
+        #if theAirspace["id"] in ["LECBFIR_E"]:
         #    self.oCtrl.oLog.critical("just for bug {0}".format(theAirspace["id"]), outConsole=False)
 
         #Homogénéisation des Classes et Types de zones
@@ -663,8 +663,9 @@ class AixmAirspaces4_5:
             if bFilter0:
                 theAirspace.update({"excludeAirspaceByAlt":True})
                 theAirspace.update({"vfrZone":False})
+            theAirspace.update({"vfrZoneExt":bool(low>=3505 and low<4419)})          #Cas specifique pour extension de FL115 à FL195
 
-            bPotentialFilter = theAirspace["freeFlightZone"] and bool(low==0 and up>3505)        #Filtre potentiel de zones qui portent sur tous les étages
+            bPotentialFilter = theAirspace["freeFlightZone"] and bool(up>3505)       #Filtre potentiel de zones qui portent sur tous les étages
             if bPotentialFilter:
                 theAirspace.update({"potentialFilter4FreeFlightZone":True})
 
@@ -680,13 +681,14 @@ class AixmAirspaces4_5:
                 #self.oCtrl.oLog.info("Potential Filter for Free-Flight-Zone {0}".format(sKey), outConsole=False)
 
             if theAirspace["freeFlightZone"] and (bFilter0 or bFilter1):
-                theAirspace.update({"freeFlightZone":False})
+                theAirspace.update({"freeFlightZone":False})               
+            theAirspace.update({"freeFlightZoneExt":bool((not bFilter1) and low>=3505 and low<4419)})      #Cas specifique pour extension de FL115 à FL195
 
             #NE JAMAIS FILTRER: les éventuelles extensions de vol classées "E"; dont le planfond va au delà de FL115/3505m
-            if classZone=="E" and up>3505:
+            if classZone=="E" and (up>3505 and low<4419):        #Si Up>FL115 & Low<FL195
                 if not theAirspace["vfrZone"]:
                     theAirspace.update({"vfrZone":True})
-                if typeZone!="LTA" and not theAirspace["freeFlightZone"]:
+                if not theAirspace["freeFlightZone"]:
                     theAirspace.update({"freeFlightZone":True})
 
 

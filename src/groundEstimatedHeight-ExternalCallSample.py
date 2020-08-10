@@ -13,7 +13,7 @@ if __name__ == '__main__':
     appVersion          = groundEstimatedHeight.appVersion          #or your app version
     appId               = appName + " v" + appVersion
     
-    if True:            #For map only 
+    if False:            #For map only 
         #outPath         = appPath + "../../poaff/output/SIA/"
         #headFileName    = "SIA@"
         outPath         = appPath + "../../poaff/output/Tests/"         

@@ -41,7 +41,7 @@ class AixmTools:
         self.oCtrl.oLog.info("{0} file {1} - {2} areas in map".format(headMsg, sOutFile, sizeMap), outConsole=True)
         return
 
-    def makeHeaderOpenairFile(self, oHeader, oOpenair, context="", gpsType="", exceptDay="", sAreaKey="", sAreaDesc="") -> str:
+    def makeHeaderOpenairFile(self, oHeader, oOpenair, context="", gpsType="", exceptDay="", sAreaKey="", sAreaDesc="", sAddHeader="") -> str:
         lLeftMargin:int=3
         sRet:str=""
         sizeMap = len(oOpenair)
@@ -57,6 +57,8 @@ class AixmTools:
 
             sRet += "*" + " "*lLeftMargin + "-"*44 + "\n"
 
+            if sAddHeader:
+                sRet += "*" + " "*lLeftMargin + "(i)Information - " + sAddHeader + "\n"
             if sAreaKey:
                 sRet += "*" + " "*lLeftMargin + "(i)Information - '{0}' - Cartographie avec filtrage géographique des zones aériennes : {1}\n".format(sAreaKey, sAreaDesc)
                 
@@ -89,7 +91,7 @@ class AixmTools:
                     sDay2 = "Jours-Fériés"
                 ext4exceptDay = exceptDay.replace("except","-for")
                 sRet += "*" + " "*lLeftMargin + "/!\Warning - '{0}' - Fichier spécifiquement utilisable les '{1}/{2}' (dépourvu des zones non-activables '{3}')\n".format(ext4exceptDay[1:], sDay1, sDay2, exceptDay)
-
+            
             sRet += "*"*50 + "\n\n"
         return sRet
 
