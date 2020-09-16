@@ -15190,6 +15190,93 @@
 		</Gbv>
 	</Gbr>
 	<Ase>
+		<AseUid mid="mid-Test1">
+			<codeType>Q</codeType>
+			<codeId>Test1</codeId>
+		</AseUid>
+		<txtName>Test1</txtName>
+		<codeActivity>BALLOON</codeActivity>
+		<codeDistVerUpper>ALT</codeDistVerUpper>
+		<valDistVerUpper>3000</valDistVerUpper>
+		<uomDistVerUpper>FT</uomDistVerUpper>
+		<codeDistVerLower>ALT</codeDistVerLower>
+		<valDistVerLower>1000</valDistVerLower>
+		<uomDistVerLower>FT</uomDistVerLower>
+		<txtRmk>Administrator and NOTAM requester : Flights director (TEL published in the activation NOTAM).#</txtRmk>
+	</Ase>
+	<Ase>
+		<AseUid mid="mid-Test2">
+			<codeType>R</codeType>
+			<codeId>Test2</codeId>
+		</AseUid>
+		<txtName>Test2</txtName>
+		<codeDistVerUpper>ALT</codeDistVerUpper>
+		<valDistVerUpper>3000</valDistVerUpper>
+		<uomDistVerUpper>FT</uomDistVerUpper>
+		<codeDistVerLower>HEI</codeDistVerLower>
+		<valDistVerLower>0</valDistVerLower>
+		<uomDistVerLower>FT</uomDistVerLower>
+		<Att>
+			<codeWorkHr>H24</codeWorkHr>
+			<txtRmkWorkHr>H24</txtRmkWorkHr>
+		</Att>
+		<txtRmk>Administrator: NIL.#Avoidance mandatory except for exemption granted by the prefect of la Manche, after West DSAC consultation.</txtRmk>
+	</Ase>
+	<Ase>
+		<AseUid mid="mid-Test3">
+			<codeType>R</codeType>
+			<codeId>Test3</codeId>
+		</AseUid>
+		<txtName>Test3</txtName>
+		<codeDistVerUpper>HEI</codeDistVerUpper>
+		<valDistVerUpper>3000</valDistVerUpper>
+		<uomDistVerUpper>FT</uomDistVerUpper>
+		<codeDistVerLower>ALT</codeDistVerLower>
+		<valDistVerLower>1000</valDistVerLower>
+		<uomDistVerLower>FT</uomDistVerLower>
+		<Att>
+			<codeWorkHr>H24</codeWorkHr>
+			<txtRmkWorkHr>H24</txtRmkWorkHr>
+		</Att>
+		<txtRmk>Administrator: NIL.#Avoidance mandatory except for exemption granted by the prefect of la Manche, after West DSAC consultation.</txtRmk>
+	</Ase>
+	<Ase>
+		<AseUid mid="mid-Test4">
+			<codeType>R</codeType>
+			<codeId>Test4</codeId>
+		</AseUid>
+		<txtName>Test4</txtName>
+		<codeDistVerUpper>ALT</codeDistVerUpper>
+		<valDistVerUpper>2500</valDistVerUpper>
+		<uomDistVerUpper>FT</uomDistVerUpper>
+		<codeDistVerLower>HEI</codeDistVerLower>
+		<valDistVerLower>2450</valDistVerLower>
+		<uomDistVerLower>FT</uomDistVerLower>
+		<Att>
+			<codeWorkHr>H24</codeWorkHr>
+			<txtRmkWorkHr>H24</txtRmkWorkHr>
+		</Att>
+		<txtRmk>Administrator: NIL.#Avoidance mandatory except for exemption granted by the prefect of la Manche, after West DSAC consultation.</txtRmk>
+	</Ase>
+	<Ase>
+		<AseUid mid="mid-Test5">
+			<codeType>R</codeType>
+			<codeId>Test5</codeId>
+		</AseUid>
+		<txtName>Test5</txtName>
+		<codeDistVerUpper>HEI</codeDistVerUpper>
+		<valDistVerUpper>3000</valDistVerUpper>
+		<uomDistVerUpper>FT</uomDistVerUpper>
+		<codeDistVerLower>ALT</codeDistVerLower>
+		<valDistVerLower>1500</valDistVerLower>
+		<uomDistVerLower>FT</uomDistVerLower>
+		<Att>
+			<codeWorkHr>H24</codeWorkHr>
+			<txtRmkWorkHr>H24</txtRmkWorkHr>
+		</Att>
+		<txtRmk>Administrator: NIL.#Avoidance mandatory except for exemption granted by the prefect of la Manche, after West DSAC consultation.</txtRmk>
+	</Ase>
+	<Ase>
 		<AseUid mid="1613148-tst">
 			<codeType>R</codeType>
 			<codeId>LFR506A</codeId>
@@ -16049,6 +16136,183 @@ Deactivation announced by RAI 129.925 MHz#
 Activity known on BASEL INFO.#
 Flying over LUXEUIL SAINT- SAUVEUR AD BLW 1000ft ASFC prohibited H24.</txtRmk>
 	</Ase>
+	<Ase>
+		<AseUid mid="1560993">
+			<codeType>TMA</codeType>
+			<codeId>TMA16161</codeId>
+		</AseUid>
+		<txtName>GENEVE 1 Double ref alti plancher</txtName>
+		<codeClass>C</codeClass>
+		<codeDistVerUpper>STD</codeDistVerUpper>
+		<valDistVerUpper>195</valDistVerUpper>
+		<uomDistVerUpper>FL</uomDistVerUpper>
+		<codeDistVerLower>ALT</codeDistVerLower>
+		<valDistVerLower>3500</valDistVerLower>
+		<uomDistVerLower>FT</uomDistVerLower>
+		<codeDistVerMnm>HEI</codeDistVerMnm>
+		<valDistVerMnm>1000</valDistVerMnm>
+		<uomDistVerMnm>FT</uomDistVerMnm>
+		<Att>
+			<codeWorkHr>H24</codeWorkHr>
+			<txtRmkWorkHr>H24</txtRmkWorkHr>
+		</Att>
+		<txtRmk>Cross-border airspace wherein ATS is provided by a foreign provider.#Refer to Swiss AIP.</txtRmk>
+	</Ase>
+	<Ase>
+		<AseUid mid="1560989">
+			<codeType>TMA</codeType>
+			<codeId>TMA16162</codeId>
+		</AseUid>
+		<txtName>GENEVE 2</txtName>
+		<codeClass>C</codeClass>
+		<codeDistVerUpper>STD</codeDistVerUpper>
+		<valDistVerUpper>195</valDistVerUpper>
+		<uomDistVerUpper>FL</uomDistVerUpper>
+		<codeDistVerLower>ALT</codeDistVerLower>
+		<valDistVerLower>5500</valDistVerLower>
+		<uomDistVerLower>FT</uomDistVerLower>
+		<Att>
+			<codeWorkHr>H24</codeWorkHr>
+			<txtRmkWorkHr>H24</txtRmkWorkHr>
+		</Att>
+		<txtRmk>Cross-border airspace wherein ATS is provided by a foreign provider.#Refer to Swiss AIP.</txtRmk>
+	</Ase>
+	<Ase>
+		<AseUid mid="7530053">
+			<codeType>TMA</codeType>
+			<codeId>TMA16162F.</codeId>
+		</AseUid>
+		<txtName>GENEVE 2 FRANCAISE.20</txtName>
+		<codeClass>E</codeClass>
+		<codeDistVerUpper>ALT</codeDistVerUpper>
+		<valDistVerUpper>5500</valDistVerUpper>
+		<uomDistVerUpper>FT</uomDistVerUpper>
+		<codeDistVerLower>ALT</codeDistVerLower>
+		<valDistVerLower>3500</valDistVerLower>
+		<uomDistVerLower>FT</uomDistVerLower>
+		<codeDistVerMnm>HEI</codeDistVerMnm>
+		<valDistVerMnm>1000</valDistVerMnm>
+		<uomDistVerMnm>FT</uomDistVerMnm>
+		<Att>
+			<codeWorkHr>H24</codeWorkHr>
+			<txtRmkWorkHr>H24</txtRmkWorkHr>
+		</Att>
+		<txtRmk>Cross-border airspace wherein ATS is provided by a foreign provider.#Refer to Swiss AIP.</txtRmk>
+	</Ase>
+	<Ase>
+		<AseUid mid="19824706">
+			<codeType>D-OTHER</codeType>
+			<codeId>NTV010NFP</codeId>
+		</AseUid>
+		<txtName>Double ref alti plafond</txtName>
+		<codeClass>R</codeClass>
+		<codeDistVerUpper>ALT</codeDistVerUpper>
+		<valDistVerUpper>2500</valDistVerUpper>
+		<uomDistVerUpper>FT</uomDistVerUpper>
+		<codeDistVerLower>HEI</codeDistVerLower>
+		<valDistVerLower>0</valDistVerLower>
+		<uomDistVerLower>FT</uomDistVerLower>
+		<codeDistVerMax>HEI</codeDistVerMax>
+		<valDistVerMax>1000</valDistVerMax>
+		<uomDistVerMax>FT</uomDistVerMax>
+		<txtRmk>un test</txtRmk>
+	</Ase>
+	<Ase>
+		<AseUid mid="19824706-BPa">
+			<codeType>D-OTHER</codeType>
+			<codeId>NTV010NFP</codeId>
+		</AseUid>
+		<txtName>Doubles ref alti plancher/plafond</txtName>
+		<codeClass>D</codeClass>
+		<codeDistVerUpper>ALT</codeDistVerUpper>
+		<valDistVerUpper>2500</valDistVerUpper>
+		<uomDistVerUpper>FT</uomDistVerUpper>
+		<codeDistVerLower>ALT</codeDistVerLower>
+		<valDistVerLower>1000</valDistVerLower>
+		<uomDistVerLower>FT</uomDistVerLower>
+		<codeDistVerMax>HEI</codeDistVerMax>
+		<valDistVerMax>2000</valDistVerMax>
+		<uomDistVerMax>FT</uomDistVerMax>
+		<codeDistVerMnm>HEI</codeDistVerMnm>
+		<valDistVerMnm>250</valDistVerMnm>
+		<uomDistVerMnm>FT</uomDistVerMnm>
+		<txtRmk>un test</txtRmk>
+	</Ase>
+	<Abd>
+		<AbdUid mid="mid-Test1">
+			<AseUid mid="mid-Test1">
+				<codeType>R</codeType>
+				<codeId>Test1</codeId>
+			</AseUid>
+		</AbdUid>
+		<Circle>
+			<geoLatCen>483811.00N</geoLatCen>
+			<geoLongCen>0013040.00E</geoLongCen>
+			<codeDatum>WGE</codeDatum>
+			<valRadius>10</valRadius>
+			<uomRadius>NM</uomRadius>
+		</Circle>
+	</Abd>
+	<Abd>
+		<AbdUid mid="mid-Test2">
+			<AseUid mid="mid-Test2">
+				<codeType>R</codeType>
+				<codeId>Test2</codeId>
+			</AseUid>
+		</AbdUid>
+		<Circle>
+			<geoLatCen>483811.00N</geoLatCen>
+			<geoLongCen>0023040.00E</geoLongCen>
+			<codeDatum>WGE</codeDatum>
+			<valRadius>10</valRadius>
+			<uomRadius>NM</uomRadius>
+		</Circle>
+	</Abd>
+	<Abd>
+		<AbdUid mid="mid-Test3">
+			<AseUid mid="mid-Test3">
+				<codeType>R</codeType>
+				<codeId>Test3</codeId>
+			</AseUid>
+		</AbdUid>
+		<Circle>
+			<geoLatCen>483811.00N</geoLatCen>
+			<geoLongCen>0033040.00E</geoLongCen>
+			<codeDatum>WGE</codeDatum>
+			<valRadius>10</valRadius>
+			<uomRadius>NM</uomRadius>
+		</Circle>
+	</Abd>
+	<Abd>
+		<AbdUid mid="mid-Test4">
+			<AseUid mid="mid-Test4">
+				<codeType>R</codeType>
+				<codeId>Test4</codeId>
+			</AseUid>
+		</AbdUid>
+		<Circle>
+			<geoLatCen>483811.00N</geoLatCen>
+			<geoLongCen>0043040.00E</geoLongCen>
+			<codeDatum>WGE</codeDatum>
+			<valRadius>10</valRadius>
+			<uomRadius>NM</uomRadius>
+		</Circle>
+	</Abd>
+	<Abd>
+		<AbdUid mid="mid-Test5">
+			<AseUid mid="mid-Test5">
+				<codeType>R</codeType>
+				<codeId>Test5</codeId>
+			</AseUid>
+		</AbdUid>
+		<Circle>
+			<geoLatCen>483811.00N</geoLatCen>
+			<geoLongCen>0053040.00E</geoLongCen>
+			<codeDatum>WGE</codeDatum>
+			<valRadius>10</valRadius>
+			<uomRadius>NM</uomRadius>
+		</Circle>
+	</Abd>
 	<Abd>
 		<AbdUid mid="1613322-zz">
 			<AseUid mid="1562265">
@@ -18214,6 +18478,222 @@ Flying over LUXEUIL SAINT- SAUVEUR AD BLW 1000ft ASFC prohibited H24.</txtRmk>
 			<valCrc>B0D762B5</valCrc>
 		</Avx>
 	</Abd>
+	<Abd>
+		<AbdUid mid="1570262">
+			<AseUid mid="1560993">
+				<codeType>TMA</codeType>
+				<codeId>TMA16161</codeId>
+			</AseUid>
+		</AbdUid>
+		<Avx>
+			<codeType>GRC</codeType>
+			<geoLat>463142N</geoLat>
+			<geoLong>0062316E</geoLong>
+			<codeDatum>WGE</codeDatum>
+			<valCrc>E54BDE5A</valCrc>
+		</Avx>
+		<Avx>
+			<codeType>GRC</codeType>
+			<geoLat>462203.00N</geoLat>
+			<geoLong>0063304.00E</geoLong>
+			<codeDatum>WGE</codeDatum>
+			<valCrc>DC1E8E71</valCrc>
+		</Avx>
+		<Avx>
+			<codeType>GRC</codeType>
+			<geoLat>455823.00N</geoLat>
+			<geoLong>0055028.00E</geoLong>
+			<codeDatum>WGE</codeDatum>
+			<valCrc>D743FDBD</valCrc>
+		</Avx>
+		<Avx>
+			<codeType>GRC</codeType>
+			<geoLat>455958.00N</geoLat>
+			<geoLong>0054814.00E</geoLong>
+			<codeDatum>WGE</codeDatum>
+			<valCrc>460FA050</valCrc>
+		</Avx>
+		<Avx>
+			<codeType>GRC</codeType>
+			<geoLat>460508.00N</geoLat>
+			<geoLong>0054703.00E</geoLong>
+			<codeDatum>WGE</codeDatum>
+			<valCrc>EDDBD7F2</valCrc>
+		</Avx>
+		<Avx>
+			<codeType>GRC</codeType>
+			<geoLat>460702.00N</geoLat>
+			<geoLong>0054904.00E</geoLong>
+			<codeDatum>WGE</codeDatum>
+			<valCrc>3FDF8A42</valCrc>
+		</Avx>
+		<Avx>
+			<codeType>GRC</codeType>
+			<geoLat>462338N</geoLat>
+			<geoLong>0060639E</geoLong>
+			<codeDatum>WGE</codeDatum>
+			<valCrc>A7E5802A</valCrc>
+		</Avx>
+	</Abd>
+	<Abd>
+		<AbdUid mid="1570270">
+			<AseUid mid="1560989">
+				<codeType>TMA</codeType>
+				<codeId>TMA16162</codeId>
+			</AseUid>
+		</AbdUid>
+		<Avx>
+			<codeType>GRC</codeType>
+			<geoLat>463455N</geoLat>
+			<geoLong>0062957E</geoLong>
+			<codeDatum>WGE</codeDatum>
+			<valCrc>AE16C21B</valCrc>
+		</Avx>
+		<Avx>
+			<GbrUid mid="1545002">
+				<txtName>FRANCE_SWITZERLAND</txtName>
+			</GbrUid>
+			<codeType>FNT</codeType>
+			<geoLat>462718N</geoLat>
+			<geoLong>0063735E</geoLong>
+			<codeDatum>WGE</codeDatum>
+			<valCrc>5B110F2D</valCrc>
+		</Avx>
+		<Avx>
+			<codeType>GRC</codeType>
+			<geoLat>462645N</geoLat>
+			<geoLong>0064333E</geoLong>
+			<codeDatum>WGE</codeDatum>
+			<valCrc>2E2E03A2</valCrc>
+		</Avx>
+		<Avx>
+			<codeType>GRC</codeType>
+			<geoLat>462614N</geoLat>
+			<geoLong>0064153E</geoLong>
+			<codeDatum>WGE</codeDatum>
+			<valCrc>0353F592</valCrc>
+		</Avx>
+		<Avx>
+			<codeType>GRC</codeType>
+			<geoLat>462454N</geoLat>
+			<geoLong>0063959E</geoLong>
+			<codeDatum>WGE</codeDatum>
+			<valCrc>85505745</valCrc>
+		</Avx>
+		<Avx>
+			<codeType>GRC</codeType>
+			<geoLat>461817N</geoLat>
+			<geoLong>0063034E</geoLong>
+			<codeDatum>WGE</codeDatum>
+			<valCrc>069EAD4F</valCrc>
+		</Avx>
+		<Avx>
+			<codeType>GRC</codeType>
+			<geoLat>460256N</geoLat>
+			<geoLong>0060933E</geoLong>
+			<codeDatum>WGE</codeDatum>
+			<valCrc>39E4F09B</valCrc>
+		</Avx>
+		<Avx>
+			<codeType>CWA</codeType>
+			<geoLat>455541.00N</geoLat>
+			<geoLong>0055439.00E</geoLong>
+			<codeDatum>WGE</codeDatum>
+			<geoLatArc>460303.00N</geoLatArc>
+			<geoLongArc>0054712.00E</geoLongArc>
+			<valRadiusArc>9.017</valRadiusArc>
+			<uomRadiusArc>NM</uomRadiusArc>
+			<valCrc>D0305B2C</valCrc>
+		</Avx>
+		<Avx>
+			<codeType>GRC</codeType>
+			<geoLat>461024N</geoLat>
+			<geoLong>0053942E</geoLong>
+			<codeDatum>WGE</codeDatum>
+			<valCrc>E4860852</valCrc>
+		</Avx>
+		<Avx>
+			<codeType>GRC</codeType>
+			<geoLat>461059N</geoLat>
+			<geoLong>0054052E</geoLong>
+			<codeDatum>WGE</codeDatum>
+			<valCrc>163D1861</valCrc>
+		</Avx>
+		<Avx>
+			<codeType>GRC</codeType>
+			<geoLat>460702N</geoLat>
+			<geoLong>0054904E</geoLong>
+			<codeDatum>WGE</codeDatum>
+			<valCrc>C168C8CD</valCrc>
+		</Avx>
+		<Avx>
+			<codeType>GRC</codeType>
+			<geoLat>460508N</geoLat>
+			<geoLong>0054703E</geoLong>
+			<codeDatum>WGE</codeDatum>
+			<valCrc>FA0E7895</valCrc>
+		</Avx>
+		<Avx>
+			<codeType>GRC</codeType>
+			<geoLat>455958N</geoLat>
+			<geoLong>0054814E</geoLong>
+			<codeDatum>WGE</codeDatum>
+			<valCrc>BFCC147D</valCrc>
+		</Avx>
+		<Avx>
+			<codeType>GRC</codeType>
+			<geoLat>455823N</geoLat>
+			<geoLong>0055028E</geoLong>
+			<codeDatum>WGE</codeDatum>
+			<valCrc>1A8BA575</valCrc>
+		</Avx>
+		<Avx>
+			<codeType>GRC</codeType>
+			<geoLat>462203N</geoLat>
+			<geoLong>0063304E</geoLong>
+			<codeDatum>WGE</codeDatum>
+			<valCrc>A6FE14C3</valCrc>
+		</Avx>
+		<Avx>
+			<codeType>GRC</codeType>
+			<geoLat>463142N</geoLat>
+			<geoLong>0062316E</geoLong>
+			<codeDatum>WGE</codeDatum>
+			<valCrc>E54BDE5A</valCrc>
+		</Avx>
+	</Abd>
+	<Abd>
+		<AbdUid mid="19824708">
+			<AseUid mid="19824706">
+				<codeType>D-OTHER</codeType>
+				<codeId>NTV010NFP</codeId>
+			</AseUid>
+		</AbdUid>
+		<Circle>
+			<geoLatCen>502547.00N</geoLatCen>
+			<geoLongCen>0042856.00E</geoLongCen>
+			<codeDatum>WGE</codeDatum>
+			<valRadius>20</valRadius>
+			<uomRadius>NM</uomRadius>
+			<valCrc>F1E3746D</valCrc>
+		</Circle>
+	</Abd>
+	<Abd>
+		<AbdUid mid="19824708">
+			<AseUid mid="19824706-BPa">
+				<codeType>D-OTHER</codeType>
+				<codeId>NTV010NFP</codeId>
+			</AseUid>
+		</AbdUid>
+		<Circle>
+			<geoLatCen>512547.00N</geoLatCen>
+			<geoLongCen>0042856.00E</geoLongCen>
+			<codeDatum>WGE</codeDatum>
+			<valRadius>20</valRadius>
+			<uomRadius>NM</uomRadius>
+			<valCrc>F1E3746D</valCrc>
+		</Circle>
+	</Abd>
 	<Adg>
 		<AdgUid>
 			<AseUid mid="1560463">
@@ -18356,6 +18836,18 @@ Flying over LUXEUIL SAINT- SAUVEUR AD BLW 1000ft ASFC prohibited H24.</txtRmk>
 			<codeType>TMA</codeType>
 			<codeId>LFCL12</codeId>
 		</AseUidComponent>
+	</Adg>
+	<Adg>
+		<AdgUid mid="7530055">
+			<AseUid mid="7530053">
+				<codeType>TMA</codeType>
+				<codeId>TMA16162F.</codeId>
+			</AseUid>
+		</AdgUid>
+		<AseUidSameExtent mid="1560989">
+			<codeType>TMA</codeType>
+			<codeId>TMA16162</codeId>
+		</AseUidSameExtent>
 	</Adg>
 	<Sae>
 		<SaeUid mid="29598381">

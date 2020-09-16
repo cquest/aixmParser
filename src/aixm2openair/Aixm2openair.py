@@ -6,6 +6,88 @@ import aixmReader
 
 errLocalisationPoint:list = ["DP 45:00:00 N 005:00:00 W"]
 
+
+#* Rappel: Syntaxe déclarative des Classes dans le format OpenAir
+#* 	AC <classType>
+#*   	  <ClassType> = Type of airspace class, see below:
+#*     		A	Class A
+#*     		B	Class B
+#*     		C	Class C
+#*     		D	Class D
+#*     		E	Class E
+#*     		F	Class F
+#*     		G	Class G
+#*     		W	Wave Window (espaces réservés aux vélivoles)
+#*     		R 	Restricted
+#*     		Q 	Danger
+#*     		P	Prohibited
+#*     		GP  Glider Prohibited
+#*     		CTR	CONTROL TRAFFIC AREAS
+#*		ZMT	ZONE REGLEMENTE TEMPORAIRE
+#*		RMZ	Radio Mandatory Zone
+#*		TMZ	Transponder Mandatory Zone
+#*		ZSM	Zone de Sensibilité Majeure (Protection Rapaces, Urubus, etc...)
+def makeOpenair(oAirspace:dict, gpsType:str) -> list:
+    openair = []
+    oZone = oAirspace.get("properties", oAirspace)
+    theClass = oZone["class"]
+    theType = oZone["type"]
+
+    #1/ Specific translations for Openair format
+    if theClass=="D" and theType=="CTR":    theClass="CTR"     #CTR CONTROL TRAFFIC AREAS
+    #2/ Specific translations for Openair format
+    if   theType=="RMZ":                    theClass="RMZ"
+    elif theType=="TMZ":                    theClass="TMZ"
+
+    openair.append("AC {0}".format(theClass))
+    openair.append("AN {0}".format(oZone["nameV"]))
+    openair.append("*AAlt {0} {1}".format(aixmReader.getSerializeAlt(oZone), aixmReader.getSerializeAltM(oZone)))
+    openair.append("*AUID GUId={0} UId={1} Id={2}".format(oZone.get("GUId", "!"), oZone["UId"], oZone["id"]))
+    if "desc" in oZone:     openair.append("*ADescr {0}".format(oZone["desc"]))
+    if "Mhz" in oZone:      openair.append("*AMhz {0}".format(oZone["Mhz"]))
+    if ("activationCode" in oZone) and ("activationDesc" in oZone):       openair.append("*AActiv [{0}] {1}".format(oZone["activationCode"], oZone["activationDesc"]))
+    if ("activationCode" in oZone) and not ("activationDesc" in oZone):   openair.append("*AActiv [{0}]".format(oZone["activationCode"]))
+    if not("activationCode" in oZone) and ("activationDesc" in oZone):    openair.append("*AActiv {0}".format(oZone["activationDesc"]))
+    if "timeScheduling" in oZone:                                         openair.append("*ATimes {0}".format(oZone["timeScheduling"]))
+    if "exceptSAT" in oZone:    openair.append("*AExSAT {0}".format(oZone["exceptSAT"]))
+    if "exceptSUN" in oZone:    openair.append("*AExSUN {0}".format(oZone["exceptSUN"]))
+    if "exceptHOL" in oZone:    openair.append("*AExHOL {0}".format(oZone["exceptHOL"]))
+    if "seeNOTAM" in oZone:     openair.append("*ASeeNOTAM {0}".format(oZone["seeNOTAM"]))
+    openair.append("AH {0}".format(parseAlt("AH", gpsType, oZone)))
+    openair.append("AL {0}".format(parseAlt("AL", gpsType, oZone)))
+    if "geometry" in oAirspace:
+        openair += oAirspace["geometry"]
+    return openair
+
+def parseAlt(altRef:str, gpsType:str, oZone:dict) -> str:
+    if altRef=="AH":
+        if gpsType=="-gpsWithoutTopo" and (("ordinalUpperMaxM" in oZone) or ("ordinalUpperM" in oZone)):
+            altM = oZone["upperM"]
+            altFT = int(float(altM+100) / aixmReader.CONST.ft)      #Surélévation du plafond de 100 mètres pour marge d'altitude
+            ret = "{0}FT AMSL".format(altFT)
+            return ret
+        elif "ordinalUpperMaxM" in oZone:
+            return oZone["upperMax"]
+        else:
+            return oZone["upper"]
+    elif altRef=="AL":
+        if gpsType=="-gpsWithoutTopo" and (("ordinalLowerMinM" in oZone) or ("ordinalLowerM" in oZone)):
+            altM = oZone["lowerM"]
+            altFT = int(float(altM-100) / aixmReader.CONST.ft)      #Abaissement du plancher de 100 mètres pour marge d'altitude
+            if altFT <= 0:
+                ret = "SFC"
+            else:
+                ret = "{0}FT AMSL".format(altFT)
+            return ret
+        elif "ordinalLowerMinM" in oZone:
+            return oZone["lowerMin"]
+        else:
+            return oZone["lower"]
+    else:
+        print("parseAlt() calling error !")
+    return
+
+
 class Aixm2openair:
 
     def __init__(self, oCtrl) -> None:
@@ -281,112 +363,25 @@ class Aixm2openair:
                    include = False
                 else:
                     include = False
-                    if context=="all":                                  include = True
-                    elif context=="ifr" and not oZone["vfrZone"]:       include = True
-                    elif context=="vfr" and oZone["vfrZone"]:           include = True
-                    elif context=="ff" and oZone["freeFlightZone"]:     include = True
+                    if context=="all":
+                        include = True
+                    elif context=="ifr":
+                        include = (not oZone["vfrZone"]) and (not oZone["groupZone"])
+                    elif context=="vfr":
+                        include = oZone["vfrZone"]
+                        #include = include or oZone.get("vfrZoneExt", False)   			#Ne pas exporter l'extension de vol possible en VFR de 0m jusqu'au FL175/5334m                     
+                    elif context=="ff":
+                        include = oZone["freeFlightZone"]
+                        #include = include or oZone.get("freeFlightZoneExt", False)		#Ne pas exporter l'extension de vol possible en VFR de 0m jusqu'au FL175/5334m
                 if include==True and exceptDay!="":
                     if exceptDay in oZone:                              include = False
                 if include==True:
-                    openair.append(self.makeOpenair(o, gpsType))
+                    openair.append(makeOpenair(o, gpsType))
             barre.update(idx)
         barre.reset()
         if openair:
             self.oCtrl.oAixmTools.writeOpenairFile("airspaces", openair, context, gpsType, exceptDay)
         return
-
-    #* Rappel: Syntaxe déclarative des Classes dans le format OpenAir
-    #* 	AC <classType>
-    #*   	  <ClassType> = Type of airspace class, see below:
-    #*     		A	Class A
-    #*     		B	Class B
-    #*     		C	Class C
-    #*     		D	Class D
-    #*     		E	Class E
-    #*     		F	Class F
-    #*     		G	Class G
-    #*     		W	Wave Window (espaces réservés aux vélivoles)
-    #*     		R 	Restricted
-    #*     		Q 	Danger
-    #*     		P	Prohibited
-    #*     		GP  Glider Prohibited
-    #*     		CTR	CONTROL TRAFFIC AREAS
-    #*		ZMT	ZONE REGLEMENTE TEMPORAIRE
-    #*		RMZ	Radio Mandatory Zone
-    #*		TMZ	Transponder Mandatory Zone
-    #*		ZSM	Zone de Sensibilité Majeure (Protection Rapaces, Urubus, etc...)
-    def makeOpenair(self, oAirspace:dict, gpsType:str) -> list:
-        openair = []
-        oZone = oAirspace["properties"]
-        theClass = oZone["class"]
-        theType = oZone["type"]
-
-        #1/ Specific translations for Openair format
-        if theClass=="D" and theType=="CTR":    theClass="CTR"     #CTR CONTROL TRAFFIC AREAS
-        #2/ Specific translations for Openair format
-        if   theType=="RMZ":                    theClass="RMZ"
-        elif theType=="TMZ":                    theClass="TMZ"
-
-        openair.append("AC {0}".format(theClass))
-        openair.append("AN {0}".format(oZone["nameV"]))
-        openair.append("*AAlt {0} {1}".format(oZone["alt"], oZone["altM"]))
-        openair.append("*AUID GUId=! UId={0} Id={1}".format(oZone["UId"], oZone["id"]))
-        if "desc" in oZone:    openair.append("*ADescr {0}".format(oZone["desc"]))
-        if ("activationCode" in oZone) and ("activationDesc" in oZone):       openair.append("*AActiv [{0}] {1}".format(oZone["activationCode"], oZone["activationDesc"]))
-        if ("activationCode" in oZone) and not ("activationDesc" in oZone):   openair.append("*AActiv [{0}]".format(oZone["activationCode"]))
-        if not("activationCode" in oZone) and ("activationDesc" in oZone):    openair.append("*AActiv {0}".format(oZone["activationDesc"]))
-        if "exceptSAT" in oZone:    openair.append("*AExSAT {0}".format(oZone["exceptSAT"]))
-        if "exceptSUN" in oZone:    openair.append("*AExSUN {0}".format(oZone["exceptSUN"]))
-        if "exceptHOL" in oZone:    openair.append("*AExHOL {0}".format(oZone["exceptHOL"]))
-        if "seeNOTAM" in oZone:     openair.append("*ASeeNOTAM {0}".format(oZone["seeNOTAM"]))
-        openair.append("AH {0}".format(self.parseAlt("AH", gpsType, oZone)))
-        openair.append("AL {0}".format(self.parseAlt("AL", gpsType, oZone)))
-        openair += oAirspace["geometry"]
-        return openair
-
-    def parseAlt(self, altRef:str, gpsType:str, oZone:dict) -> str:
-        if altRef=="AH":
-            if gpsType=="-gpsWithoutTopo" and ("ordinalUpperM" in oZone):
-                altM = oZone["upperM"]
-                altFT = int(float(altM+100) / aixmReader.CONST.ft)      #Surélévation du plafond de 100 mètres pour marge d'altitude
-                ret = "{0}FT AMSL".format(altFT)
-                return ret
-            sType = oZone["upperType"]
-            sValue =  oZone["upperValue"]
-            sUnit = oZone["upperUnit"]
-        else:
-            if gpsType=="-gpsWithoutTopo" and ("ordinalLowerM" in oZone):
-                altM = oZone["lowerM"]
-                altFT = int(float(altM-100) / aixmReader.CONST.ft)      #Abaissement du plancher de 100 mètres pour marge d'altitude
-                if altFT <= 0:
-                    ret = "SFC"
-                else:
-                    ret = "{0}FT AMSL".format(altFT)
-                return ret
-            sType = oZone["lowerType"]
-            sValue =  oZone["lowerValue"]
-            sUnit = oZone["lowerUnit"]
-
-        ret = "???"
-        if   sValue=="0":
-            ret = "SFC"                         #sample AH SFC
-        elif sValue=="999" and sUnit=="FL":
-            ret = "UNL"                         #sample AH UNL (or UNLIM)
-        elif sUnit == "FL":
-            ret = sUnit + sValue                #sample AH FL115
-        elif sUnit in ["FT","SM","M"]:
-            if sUnit=="SM":
-                ret = sValue + "M"              #sample AH 2500M
-            else:
-                ret = sValue + sUnit            #sample AH 2500FT or AH 2500M
-            if sType=="HEI":
-                ret += " AGL"                    #sample AH 2500FT AGL     (or ASFC)
-            else:
-                ret += " AMSL"                   #sample AH 2500FT AMSL
-        else:
-            self.oCtrl.oLog.error("parseAlt() error sType={0} sValue={1} sUnit={2}".format(sType, sValue, sUnit), outConsole=False)
-
-        return ret
 
     #Nétoyage du catalogue de zones pour desactivation des éléments qui ne sont pas valides ; ou constitués que d'un ou deux 'Point' a exclure uniquement pour le freefligth
     #Ces simples 'Point remarquable' sont supprimés de la cartographie freefligth (ex: un VOR, un émmzteur radio, un centre de piste)

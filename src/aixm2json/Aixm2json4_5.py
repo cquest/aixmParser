@@ -395,15 +395,22 @@ class Aixm2json4_5:
         for o in self.geoAirspaces:
             oZone = o["properties"]
             idx+=1
-            include = not oZone["groupZone"]                         #Ne pas traiter les zones de type 'Regroupement'
-            #if include and ("excludeAirspaceNotCoord" in oZone):     #Ne pas traiter les zones qui n'ont pas de coordonnées geometriques
+            include = not oZone["groupZone"]                         				#Ne pas traiter les zones de type 'Regroupement'
+            #if include and ("excludeAirspaceNotCoord" in oZone):     				#Ne pas traiter les zones qui n'ont pas de coordonnées geometriques
             #    include = not oZone["excludeAirspaceNotCoord"]
             if include:
                 include = False
-                if   context=="all":                              include = True
-                elif context=="ifr" and not oZone["vfrZone"]:     include = True
-                elif context=="vfr" and oZone["vfrZone"]:         include = True
-                elif context=="ff" and oZone["freeFlightZone"] and (o["geometry"]["coordinates"]!=errLocalisationPoint):   include = True
+                if context=="all":
+                    include = True
+                elif context=="ifr":
+                    include = (not oZone["vfrZone"]) and (not oZone["groupZone"])
+                elif context=="vfr":
+                    include = oZone["vfrZone"]
+                    #include = include or oZone.get("vfrZoneExt", False)     		#Ne pas exporter l'extension de vol possible en VFR de 0m jusqu'au FL175/5334m                   
+                elif context=="ff":
+                    include = oZone["freeFlightZone"]
+                    #include = include or oZone.get("freeFlightZoneExt", False) 	#Ne pas exporter l'extension de vol possible en VFR de 0m jusqu'au FL175/5334m
+                    include = include and (o["geometry"]["coordinates"]!=errLocalisationPoint)
             if include:
                 geojson.append(o)
             barre.update(idx)

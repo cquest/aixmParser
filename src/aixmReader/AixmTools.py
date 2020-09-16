@@ -108,7 +108,7 @@ class AixmTools:
         sizeMap = len(oOpenair)
         if sizeMap:
             headMsg = "Written"
-            with open(self.oCtrl.sOutPath + sOutFile, "w", encoding=self.oCtrl.sEncoding) as output:
+            with open(self.oCtrl.sOutPath + sOutFile, "w", encoding="cp1252") as output:
                 oHeader = self.getJsonPropHeaderFile(sFileName, context, sizeMap)
                 sHeader:str = self.makeHeaderOpenairFile(oHeader, oOpenair, context, gpsType, exceptDay)
                 output.write(sHeader)
@@ -132,13 +132,14 @@ class AixmTools:
         return
 
 
-    def writeTextFile(self, sPath="", sFileName="", oText=None, fileExtention="txt"):
+    def writeTextFile(self, sPath="", sFileName="", oText=None, fileExtention="txt", sencoding="cp1252"):
         if sFileName!="":
             sOutFile = self.oCtrl.sOutHeadFile + sFileName + "." + fileExtention
             self.oCtrl.oLog.info("Written file {0}".format(sOutFile), outConsole=True)
             if sPath=="":
                 sPath = self.oCtrl.sOutPath
-            with open(sPath + sOutFile, "w", encoding=self.oCtrl.sEncoding) as output:
+            #with open(sPath + sOutFile, "w", encoding=self.oCtrl.sEncoding) as output:
+            with open(sPath + sOutFile, "w", encoding=sencoding) as output:
                 output.write(oText)
         return
 
@@ -250,8 +251,9 @@ class AixmTools:
         if (o is None) and (not self.oCtrl.oLog is None):
             self.oCtrl.oLog.error("Object is none !? in={0} out={1}\n{2}".format(inputname, outputname, o), outConsole=True)
             return None
-        if self.oCtrl.oAixm.openType == "lxml":
-            inputname = inputname.lower()
+        if self.oCtrl:
+            if self.oCtrl.oAixm.openType == "lxml":
+                inputname = inputname.lower()
         if outputname is None:
             outputname = inputname
         value = o.find(inputname, recursive=False)
@@ -543,16 +545,14 @@ class AixmTools:
             vertex_list = reversed(vertex_list)
 
         return LineString(vertex_list)
-
-
+    
     def getAirspaceFunctionalKeyName(self, airspaceProperties:dict) -> str:
         sKey = "{0}.{1}.{2}".format(airspaceProperties["srcClass"], airspaceProperties["srcType"], airspaceProperties["srcName"])
         return sKey
 
     def getAirspaceFunctionalKey(self, airspaceProperties:dict) -> str:
-        sKey = "{0}@{1}".format(self.getAirspaceFunctionalKeyName(airspaceProperties), airspaceProperties["alt"])
+        sKey = "{0}@{1}".format(self.getAirspaceFunctionalKeyName(airspaceProperties), aixmReader.getSerializeAlt(airspaceProperties))
         return sKey
-
 
     def getAirspaceFunctionalLowerKey(self, airspaceProperties:dict) -> str:
         if ("nameV" in airspaceProperties) and \
@@ -563,5 +563,4 @@ class AixmTools:
         else:
             sKey = None
         return sKey
-
 

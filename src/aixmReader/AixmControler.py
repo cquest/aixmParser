@@ -57,7 +57,7 @@ class AixmControler:
         self.oAixmTools = None              #Utilitaire pour geojson
         self.sEncoding = "utf-8"            #Encoding du fichier source
         self.__ALL = False                  #Generation de toutes zones cartographie IFR+VFR
-        self.__IFR = False                  #Generation spécifique pour cartographie IFR (en dessus de FL115)
+        self.__IFR = False                  #Generation spécifique pour cartographie IFR (au dessus de FL115)
         self.__VFR = False                  #Generation spécifique pour cartographie VFR (en dessous FL115)
         self.__FreeFlight = False           #Generation spécifique pour le Vol Libre avec différents filtrages (E, F, G...)
         self.__Draft = False                #Limitation du nombre de segmentation des arcs et cercles en geojson

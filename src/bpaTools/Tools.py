@@ -81,8 +81,8 @@ def writeJsonFile(sFile:str, jdata:dict) -> None:
     return
 
 
-def writeTextFile(sFile:str, stext:str):
-    textFile = open(sFile, "w", encoding="utf-8")
+def writeTextFile(sFile:str, stext:str, sencoding="cp1252"):
+    textFile = open(sFile, "w", encoding=sencoding)
     textFile.write(stext)
     textFile.close()
     return
