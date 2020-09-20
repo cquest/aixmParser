@@ -990,6 +990,7 @@ class AixmAirspaces4_5:
             if oValDistVer.string == "0":   sType = "ASFC"
         elif oCodeDistVer.string == "ALT":  sType = "AMSL"
         elif oCodeDistVer.string == "HEI":  sType = "ASFC"
+        #elif oCodeDistVer.string == "STD":  sType = "AMSL"  #Default value for 'R T VALLORBE (GLIDER)' or 'R T LE BRASSUS (GLIDER)'
             
         #Décodage
         altM:int    = None
@@ -1036,7 +1037,7 @@ class AixmAirspaces4_5:
                 sAlt = "SFC"
             else:
                 if sType == "":
-                    sAlt = "{0}M".format(oValDistVer.string)
+                    sAlt = "{0}M AMSL".format(oValDistVer.string)  #'AMSL' is default value
                 else:
                     sAlt = "{0}M {1}".format(oValDistVer.string, sType)
                 if oCodeDistVer.string == "HEI":
@@ -1060,29 +1061,32 @@ class AixmAirspaces4_5:
         sOrdinalLower:str = "ordinalLower"    #samples: 'ordinalLowerM' or 'ordinalLowerMinM'
         aFinalLower:list
         aAltLower    = self.getAltitude(theAirspace, "Lower", "",    ase.valDistVerLower, ase.codeDistVerLower, ase.uomDistVerLower, aGroundEstimatedHeight)
-        if theAirspace["id"] == "LTA13071":
-            #Spécifique pour fichiers (EuCtrl & SIA France): Ignorer la double référence altimétrique du plancher de la #LTA FRANCE 1 Lower(3000FT ASFC|FL115)
+        aAltLowerMin = self.getAltitude(theAirspace, "Lower", "Min", ase.valDistVerMnm, ase.codeDistVerMnm, ase.uomDistVerMnm, aGroundEstimatedHeight)
+        #Spécifique pour les fichiers (EuCtrl & SIA France): Ignorer la double référence altimétrique du plancher pour toutes les #LTA FRANCE
+        if theAirspace["type"] == "LTA":
             aAltLowerMin = [-1, 0, None, None, None]
-        else:
-            aAltLowerMin = self.getAltitude(theAirspace, "Lower", "Min", ase.valDistVerMnm, ase.codeDistVerMnm, ase.uomDistVerMnm, aGroundEstimatedHeight)
-        if aAltLowerMin[0]>=0:
-            aFinalLower = aAltLowerMin
-            sOrdinalLower += "MinM"
-        else:
-            aFinalLower = aAltLower
-            sOrdinalLower += "M"
+        #if aAltLowerMin[0]>=0:
+        #    aFinalLower = aAltLowerMin
+        #    sOrdinalLower += "MinM"
+        #else:
+        #    aFinalLower = aAltLower
+        #    sOrdinalLower += "M"
+        aFinalLower = aAltLower
+        sOrdinalLower += "M"
 
         sOrdinalUpper:str = "ordinalUpper"    #samples: 'ordinalUpperM' or 'ordinalUpperMaxM'
         aFinalUpper:list
         aAltUpper    = self.getAltitude(theAirspace, "Upper", "",    ase.valDistVerUpper, ase.codeDistVerUpper, ase.uomDistVerUpper, aGroundEstimatedHeight)
         aAltUpperMax = self.getAltitude(theAirspace, "Upper", "Max", ase.valDistVerMax, ase.codeDistVerMax, ase.uomDistVerMax, aGroundEstimatedHeight)
-        if aAltUpperMax[0]>=0:
-            aFinalUpper = aAltUpperMax
-            sOrdinalUpper += "MaxM"
-        else:
-            aFinalUpper = aAltUpper
-            sOrdinalUpper += "M"
-
+        #if aAltUpperMax[0]>=0:
+        #    aFinalUpper = aAltUpperMax
+        #    sOrdinalUpper += "MaxM"
+        #else:
+        #    aFinalUpper = aAltUpper
+        #    sOrdinalUpper += "M"
+        aFinalUpper = aAltUpper
+        sOrdinalUpper += "M"
+        
         #Verrification de conformité des altitudes
         low = aFinalLower[1]
         up  = aFinalUpper[1]

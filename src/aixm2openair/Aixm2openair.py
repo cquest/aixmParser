@@ -66,8 +66,8 @@ def parseAlt(altRef:str, gpsType:str, oZone:dict) -> str:
             altFT = int(float(altM+100) / aixmReader.CONST.ft)      #Surélévation du plafond de 100 mètres pour marge d'altitude
             ret = "{0}FT AMSL".format(altFT)
             return ret
-        elif "ordinalUpperMaxM" in oZone:
-            return oZone["upperMax"]
+        #elif "ordinalUpperMaxM" in oZone:
+        #    return oZone["upperMax"]
         else:
             return oZone["upper"]
     elif altRef=="AL":
@@ -79,8 +79,8 @@ def parseAlt(altRef:str, gpsType:str, oZone:dict) -> str:
             else:
                 ret = "{0}FT AMSL".format(altFT)
             return ret
-        elif "ordinalLowerMinM" in oZone:
-            return oZone["lowerMin"]
+        #elif "ordinalLowerMinM" in oZone:
+        #    return oZone["lowerMin"]
         else:
             return oZone["lower"]
     else:
