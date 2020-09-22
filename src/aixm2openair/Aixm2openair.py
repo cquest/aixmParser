@@ -48,13 +48,15 @@ def makeOpenair(oAirspace:dict, gpsType:str) -> list:
     if ("activationCode" in oZone) and ("activationDesc" in oZone):       openair.append("*AActiv [{0}] {1}".format(oZone["activationCode"], oZone["activationDesc"]))
     if ("activationCode" in oZone) and not ("activationDesc" in oZone):   openair.append("*AActiv [{0}]".format(oZone["activationCode"]))
     if not("activationCode" in oZone) and ("activationDesc" in oZone):    openair.append("*AActiv {0}".format(oZone["activationDesc"]))
-    if "timeScheduling" in oZone:                                         openair.append("*ATimes {0}".format(oZone["timeScheduling"]))
-    if "exceptSAT" in oZone:    openair.append("*AExSAT {0}".format(oZone["exceptSAT"]))
-    if "exceptSUN" in oZone:    openair.append("*AExSUN {0}".format(oZone["exceptSUN"]))
-    if "exceptHOL" in oZone:    openair.append("*AExHOL {0}".format(oZone["exceptHOL"]))
-    if "seeNOTAM" in oZone:     openair.append("*ASeeNOTAM {0}".format(oZone["seeNOTAM"]))
+    if "timeScheduling" in oZone:   openair.append("*ATimes {0}".format(oZone["timeScheduling"]))
+    if "exceptSAT" in oZone:        openair.append("*AExSAT {0}".format(oZone["exceptSAT"]))
+    if "exceptSUN" in oZone:        openair.append("*AExSUN {0}".format(oZone["exceptSUN"]))
+    if "exceptHOL" in oZone:        openair.append("*AExHOL {0}".format(oZone["exceptHOL"]))
+    if "seeNOTAM" in oZone:         openair.append("*ASeeNOTAM {0}".format(oZone["seeNOTAM"]))
     openair.append("AH {0}".format(parseAlt("AH", gpsType, oZone)))
+    if "ordinalUpperMaxM" in oZone:     openair.append("*AH2 {0}".format(oZone["upperMax"]))
     openair.append("AL {0}".format(parseAlt("AL", gpsType, oZone)))
+    if "ordinalLowerMinM" in oZone:     openair.append("*AL2 {0}".format(oZone["lowerMin"]))
     if "geometry" in oAirspace:
         openair += oAirspace["geometry"]
     return openair

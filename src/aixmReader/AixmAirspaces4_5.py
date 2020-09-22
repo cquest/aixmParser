@@ -987,9 +987,9 @@ class AixmAirspaces4_5:
         #Décodage du référencement d'altitude
         sType:str = ""                      #Defualt value
         if oCodeDistVer is None:
-            if oValDistVer.string == "0":   sType = "ASFC"
+            if oValDistVer.string == "0":   sType = "AGL"       #old ASFC
+        elif oCodeDistVer.string == "HEI":  sType = "AGL"       #old ASFC
         elif oCodeDistVer.string == "ALT":  sType = "AMSL"
-        elif oCodeDistVer.string == "HEI":  sType = "ASFC"
         #elif oCodeDistVer.string == "STD":  sType = "AMSL"  #Default value for 'R T VALLORBE (GLIDER)' or 'R T LE BRASSUS (GLIDER)'
             
         #Décodage
@@ -1063,8 +1063,8 @@ class AixmAirspaces4_5:
         aAltLower    = self.getAltitude(theAirspace, "Lower", "",    ase.valDistVerLower, ase.codeDistVerLower, ase.uomDistVerLower, aGroundEstimatedHeight)
         aAltLowerMin = self.getAltitude(theAirspace, "Lower", "Min", ase.valDistVerMnm, ase.codeDistVerMnm, ase.uomDistVerMnm, aGroundEstimatedHeight)
         #Spécifique pour les fichiers (EuCtrl & SIA France): Ignorer la double référence altimétrique du plancher pour toutes les #LTA FRANCE
-        if theAirspace["type"] == "LTA":
-            aAltLowerMin = [-1, 0, None, None, None]
+        #if theAirspace["type"] == "LTA":
+        #    aAltLowerMin = [-1, 0, None, None, None]
         #if aAltLowerMin[0]>=0:
         #    aFinalLower = aAltLowerMin
         #    sOrdinalLower += "MinM"
