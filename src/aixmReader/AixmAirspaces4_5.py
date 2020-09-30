@@ -2,8 +2,12 @@
 
 import bpaTools
 import aixmReader
-import xmlSIA
 from bs4 import BeautifulSoup
+try:
+    import xmlSIA
+except ImportError:
+    xmlSIA = None
+   
 
 #Sauvegarde du catalogue de zones sous forme de CSV
 def convertJsonCalalogToCSV(cat:dict) -> str:
@@ -88,7 +92,7 @@ def getSerializeAltM(airspaceProperties:dict) -> str:
 def getVerboseName(cat:dict) -> str:
     #Nouveau format fixé le 13/08/2020 - AN <Type> <Nommage> [Frequences] [([<codeActivity>] / [SeeNOTAM])]
     sVerboseName:str = "{0} {1}".format(cat["type"], cat["name"])
-    if "Mhz" in cat:
+    if xmlSIA and ("Mhz" in cat):
         sFreq = xmlSIA.getMasterFrequecy(cat["Mhz"], cat["type"])
         if sFreq:
             sVerboseName += " " + sFreq
