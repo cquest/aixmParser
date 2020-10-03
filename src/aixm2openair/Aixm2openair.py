@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
+import json
 
 import bpaTools
 from shapely.geometry import LineString, Point
 import aixmReader
+
 
 errLocalisationPoint:list = ["DP 45:00:00 N 005:00:00 W"]
 
@@ -44,7 +46,7 @@ def makeOpenair(oAirspace:dict, gpsType:str) -> list:
     openair.append("*AAlt {0} {1}".format(aixmReader.getSerializeAlt(oZone), aixmReader.getSerializeAltM(oZone)))
     openair.append("*AUID GUId={0} UId={1} Id={2}".format(oZone.get("GUId", "!"), oZone["UId"], oZone["id"]))
     if "desc" in oZone:     openair.append("*ADescr {0}".format(oZone["desc"]))
-    if "Mhz" in oZone:      openair.append("*AMhz {0}".format(oZone["Mhz"]))
+    if "Mhz" in oZone:      openair.append("*AMhz {0}".format(json.dumps(oZone["Mhz"])))
     if ("activationCode" in oZone) and ("activationDesc" in oZone):       openair.append("*AActiv [{0}] {1}".format(oZone["activationCode"], oZone["activationDesc"]))
     if ("activationCode" in oZone) and not ("activationDesc" in oZone):   openair.append("*AActiv [{0}]".format(oZone["activationCode"]))
     if not("activationCode" in oZone) and ("activationDesc" in oZone):    openair.append("*AActiv {0}".format(oZone["activationDesc"]))
@@ -371,10 +373,10 @@ class Aixm2openair:
                         include = (not oZone["vfrZone"]) and (not oZone["groupZone"])
                     elif context=="vfr":
                         include = oZone["vfrZone"]
-                        #include = include or oZone.get("vfrZoneExt", False)   			#Ne pas exporter l'extension de vol possible en VFR de 0m jusqu'au FL175/5334m                     
+                        include = include or oZone.get("vfrZoneExt", False)   			#Exporter l'extension de vol possible en VFR de 0m jusqu'au FL175/5334m                     
                     elif context=="ff":
                         include = oZone["freeFlightZone"]
-                        #include = include or oZone.get("freeFlightZoneExt", False)		#Ne pas exporter l'extension de vol possible en VFR de 0m jusqu'au FL175/5334m
+                        include = include or oZone.get("freeFlightZoneExt", False)		#Exporter l'extension de vol possible en VFR de 0m jusqu'au FL175/5334m
                 if include==True and exceptDay!="":
                     if exceptDay in oZone:                              include = False
                 if include==True:
