@@ -280,7 +280,7 @@ class Aixm2openair:
                 else:
                     openair.append("V D=+")
                 openair.append("DB {0} {1}, {2} {3}".format(lat1s, lon1s, lat1e, lon1e))
-                
+
                 sPoint = "DP {0} {1}".format(lat1e, lon1e)
                 lastPoint = sPoint
                 if sPoint != firstPoint:
@@ -360,7 +360,7 @@ class Aixm2openair:
                 include = not oZone["excludeAirspaceNotCoord"]
             if include:
                 if len(o["geometry"])==1:
-                    #Exclure tout les points fixes - or (oAs.oBorder[0]!=errLocalisationPoint)
+                    #Exclure toutes zones en erreur de localisation (oAs.oBorder[0]!=errLocalisationPoint)
                     include = False
                 elif len(o["geometry"])==2 and o["geometry"][0][:4]!="V X=":
                     #Exclure les doubles points fixes (DP.. + DP..) mais autoriser les cercles (V X=.. + DP..)
@@ -373,7 +373,7 @@ class Aixm2openair:
                         include = (not oZone["vfrZone"]) and (not oZone["groupZone"])
                     elif context=="vfr":
                         include = oZone["vfrZone"]
-                        include = include or oZone.get("vfrZoneExt", False)   			#Exporter l'extension de vol possible en VFR de 0m jusqu'au FL175/5334m                     
+                        include = include or oZone.get("vfrZoneExt", False)   			#Exporter l'extension de vol possible en VFR de 0m jusqu'au FL175/5334m
                     elif context=="ff":
                         include = oZone["freeFlightZone"]
                         include = include or oZone.get("freeFlightZoneExt", False)		#Exporter l'extension de vol possible en VFR de 0m jusqu'au FL175/5334m
@@ -392,8 +392,8 @@ class Aixm2openair:
     #Idem, suppression des 'lignes' (ex: Axe d'approche d'un aérodrome ou autres...)
     def cleanAirspacesCalalog(self, airspacesCatalog) -> None:
         self.oAirspacesCatalog = airspacesCatalog
-        if self.oAirspacesCatalog.cleanAirspacesCalalog:     #Contrôle si l'optimisation est déjà réalisée
-            return
+        #if self.oAirspacesCatalog.cleanAirspacesCalalog:     #Contrôle si l'optimisation est déjà réalisée
+        #    return
 
         sMsg = "Clean catalog"
         self.oCtrl.oLog.info(sMsg)
@@ -411,11 +411,22 @@ class Aixm2openair:
                 lNbChange+=1
 
             #if oZone["freeFlightZone"]:
-            if len(oGeom)==1:                               exclude=True
-            elif len(oGeom)==2 and oGeom[0][:4]!="V X=":    exclude=True
-            else:                                           exclude=False
+            if len(oGeom)==1:                               #Point
+                exclude=True
+                oZone.update({"geometryType":"Point"})        #info for catalog "Point"
+                #Transformer systématiquement les 'Point simples' en cercle de rayon 1 Km = 0.54 NM (Nautic Milles)
+                #exemple d'un Point d'ogigine: ['DP 44:21:02 N 001:28:43 E']
+                #se transforme en - ['V X=44:21:02 N 001:28:43 E', 'DC 0.54']
+                oGeom[0] = "V X=" + oGeom[0][3:]
+                oGeom.append("DC 0.54")
+            elif len(oGeom)==2 and oGeom[0][:4]!="V X=":    #Line
+                exclude=True
+            else:
+                exclude=False
             if exclude:
                 oZone.update({"freeFlightZone":False})              	#Change value in catalog
+                if oZone.get("freeFlightZoneExt", False)==True:
+                    oZone.update({"freeFlightZoneExt":False})           #Change value in catalog
                 oZone.update({"excludeAirspaceNotFfArea":True})       	#Flag this change in catalog
                 lNbChange+=1
             barre.update(idx)

@@ -28,7 +28,7 @@ def convertJsonCalalogToCSV(cat:dict) -> str:
     #Phase 2.2 : Construct a global index on columns (collect all columns in contents for complete header of CSV file...)
     #oCols avec initialisation d'une table d'index avec imposition de l'ordonnancement de colonnes choisies
     oCols = {"zoneType":0, "groupZone":0, "vfrZone":0, "vfrZoneExt":0, "freeFlightZone":0, "freeFlightZoneExt":0, \
-             "excludeAirspaceNotCoord":0,"excludeAirspaceNotFfArea":0, "excludeAirspaceByFilter":0, "excludeAirspaceByAlt":0, "excludeAirspaceByRef":0, \
+             "excludeAirspaceNotCoord":0,"excludeAirspaceNotFfArea":0, "geometryType":0, "excludeAirspaceByFilter":0, "excludeAirspaceByAlt":0, "excludeAirspaceByRef":0, \
              "potentialFilter4FreeFlightZone":0, "orgName":0, "keySrcFile":0, "GUId":0, "UId":0, "id":0, \
              "srcClass":0, "srcType":0, "srcName":0, "class":0, "type":0, "localType":0, "codeActivity":0, "codeLocInd":0,\
              "name":0, "nameV":0, "Mhz":0, "groundEstimatedHeight":0, \

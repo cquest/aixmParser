@@ -15190,6 +15190,26 @@
 		</Gbv>
 	</Gbr>
 	<Ase>
+		<AseUid mid="1562881">
+			<codeType>D-OTHER</codeType>
+			<codeId>LFV391PJE</codeId>
+		</AseUid>
+		<txtLocalType>PJE</txtLocalType>
+		<txtName>391</txtName>
+		<codeDistVerUpper>STD</codeDistVerUpper>
+		<valDistVerUpper>140</valDistVerUpper>
+		<uomDistVerUpper>FL</uomDistVerUpper>
+		<codeDistVerLower>HEI</codeDistVerLower>
+		<valDistVerLower>0</valDistVerLower>
+		<uomDistVerLower>FT</uomDistVerLower>
+		<Att>
+			<codeWorkHr>HX</codeWorkHr>
+			<txtRmkWorkHr>SR-SS+30.</txtRmkWorkHr>
+		</Att>
+		<txtRmk>BLW FL 115: Actual activity on CLERMONT APP and CAHORS A/A.#
+ABV FL 115: Actual activity on TOULOUSE APP.</txtRmk>
+	</Ase>
+	<Ase>
 		<AseUid mid="mid-Test1">
 			<codeType>Q</codeType>
 			<codeId>Test1</codeId>
@@ -16238,6 +16258,21 @@ Flying over LUXEUIL SAINT- SAUVEUR AD BLW 1000ft ASFC prohibited H24.</txtRmk>
 		<uomDistVerMnm>FT</uomDistVerMnm>
 		<txtRmk>un test</txtRmk>
 	</Ase>
+	<Abd>
+		<AbdUid mid="1569310">
+			<AseUid mid="1562881">
+				<codeType>D-OTHER</codeType>
+				<codeId>LFV391PJE</codeId>
+			</AseUid>
+		</AbdUid>
+		<Avx>
+			<codeType>GRC</codeType>
+			<geoLat>442102.00N</geoLat>
+			<geoLong>0012843.00E</geoLong>
+			<codeDatum>WGE</codeDatum>
+			<valCrc>417B265D</valCrc>
+		</Avx>
+	</Abd>	
 	<Abd>
 		<AbdUid mid="mid-Test1">
 			<AseUid mid="mid-Test1">

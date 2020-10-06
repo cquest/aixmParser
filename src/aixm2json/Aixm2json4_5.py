@@ -406,10 +406,10 @@ class Aixm2json4_5:
                     include = (not oZone["vfrZone"]) and (not oZone["groupZone"])
                 elif context=="vfr":
                     include = oZone["vfrZone"]
-                    #include = include or oZone.get("vfrZoneExt", False)     		#Ne pas exporter l'extension de vol possible en VFR de 0m jusqu'au FL175/5334m                   
+                    include = include or oZone.get("vfrZoneExt", False)     		#Exporter l'extension de vol possible en VFR de 0m jusqu'au FL175/5334m
                 elif context=="ff":
                     include = oZone["freeFlightZone"]
-                    #include = include or oZone.get("freeFlightZoneExt", False) 	#Ne pas exporter l'extension de vol possible en VFR de 0m jusqu'au FL175/5334m
+                    include = include or oZone.get("freeFlightZoneExt", False) 	    #Exporter l'extension de vol possible en VFR de 0m jusqu'au FL175/5334m
                     include = include and (o["geometry"]["coordinates"]!=errLocalisationPoint)
             if include:
                 geojson.append(o)
@@ -443,12 +443,18 @@ class Aixm2json4_5:
                 lNbChange+=1
 
             #if oZone["freeFlightZone"]:
-            if oGeom["type"] in ["Point","LineString"]:     exclude=True
-            elif len(oGeom["coordinates"][0])<3:            exclude=True
-            else:                                           exclude=False
+            if oGeom["type"] in ["Point","LineString"]:
+                exclude=True
+            elif len(oGeom["coordinates"][0])<3:
+                exclude=True
+            else:
+                exclude=False
             if exclude:
-                oZone.update({"freeFlightZone":False})            #Change value in catalog
+                oZone.update({"freeFlightZone":False})              #Change value in catalog
+                if oZone.get("freeFlightZoneExt", False)==True:
+                    oZone.update({"freeFlightZoneExt":False})       #Change value in catalog
                 oZone.update({"excludeAirspaceNotFfArea":True})     #Flag this change in catalog
+                oZone.update({"geometryType":oGeom["type"]})        #info for catalog "Point" or "LineString"
                 lNbChange+=1
             barre.update(idx)
         barre.reset()
