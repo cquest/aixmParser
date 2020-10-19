@@ -188,13 +188,13 @@ class AixmAirspaces4_5:
     def initAirspacesCatalogIdx(self):
         sTitle = "Airspaces Groups"
         sXmlTag = "Adg"
-        if not self.oCtrl.oAixm.doc.find(sXmlTag):
+        if not self.oCtrl.oAixm.root.find(sXmlTag, recursive=False):
             sMsg = "Missing tags {0} - {1}".format(sXmlTag, sTitle)
             self.oCtrl.oLog.info(sMsg, outConsole=False)
         else:
             sMsg = "Indexing {0} - {1}".format(sXmlTag, sTitle)
             self.oCtrl.oLog.info(sMsg)
-            oList = self.oCtrl.oAixm.doc.find_all(sXmlTag)
+            oList = self.oCtrl.oAixm.root.find_all(sXmlTag, recursive=False)
             barre = bpaTools.ProgressBar(len(oList), 20, title=sMsg, isSilent=self.oCtrl.oLog.isSilent)
             idx = 0
             for o in oList:
@@ -202,20 +202,20 @@ class AixmAirspaces4_5:
                 if o.AseUidSameExtent:
                     self.oIdxAseUid2AseUid.update({o.AdgUid.AseUid["mid"]:o.AseUidSameExtent["mid"]})
                 if o.AseUidBase:
-                    for o2 in o.find_all("AseUidComponent"):
+                    for o2 in o.find_all("AseUidComponent", recursive=False):
                         self.oIdxAseUid2AseUid2.update({o2["mid"]:o.AseUidBase["mid"]})
                 barre.update(idx)
             barre.reset()
 
         sTitle = "Airspaces Services"
         sXmlTag = "Sae"
-        if not self.oCtrl.oAixm.doc.find(sXmlTag):
+        if not self.oCtrl.oAixm.root.find(sXmlTag, recursive=False):
             sMsg = "Missing tags {0} - {1}".format(sXmlTag, sTitle)
             self.oCtrl.oLog.info(sMsg, outConsole=False)
         else:
             sMsg = "Indexing {0} - {1}".format(sXmlTag, sTitle)
             self.oCtrl.oLog.info(sMsg)
-            oList = self.oCtrl.oAixm.doc.find_all(sXmlTag)
+            oList = self.oCtrl.oAixm.root.find_all(sXmlTag, recursive=False)
             barre = bpaTools.ProgressBar(len(oList), 20, title=sMsg, isSilent=self.oCtrl.oLog.isSilent)
             idx = 0
             for o in oList:
@@ -226,13 +226,13 @@ class AixmAirspaces4_5:
 
         sTitle = "Organizations"
         sXmlTag = "Uni"
-        if not self.oCtrl.oAixm.doc.find(sXmlTag):
+        if not self.oCtrl.oAixm.root.find(sXmlTag, recursive=False):
             sMsg = "Missing tags {0} - {1}".format(sXmlTag, sTitle)
             self.oCtrl.oLog.info(sMsg, outConsole=False)
         else:
             sMsg = "Indexing {0} - {1}".format(sXmlTag, sTitle)
             self.oCtrl.oLog.info(sMsg)
-            oList = self.oCtrl.oAixm.doc.find_all(sXmlTag)
+            oList = self.oCtrl.oAixm.root.find_all(sXmlTag, recursive=False)
             barre = bpaTools.ProgressBar(len(oList), 20, title=sMsg, isSilent=self.oCtrl.oLog.isSilent)
             idx = 0
             for o in oList:
@@ -245,13 +245,13 @@ class AixmAirspaces4_5:
     def initAirspacesBordersIdx(self):
         sTitle = "Airspaces Borders"
         sXmlTag = "Abd"
-        if not self.oCtrl.oAixm.doc.find(sXmlTag):
+        if not self.oCtrl.oAixm.root.find(sXmlTag, recursive=False):
             sMsg = "Missing tags {0} - {1}".format(sXmlTag, sTitle)
             self.oCtrl.oLog.warning(sMsg, outConsole=True)
         else:
             sMsg = "Indexing {0} - {1}".format(sXmlTag, sTitle)
             self.oCtrl.oLog.info(sMsg)
-            oList = self.oCtrl.oAixm.doc.find_all(sXmlTag)
+            oList = self.oCtrl.oAixm.root.find_all(sXmlTag, recursive=False)
             barre = bpaTools.ProgressBar(len(oList), 20, title=sMsg, isSilent=self.oCtrl.oLog.isSilent)
             idx = 0
             for o in oList:
@@ -334,7 +334,7 @@ class AixmAirspaces4_5:
 
         sMsg = "Loading {0} - {1}".format(sXmlTag, sTitle)
         self.oCtrl.oLog.info(sMsg)
-        oList = self.oCtrl.oAixm.doc.find_all(sXmlTag)
+        oList = self.oCtrl.oAixm.root.find_all(sXmlTag, recursive=False)
         barre = bpaTools.ProgressBar(len(oList), 20, title=sMsg, isSilent=self.oCtrl.oLog.isSilent)
         idx = 0
         for o in oList:
@@ -817,8 +817,7 @@ class AixmAirspaces4_5:
                 #   cas 2 : UTC(01/01->31/12) MON to FRI(08:30->16:00)
                 oGlobTimsh:dict = {}
                 #Interprétation de toutes les occurances de <Timsh>
-                oAtt = BeautifulSoup(str(ase.Att), "xml")
-                oLstTsh = oAtt.find_all("Timsh")
+                oLstTsh = ase.Att.find_all("Timsh", recursive=False)
                 for oTsh in oLstTsh:
                     sMonthPeriod:str = oTsh.codeTimeRef.string + "("
                     sMonthPeriod += str(oTsh.dateValidWef.string).replace("-", "/") + "->"

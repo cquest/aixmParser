@@ -43,14 +43,14 @@ def makeOpenair(oAirspace:dict, gpsType:str) -> list:
 
     openair.append("AC {0}".format(theClass))
     openair.append("AN {0}".format(oZone["nameV"]))
-    openair.append("*AAlt {0} {1}".format(aixmReader.getSerializeAlt(oZone), aixmReader.getSerializeAltM(oZone)))
+    openair.append('*AAlt ["{0}", "{1}"]'.format(aixmReader.getSerializeAlt(oZone)[1:-1], aixmReader.getSerializeAltM(oZone)[1:-1]))
     openair.append("*AUID GUId={0} UId={1} Id={2}".format(oZone.get("GUId", "!"), oZone["UId"], oZone["id"]))
     if "desc" in oZone:     openair.append("*ADescr {0}".format(oZone["desc"]))
     if "Mhz" in oZone:      openair.append("*AMhz {0}".format(json.dumps(oZone["Mhz"])))
     if ("activationCode" in oZone) and ("activationDesc" in oZone):       openair.append("*AActiv [{0}] {1}".format(oZone["activationCode"], oZone["activationDesc"]))
     if ("activationCode" in oZone) and not ("activationDesc" in oZone):   openair.append("*AActiv [{0}]".format(oZone["activationCode"]))
     if not("activationCode" in oZone) and ("activationDesc" in oZone):    openair.append("*AActiv {0}".format(oZone["activationDesc"]))
-    if "timeScheduling" in oZone:   openair.append("*ATimes {0}".format(oZone["timeScheduling"]))
+    if "timeScheduling" in oZone:   openair.append("*ATimes {0}".format(json.dumps(oZone["timeScheduling"])))
     if "exceptSAT" in oZone:        openair.append("*AExSAT {0}".format(oZone["exceptSAT"]))
     if "exceptSUN" in oZone:        openair.append("*AExSUN {0}".format(oZone["exceptSUN"]))
     if "exceptHOL" in oZone:        openair.append("*AExHOL {0}".format(oZone["exceptHOL"]))
@@ -111,7 +111,7 @@ class Aixm2openair:
 
         if self.geoBorders == None:
             self.geoBorders = dict()
-            oList = self.oCtrl.oAixm.doc.find_all(sXmlTag)
+            oList = self.oCtrl.oAixm.root.find_all(sXmlTag, recursive=False)
             barre = bpaTools.ProgressBar(len(oList), 20, title=sMsg, isSilent=self.oCtrl.oLog.isSilent)
             idx = 0
             openair = []
@@ -134,7 +134,7 @@ class Aixm2openair:
         openair.append("AH SFC")        #or "AH 500 FT AMSL"
         openair.append("AL SFC")
         # geometry
-        for gbv in gbr.find_all("Gbv"):
+        for gbv in gbr.find_all("Gbv", recursive=False):
             if gbv.codeType.string not in ("GRC", "END"):
                 self.oCtrl.oLog.critical("codetype non reconnu\n{0}".format(gbv), outConsole=True)
             lon, lat = self.oCtrl.oAixmTools.geo2coordinates(gbv)
@@ -159,7 +159,7 @@ class Aixm2openair:
         sTitle = "Airspaces Borders"
         sXmlTag = "Abd"
 
-        if not self.oCtrl.oAixm.doc.find(sXmlTag):
+        if not self.oCtrl.oAixm.root.find(sXmlTag, recursive=False):
             sMsg = "Missing tags {0} - {1}".format(sXmlTag, sTitle)
             self.oCtrl.oLog.warning(sMsg, outConsole=True)
             return
@@ -220,7 +220,7 @@ class Aixm2openair:
             return
 
         #else:
-        avx_list = oBorder.find_all("Avx")
+        avx_list = oBorder.find_all("Avx", recursive=False)
         firstPoint = lastPoint = None
         for avx_cur in range(0,len(avx_list)):
             avx = avx_list[avx_cur]
@@ -250,13 +250,13 @@ class Aixm2openair:
                 #DB 48:24:15 N 002:07:55 E,48:21:26 N 002:00:59 E
                 #DP 48:21:26 N 002:00:59 E
 
-                start = self.oCtrl.oAixmTools.geo2coordinates(avx, recurse=False)
+                start = self.oCtrl.oAixmTools.geo2coordinates(avx)
                 g.append(start)
 
                 if avx_cur+1 == len(avx_list):
                     stop = g[0]
                 else:
-                    stop = self.oCtrl.oAixmTools.geo2coordinates(avx_list[avx_cur+1], recurse=False)
+                    stop = self.oCtrl.oAixmTools.geo2coordinates(avx_list[avx_cur+1])
 
                 center = self.oCtrl.oAixmTools.geo2coordinates(avx,
                                          latitude=avx.geoLatArc.string,

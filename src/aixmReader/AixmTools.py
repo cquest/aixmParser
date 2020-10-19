@@ -175,7 +175,7 @@ class AixmTools:
         return prop
 
 
-    def geo2coordinates(self, o, latitude=None, longitude=None, recurse=True):
+    def geo2coordinates(self, o, latitude=None, longitude=None) -> list:
         """ codeDatum or CODE_DATUM Format:
             WGE [WGS-84 (GRS-80).]
             WGC [WGS-72.]
@@ -203,25 +203,36 @@ class AixmTools:
             U [Other datum or unknown..]
         """
         #Ctrl du référentiel des coordonnées
-        codedatum = o.find("codeDatum", recursive=recurse).string
+        codedatum = o.find("codeDatum", recursive=False)
+        if codedatum == None:
+            codedatum = o.parent.find("codeDatum", recursive=False)
+        if codedatum == None:
+            self.oCtrl.oLog.critical("geo2coordinates() codeDatum not found ! {0}".format(o), outConsole=True)
+        codedatum = codedatum.string
         if not codedatum in ("WGE", "U"):
             self.oCtrl.oLog.critical("geo2coordinates() codedatum is {0}\n{1}".format(codedatum, o), outConsole=True)
 
         if latitude:
             sLat = latitude
         else:
-            sLat = o.find("geoLat", recursive=recurse).string
+            sLat = o.find("geoLat", recursive=False)
+            if sLat == None:
+                self.oCtrl.oLog.critical("geo2coordinates() geoLat not found ! {0}".format(o), outConsole=True)
+            sLat = sLat.string
 
         if longitude:
             sLon = longitude
         else:
-            sLon = o.find("geoLong", recursive=recurse).string
+            sLon = o.find("geoLong", recursive=False)
+            if sLon == None:
+                self.oCtrl.oLog.critical("geo2coordinates() geoLong not found ! {0}".format(o), outConsole=True)
+            sLon = sLon.string
 
         lat, lon = bpaTools.GeoCoordinates.geoStr2dd(sLat, sLon, self.oCtrl.digit4roundPoint)
-        return([lon, lat])
+        return [lon, lat]
 
 
-    def convertLength(self, length:float, srcRef:str, dstRef:str):
+    def convertLength(self, length:float, srcRef:str, dstRef:str) -> float:
         srcRef = srcRef.upper()
         dstRef = dstRef.upper()
         if not srcRef in ["NM","KM","M","FT"]:      raise Exception("Invalid input - srcRef")

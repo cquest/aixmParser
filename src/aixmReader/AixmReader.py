@@ -10,7 +10,8 @@ class AixmReader:
         bpaTools.initEvent(__file__, oCtrl.oLog)
         self.oCtrl = oCtrl                  #Référence du contrôleur appelant
         self.openType = openType            #openType in ["xml"(default) or "lxml"(html solution, with lowercase elements)]
-        self.doc = None
+        self.doc:BeautifulSoup = None
+        self.root:BeautifulSoup = None
         self.OpenFile()
         return
 
@@ -21,10 +22,10 @@ class AixmReader:
         self.doc = BeautifulSoup(open(self.oCtrl.srcFile, encoding=self.oCtrl.sEncoding), self.openType, from_encoding=self.oCtrl.sEncoding)
         
         #Extract xml root attributes
-        root = self.doc.find("AIXM-Snapshot")
-        self.srcVersion = root['version']
-        self.srcOrigin = root['origin']
-        self.srcCreated = root['created']
-        self.srcEffective = root['effective']
+        self.root = self.doc.find("AIXM-Snapshot", recursive=False)
+        self.srcVersion = self.root['version']
+        self.srcOrigin = self.root['origin']
+        self.srcCreated = self.root['created']
+        self.srcEffective = self.root['effective']
         return
 

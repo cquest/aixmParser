@@ -22,7 +22,7 @@ class Aixm2json4_5:
         sMsg = "Parsing {0} to GeoJSON - {1}".format(sXmlTag, sTitle)
         self.oCtrl.oLog.info(sMsg)
 
-        oList = self.oCtrl.oAixm.doc.find_all(sXmlTag)
+        oList = self.oCtrl.oAixm.root.find_all(sXmlTag, recursive=False)
         barre = bpaTools.ProgressBar(len(oList), 20, title=sMsg, isSilent=self.oCtrl.oLog.isSilent)
         idx = 0
         geojson = []
@@ -38,7 +38,7 @@ class Aixm2json4_5:
 
     def tower2json(self, uni) -> dict:
         if uni.codeType.string in ("TWR", "OTHER"):
-            if uni.find("geoLat"):
+            if uni.find("geoLat", recursive=False):
                 prop = self.oCtrl.oAixmTools.initProperty("Aerodrome Control Tower")
                 prop = self.oCtrl.oAixmTools.addProperty(prop, uni.OrgUid, "txtName", "organisationAuthority")
                 prop = self.oCtrl.oAixmTools.addProperty(prop, uni, "codeType", "codeType")
@@ -56,7 +56,7 @@ class Aixm2json4_5:
         sMsg = "Parsing {0} to GeoJSON - {1}".format(sXmlTag, sTitle)
         self.oCtrl.oLog.info(sMsg)
 
-        oList = self.oCtrl.oAixm.doc.find_all(sXmlTag)
+        oList = self.oCtrl.oAixm.root.find_all(sXmlTag, recursive=False)
         barre = bpaTools.ProgressBar(len(oList), 20, title=sMsg, isSilent=self.oCtrl.oLog.isSilent)
         idx = 0
         geojson = []
@@ -93,7 +93,7 @@ class Aixm2json4_5:
         sMsg = "Parsing {0} to GeoJSON - {1}".format(sXmlTag, sTitle)
         self.oCtrl.oLog.info(sMsg)
 
-        oList = self.oCtrl.oAixm.doc.find_all(sXmlTag)
+        oList = self.oCtrl.oAixm.root.find_all(sXmlTag, recursive=False)
         barre = bpaTools.ProgressBar(len(oList), 20, title=sMsg, isSilent=self.oCtrl.oLog.isSilent)
         idx = 0
         geojson = []
@@ -116,7 +116,7 @@ class Aixm2json4_5:
         prop = self.oCtrl.oAixmTools.addProperty(prop, obs, "valHgt", "height", optional=True)
         prop = self.oCtrl.oAixmTools.addProperty(prop, obs, "uomDistVer", "verticalUnit")
         prop = self.oCtrl.oAixmTools.addProperty(prop, obs, "txtRmk", "remark", optional=True)
-        geom = {"type":"Point", "coordinates":self.oCtrl.oAixmTools.geo2coordinates(obs)}
+        geom = {"type":"Point", "coordinates":self.oCtrl.oAixmTools.geo2coordinates(obs.ObsUid)}
         return {"type":"Feature", "properties":prop, "geometry":geom}
 
     def parseRunwayCenterLinePosition(self) -> None:
@@ -126,7 +126,7 @@ class Aixm2json4_5:
         sMsg = "Parsing {0} to GeoJSON - {1}".format(sXmlTag, sTitle)
         self.oCtrl.oLog.info(sMsg)
 
-        oList = self.oCtrl.oAixm.doc.find_all(sXmlTag)
+        oList = self.oCtrl.oAixm.root.find_all(sXmlTag, recursive=False)
         barre = bpaTools.ProgressBar(len(oList), 20, title=sMsg, isSilent=self.oCtrl.oLog.isSilent)
         idx = 0
         geojson = []
@@ -144,7 +144,7 @@ class Aixm2json4_5:
         prop = self.oCtrl.oAixmTools.addProperty(prop, rcp.RcpUid.RwyUid, "txtDesig", "designator")
         prop = self.oCtrl.oAixmTools.addProperty(prop, rcp, "valElev", "elevation", optional=True)
         prop = self.oCtrl.oAixmTools.addProperty(prop, rcp, "uomDistVer", "verticalUnit", optional=True)
-        geom = {"type":"Point", "coordinates":self.oCtrl.oAixmTools.geo2coordinates(rcp)}
+        geom = {"type":"Point", "coordinates":self.oCtrl.oAixmTools.geo2coordinates(rcp.RcpUid)}
         return {"type":"Feature", "properties":prop, "geometry":geom}
 
     def parseGateStands(self) -> None:
@@ -154,7 +154,7 @@ class Aixm2json4_5:
         sMsg = "Parsing {0} to GeoJSON - {1}".format(sXmlTag, sTitle)
         self.oCtrl.oLog.info(sMsg)
 
-        oList = self.oCtrl.oAixm.doc.find_all(sXmlTag)
+        oList = self.oCtrl.oAixm.root.find_all(sXmlTag, recursive=False)
         barre = bpaTools.ProgressBar(len(oList), 20, title=sMsg, isSilent=self.oCtrl.oLog.isSilent)
         idx = 0
         geojson = []
@@ -186,7 +186,7 @@ class Aixm2json4_5:
 
         if self.geoBorders == None:
             self.geoBorders = dict()
-            oList = self.oCtrl.oAixm.doc.find_all(sXmlTag)
+            oList = self.oCtrl.oAixm.root.find_all(sXmlTag, recursive=False)
             barre = bpaTools.ProgressBar(len(oList), 20, title=sMsg, isSilent=self.oCtrl.oLog.isSilent)
             idx = 0
             geojson = []
@@ -208,7 +208,7 @@ class Aixm2json4_5:
         # geometry
         g = []
         l = []
-        for gbv in gbr.find_all("Gbv"):
+        for gbv in gbr.find_all("Gbv", recursive=False):
             if gbv.codeType.string not in ("GRC", "END"):
                 self.oCtrl.oLog.critical("Not recognized codetype\n{0}".format(gbv), outConsole=True)
             g.append(self.oCtrl.oAixmTools.geo2coordinates(gbv))
@@ -232,7 +232,7 @@ class Aixm2json4_5:
         sTitle = "Airspaces Borders"
         sXmlTag = "Abd"
 
-        if not self.oCtrl.oAixm.doc.find(sXmlTag):
+        if not self.oCtrl.oAixm.root.find(sXmlTag, recursive=False):
             sMsg = "Missing tags {0} - {1}".format(sXmlTag, sTitle)
             self.oCtrl.oLog.warning(sMsg, outConsole=True)
             return
@@ -296,7 +296,7 @@ class Aixm2json4_5:
             g = self.oCtrl.oAixmTools.make_arc(Pcenter, radius)
             geom = {"type":"Polygon", "coordinates":[g]}
         else:
-            avx_list = oBorder.find_all("Avx")
+            avx_list = oBorder.find_all("Avx", recursive=False)
             for avx_cur in range(0,len(avx_list)):
                 avx = avx_list[avx_cur]
                 codeType = avx.codeType.string
@@ -312,11 +312,11 @@ class Aixm2json4_5:
                 # 'Counter Clockwise Arc' or 'Clockwise Arc'
                 #Nota: 'ABE' = 'Arc By Edge' ne semble pas utilisé dans les fichiers SIA-France et Eurocontrol-Europe
                 elif codeType in ["CCA", "CWA"]:
-                    start = self.oCtrl.oAixmTools.geo2coordinates(avx, recurse=False)
+                    start = self.oCtrl.oAixmTools.geo2coordinates(avx)
                     if avx_cur+1 == len(avx_list):
                         stop = g[0]
                     else:
-                        stop = self.oCtrl.oAixmTools.geo2coordinates(avx_list[avx_cur+1], recurse=False)
+                        stop = self.oCtrl.oAixmTools.geo2coordinates(avx_list[avx_cur+1])
 
                     center = self.oCtrl.oAixmTools.geo2coordinates(avx,
                                              latitude=avx.geoLatArc.string,
