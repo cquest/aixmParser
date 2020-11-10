@@ -61,7 +61,7 @@ class AixmTools:
                 sRet += "*" + " "*lLeftMargin + "(i)Information - " + sAddHeader + "\n"
             if sAreaKey:
                 sRet += "*" + " "*lLeftMargin + "(i)Information - '{0}' - Cartographie avec filtrage géographique des zones aériennes : {1}\n".format(sAreaKey, sAreaDesc)
-                
+
             if context=="ifr":
                 sRet += "*" + " "*lLeftMargin + "/!\Warning - 'IFR Map' - Cartographie de l'espace aérien IFR (zones majotitairement situées au dessus du niveau FL115)\n"
             elif context=="vfr":
@@ -91,7 +91,7 @@ class AixmTools:
                     sDay2 = "Jours-Fériés"
                 ext4exceptDay = exceptDay.replace("except","-for")
                 sRet += "*" + " "*lLeftMargin + "/!\Warning - '{0}' - Fichier spécifiquement utilisable les '{1}/{2}' (dépourvu des zones non-activables '{3}')\n".format(ext4exceptDay[1:], sDay1, sDay2, exceptDay)
-            
+
             sRet += "*"*50 + "\n\n"
         return sRet
 
@@ -108,7 +108,7 @@ class AixmTools:
         sizeMap = len(oOpenair)
         if sizeMap:
             headMsg = "Written"
-            with open(self.oCtrl.sOutPath + sOutFile, "w", encoding="cp1252") as output:
+            with open(self.oCtrl.sOutPath + sOutFile, "w", encoding="cp1252", errors="replace") as output:
                 oHeader = self.getJsonPropHeaderFile(sFileName, context, sizeMap)
                 sHeader:str = self.makeHeaderOpenairFile(oHeader, oOpenair, context, gpsType, exceptDay)
                 output.write(sHeader)
@@ -139,7 +139,7 @@ class AixmTools:
             if sPath=="":
                 sPath = self.oCtrl.sOutPath
             #with open(sPath + sOutFile, "w", encoding=self.oCtrl.sEncoding) as output:
-            with open(sPath + sOutFile, "w", encoding=sencoding) as output:
+            with open(sPath + sOutFile, "w", encoding=sencoding, errors="replace") as output:
                 output.write(oText)
         return
 
@@ -175,7 +175,7 @@ class AixmTools:
         return prop
 
 
-    def geo2coordinates(self, o, latitude=None, longitude=None) -> list:
+    def geo2coordinates(self, o, latitude=None, longitude=None, oZone=None) -> list:
         """ codeDatum or CODE_DATUM Format:
             WGE [WGS-84 (GRS-80).]
             WGC [WGS-72.]
@@ -209,8 +209,10 @@ class AixmTools:
         if codedatum == None:
             self.oCtrl.oLog.critical("geo2coordinates() codeDatum not found ! {0}".format(o), outConsole=True)
         codedatum = codedatum.string
-        if not codedatum in ("WGE", "U"):
-            self.oCtrl.oLog.critical("geo2coordinates() codedatum is {0}\n{1}".format(codedatum, o), outConsole=True)
+        if not codedatum in ("WGE","U","WGC","NAW"):
+            self.oCtrl.oLog.critical("geo2coordinates() codedatum is {0}\n{1}".format(codedatum, o), outConsole=False)
+            if type(oZone)==dict:
+                oZone.update({"CriticalCodedatum":codedatum})
 
         if latitude:
             sLat = latitude
@@ -312,7 +314,7 @@ class AixmTools:
     def addColorProperties(self, prop):
         sClass = prop["class"]
         #Red
-        if sClass in ["A","B","C","P","CTR","CTR-P","CTA","CTA-P","TMA","TMA-P","FIR","FIR-P","NO-FIR","PART","CLASS","SECTOR","SECTOR-C","OCA","OCA-P","OTA","OTA-P","UTA","UTA-P","UIR","UIR-P","TSA","CBA","RCA","RAS","TRA","AMA","ASR","ADIZ","POLITICAL"]:
+        if sClass in ["A","B","C","P","CTR","CTR-P","CTA","CTA-P","TMA","TMA-P","FIR","FIR-P","NO-FIR","PART","CLASS","SECTOR","SECTOR-C","OCA","OCA-P","OTA","OTA-P","UTA","UTA-P","UIR","UIR-P","TSA","CBA","RCA","RAS","TRA","AMA","ASR","ADIZ","POLITICAL","OTHER","AWY"]:
             sStroke = "#ff0000"
             sFill = "#ff8080"
             nFillOpacity = 0.5
@@ -556,7 +558,7 @@ class AixmTools:
             vertex_list = reversed(vertex_list)
 
         return LineString(vertex_list)
-    
+
     def getAirspaceFunctionalKeyName(self, airspaceProperties:dict) -> str:
         sKey = "{0}.{1}.{2}".format(airspaceProperties["srcClass"], airspaceProperties["srcType"], airspaceProperties["srcName"])
         return sKey

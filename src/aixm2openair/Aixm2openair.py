@@ -73,7 +73,10 @@ def parseAlt(altRef:str, gpsType:str, oZone:dict) -> str:
         #elif "ordinalUpperMaxM" in oZone:
         #    return oZone["upperMax"]
         else:
-            return oZone["upper"]
+            if ("upper" in oZone):
+                return oZone["upper"]
+            else:
+                return "FL999"
     elif altRef=="AL":
         if gpsType=="-gpsWithoutTopo" and (("ordinalLowerMinM" in oZone) or ("ordinalLowerM" in oZone)):
             altM = oZone["lowerM"]
@@ -86,7 +89,10 @@ def parseAlt(altRef:str, gpsType:str, oZone:dict) -> str:
         #elif "ordinalLowerMinM" in oZone:
         #    return oZone["lowerMin"]
         else:
-            return oZone["lower"]
+            if ("lower" in oZone):
+                return oZone["lower"]
+            else:
+                return "SFC"
     else:
         print("parseAlt() calling error !")
     return
@@ -209,7 +215,8 @@ class Aixm2openair:
 
             lon_c, lat_c = self.oCtrl.oAixmTools.geo2coordinates(oBorder.Circle,
                                            latitude=oBorder.Circle.geoLatCen.string,
-                                           longitude=oBorder.Circle.geoLongCen.string)
+                                           longitude=oBorder.Circle.geoLongCen.string,
+                                           oZone=oZone)
 
             lat1, lon1 = bpaTools.GeoCoordinates.geoDd2dms(lat_c,"lat", lon_c,"lon", ":"," ")
             openair.append("V X={0} {1}".format(lat1, lon1))
@@ -231,7 +238,7 @@ class Aixm2openair:
                 #Openair sample
                 #DP 48:51:25 N 002:33:26 E
 
-                lon, lat = self.oCtrl.oAixmTools.geo2coordinates(avx)
+                lon, lat = self.oCtrl.oAixmTools.geo2coordinates(avx, oZone=oZone)
                 g.append([lon, lat])
                 lat1, lon1 = bpaTools.GeoCoordinates.geoDd2dms(lat,"lat", lon,"lon", ":"," ")
                 sPoint = "DP {0} {1}".format(lat1, lon1)
@@ -250,17 +257,18 @@ class Aixm2openair:
                 #DB 48:24:15 N 002:07:55 E,48:21:26 N 002:00:59 E
                 #DP 48:21:26 N 002:00:59 E
 
-                start = self.oCtrl.oAixmTools.geo2coordinates(avx)
+                start = self.oCtrl.oAixmTools.geo2coordinates(avx, oZone=oZone)
                 g.append(start)
 
                 if avx_cur+1 == len(avx_list):
                     stop = g[0]
                 else:
-                    stop = self.oCtrl.oAixmTools.geo2coordinates(avx_list[avx_cur+1])
+                    stop = self.oCtrl.oAixmTools.geo2coordinates(avx_list[avx_cur+1], oZone=oZone)
 
                 center = self.oCtrl.oAixmTools.geo2coordinates(avx,
                                          latitude=avx.geoLatArc.string,
-                                         longitude=avx.geoLongArc.string)
+                                         longitude=avx.geoLongArc.string,
+                                         oZone=oZone)
 
                 lonc, latc = center
                 lons, lats = start
@@ -289,11 +297,11 @@ class Aixm2openair:
             # 'Sequence of geographical (political) border vertexes'
             elif codeType == "FNT":
                 # geographic borders
-                start = self.oCtrl.oAixmTools.geo2coordinates(avx)
+                start = self.oCtrl.oAixmTools.geo2coordinates(avx, oZone=oZone)
                 if avx_cur+1 == len(avx_list):
                     stop = g[0]
                 else:
-                    stop = self.oCtrl.oAixmTools.geo2coordinates(avx_list[avx_cur+1])
+                    stop = self.oCtrl.oAixmTools.geo2coordinates(avx_list[avx_cur+1], oZone=oZone)
 
                 if avx.GbrUid["mid"] in self.geoBorders:
                     fnt = self.geoBorders[avx.GbrUid["mid"]]
@@ -312,7 +320,7 @@ class Aixm2openair:
                     g.append(start)
             else:
                 self.oCtrl.oLog.warning("Default case - GbrUid='{0}' Name={1} of {2}".format(avx.GbrUid["mid"], avx.GbrUid.txtName.string, oZone["nameV"]), outConsole=False)
-                lon, lat = self.oCtrl.oAixmTools.geo2coordinates(avx)
+                lon, lat = self.oCtrl.oAixmTools.geo2coordinates(avx, oZone=oZone)
                 g.append([lon, lat])
                 lat1, lon1 = bpaTools.GeoCoordinates.geoDd2dms(lat,"lat", lon,"lon", ":"," ")
                 sPoint = "DP {0} {1}".format(lat1, lon1)

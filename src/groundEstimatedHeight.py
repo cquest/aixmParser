@@ -36,23 +36,23 @@ oLog = bpaTools.Logger(appId,logFile)
 errLocalisationPoint:list = [-5,45]
 
 class GroundEstimatedHeight:
-    
+
     def __init__(self, oLog, srcPath, refPath, headFileName=""):
         bpaTools.initEvent(__file__, oLog)
         self.oLog = oLog
         self.refPath = refPath
         self.srcPath = srcPath
         self.headFileName = headFileName
-        
+
         self.elevation_data = srtm.get_data()
-        
+
         self.sHead = "headerFile"
         self.sProp = "properties"
         self.sGeom = "geometry"
         self.sCoor = "coordinates"
         self.sRefe = "referential"
         self.sFeat = "features"
-        
+
         self.sUnknownGroundHeightFileName = self.headFileName + "refUnknownGroundHeight.json"
         self.sGroundHeightFileName = self.headFileName + "refGroundEstimatedHeight"
         self.sGroundHeightFileNameJson = self.sGroundHeightFileName + ".json"
@@ -82,7 +82,7 @@ class GroundEstimatedHeight:
         if not isinstance(oCoordinates, list):
             #self.oLog.critical("float err: No coordinates found {}".format(oZone))
             return 0,{}
-        
+
         lon = []
         lat = []
         try:
@@ -92,21 +92,21 @@ class GroundEstimatedHeight:
         except Exception as e:
             sHeader = "[" + bpaTools.getFileName(__file__) + "." + self.getGroundEstimatedHeight.__name__ + "()] "
             sMsg = "/!\ Estimated height Error - AreaRef={0}".format(oZone)
-            raise Exception(sHeader + sMsg + " / " + str(e))           
-            
+            raise Exception(sHeader + sMsg + " / " + str(e))
+
         #Estimation d'un carré représentatif de la zone
         latMin = min(lat)   #Bottom segment of square
         latMax = max(lat)   #Top segment of square
         lonMin = min(lon)   #Left segment of square
         lonMax = max(lon)   #Right segment of square
         #self.oLog.info("Data: sZoneUId={} - lonMin={} - lonMax={} - latMin={} - latMax={}\nCoordinate={}".format(sZoneUId, lonMin, lonMax, latMin, latMax, oCoordinates), outConsole=False)
-    
+
         #Définition d'une suite de coordonnées pour représenter la surface de la zone carré
         step = 10
         latSerial = np.linspace(latMin, latMax, step)   #10 nombres établies entre la valeur mini et maxi
         lonSerial = np.linspace(lonMin, lonMax, step)   #10 nombres établies entre la valeur mini et maxi
         #self.oLog.info("lonMin={} - lonMax={} - latMin={} - latMax={} \nlonSerial={} \nlatSerial={}".format(lonMin, lonMax, latMin, latMax, lonSerial, latSerial), outConsole=False)
-    
+
         #Définition d'une ligne (type serpentin) qui parcours la surface de la zone
         line = []
         switch=True
@@ -119,7 +119,7 @@ class GroundEstimatedHeight:
                     line.append([latSerial[latIdx], lonSerial[lonIdx-1]])
             switch = not switch
         #self.oLog.info("line={}\n".format(line), outConsole=False)
-        
+
         #Détermination des hauteurs terrain des 100 points (=step*step) qui couvre la zone géographique
         #srtm library documentation - https://pypi.org/project/SRTM.py/
         aElevation = []
@@ -132,27 +132,28 @@ class GroundEstimatedHeight:
             if lElevation==None:
                 lCptError += 1
                 lElevation = lastElevation
-            
+
             if lElevation>0:
                 lastElevation = lElevation
                 aElevation.append(lElevation)
             elif lElevation==0 and lCptNullValue==0:
                 lCptNullValue += 1
                 aElevation.append(lElevation)
-    
+
         #self.oLog.info("aElevation={}".format(aElevation), outConsole=False)
-        if lCptError > 40:
+        if lCptError > 60:
+             print("{0} errors in call elevation_data.get_elevation() - name={1}".format(lCptError, oZone[self.sProp]["name"]))
              self.oLog.warning("{0} errors in call elevation_data.get_elevation()\nProperties={1}\naElevation{2}".format(lCptError, oZone[self.sProp], aElevation), outConsole=False)
-    
+
         eSortedElevation = sorted(aElevation)
-        
+
         idxMedium = int(len(eSortedElevation)/2)
         idxRetain = int(idxMedium+(idxMedium*(2/3)))
         lAltMin = eSortedElevation[0]
         lAltMax = eSortedElevation[len(eSortedElevation)-1]
         lAltMed = eSortedElevation[idxMedium]
         lAltRet = eSortedElevation[idxRetain]          #Valeur retenue pour l'estimation globale de la hauteur sol
-    
+
         #¤Contruction d'une description geoJSON de la ligne de calcul d'élévations
         #self.oLog.info("oZone=\n{}".format(str(oZone).replace(chr(39),chr(34))), outConsole=False)
         geoJSON = []
@@ -167,7 +168,7 @@ class GroundEstimatedHeight:
         prop.update({"sortedElevationArray":eSortedElevation})
         geoJSON.append({"type":"Feature", "properties":prop, "geometry":{"type":"LineString", "coordinates":line}})
         #self.oLog.info("geoJSON=\n{}".format(str(geoJSON).replace(chr(39),chr(34))), outConsole=False)
-        
+
         return [lAltMin,lAltMed,lAltRet,lAltMax], geoJSON
 
 
@@ -180,23 +181,23 @@ class GroundEstimatedHeight:
         oUnknownGroundHeight = bpaTools.readJsonFile(sSrcFileName)
         oGroundEstimatedHeight = dict()
         oFeatures = dict()
-        
+
         if len(oUnknownGroundHeight)==0:
             self.oLog.warning("Empty reference file : {0}".format(sSrcFileName), outConsole=False)
         else:
             self.oLog.info("Load reference file : {0}".format(sSrcFileName), outConsole=False)
-            
+
             #Select dataObject in src file
             oUnknownHeader = oUnknownGroundHeight[self.sHead]       #Get the header file
             oUnknownContent = oUnknownGroundHeight[self.sRefe]      #Get the content of referential
             #oNewUnknownContent = deepcopy(oUnknownContent)          #Clone the initial repository for clean
-            
+
             #Let specific header file & save the source file
             sHeadFileName = "_{0}_".format(oUnknownHeader["srcAixmOrigin"])
             #Sauvegarde systématique des données manquantes dans le référentiel
             sCpyFileName = "{0}{1}{2}_{3}".format(self.refPath, sHeadFileName, bpaTools.getDateNow(), self.sUnknownGroundHeightFileName)
             shutil.copyfile(sSrcFileName, sCpyFileName)
-            
+
             #Référentiel de destination (.json)
             sRefFileNameJson = "{0}{1}{2}".format(self.refPath, sHeadFileName, self.sGroundHeightFileNameJson)
             #Sauvegarde initiale de la première instance du jour (si pas déjà existant pour ne pas perdre les données en cas réexécution pour mises au point)
@@ -205,7 +206,7 @@ class GroundEstimatedHeight:
                 if not os.path.exists(sCpyFileName):
                     shutil.copyfile(sRefFileNameJson, sCpyFileName)
                     self.oLog.info("Save initial reference file : {0} --> {1}".format(sRefFileNameJson, sCpyFileName), outConsole=False)
-            
+
             #Visualiseur du référentiel (.geojson)
             sRefFileNameGeoj = "{0}{1}{2}".format(self.refPath, sHeadFileName, self.sGroundHeightFileNameGeoj)
             #Sauvegarde initiale de la première instance du jour (si pas déjà existant pour ne pas perdre les données en cas réexécution pour mises au point)
@@ -214,12 +215,12 @@ class GroundEstimatedHeight:
                 if not os.path.exists(sCpyFileName):
                     shutil.copyfile(sRefFileNameGeoj, sCpyFileName)
                     self.oLog.info("Save initial reference file : {0} --> {1}".format(sRefFileNameGeoj, sCpyFileName), outConsole=False)
-            
+
             #Chargement du reférentiel initial (si déjà existant ; pour ajout de la complétude des données manquantes)
             oJson = bpaTools.readJsonFile(sRefFileNameJson)
             if self.sRefe in oJson:
                 oGroundEstimatedHeight = oJson[self.sRefe]        #Ne récupère que les datas du fichier
-            
+
             #Chargement des zones avec description des bordures
             sGeoJsonFileName = self.srcPath + self.headFileName + "airspaces-all.geojson"
             if not os.path.exists(sGeoJsonFileName):
@@ -229,11 +230,11 @@ class GroundEstimatedHeight:
             if not os.path.exists(sGeoJsonFileName):
                 self.oLog.error("File not found - {0} ".format(sGeoJsonFileName), outConsole=True)
                 return
-            oGeoJsondata = bpaTools.readJsonFile(sGeoJsonFileName)   
+            oGeoJsondata = bpaTools.readJsonFile(sGeoJsonFileName)
             self.oLog.info("Load source data file : {0}".format(sGeoJsonFileName), outConsole=False)
             if self.sFeat in oGeoJsondata:
                 oFeatures = oGeoJsondata[self.sFeat]
-            
+
             #Analyse de toutes les zones manquante du référentiel
             barre = bpaTools.ProgressBar(len(oUnknownContent), 20, title="Unknown Ground Estimated Height")
             geoJSON = []
@@ -258,14 +259,14 @@ class GroundEstimatedHeight:
                                 geoJSON.append(g)
                 barre.update(idx)
             barre.reset()
-            
+
             #if len(oNewUnknownContent) != len(oUnknownContent):
             #    #Generate new repository if clean data
             #    oNewRepository:dict = {}
             #    oNewRepository.update({self.sHead:oUnknownHeader})
             #    oNewRepository.update({self.sRefe:oNewUnknownContent})
             #    bpaTools.writeJsonFile(sSrcFileName, oNewRepository)
-        
+
         if len(oGroundEstimatedHeight)>0:
             #Contruction du nouveau référentiel
             header = dict()
@@ -273,13 +274,13 @@ class GroundEstimatedHeight:
             out = {self.sHead:header, self.sRefe:oGroundEstimatedHeight}
             bpaTools.writeJsonFile(sRefFileNameJson, out)
             self.oLog.info("Written Referential Ground Estimated Height: {0} heights in file {1}".format(len(oGroundEstimatedHeight), sRefFileNameJson), outConsole=True)
-            
+
             #Construction du fichier geojson représentatif du référentiel; y compris la précision du cadrage des zones référencées...
             with open(sRefFileNameGeoj, "w", encoding="utf-8") as output:
                 output.write(json.dumps({"type":"FeatureCollection",self.sFeat:geoJSON}, ensure_ascii=False))
             self.oLog.info("Written GeoJSON View of Referential Ground Estimated Height: {0} features in file {1}".format(len(oGroundEstimatedHeight), sRefFileNameGeoj), outConsole=True)
         return
-        
+
 
 if __name__ == '__main__':
     oGEH = GroundEstimatedHeight(oLog, srcPath, refPath)

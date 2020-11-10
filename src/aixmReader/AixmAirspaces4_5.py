@@ -7,7 +7,7 @@ try:
     import xmlSIA
 except ImportError:
     xmlSIA = None
-   
+
 
 #Sauvegarde du catalogue de zones sous forme de CSV
 def convertJsonCalalogToCSV(cat:dict) -> str:
@@ -56,7 +56,15 @@ def convertJsonCalalogToCSV(cat:dict) -> str:
         #Extract columns in order of the global index on columns
         for colKey,colVal in oCols.items():
             if colKey in val:
-                csv += '"{0}";'.format(val[colKey])
+                utfValue = val[colKey]
+                if colKey in ["desc","activationDesc"]:
+                    utfValue = utfValue.replace(chr(34), chr(39))
+                #if type(utfValue)=="str":
+                #    winValue = utfValue.encode('UTF-8').decode('cp1252')
+                #else:
+                #    winValue = utfValue
+                #csv += '"{0}";'.format(winValue)
+                csv += '"{0}";'.format(utfValue)
             else:
                 csv += ';'
 
@@ -69,10 +77,16 @@ def getSerializeAlt(airspaceProperties:dict, sUppLow:str="") -> str:
     if sUppLow in ["","Low"]:
         if ("ordinalLowerMinM" in airspaceProperties):
             sLower += airspaceProperties["lowerMin"] + "|"
-        sLower += airspaceProperties["lower"]
+        if ("lower" in airspaceProperties):
+            sLower += airspaceProperties["lower"]
+        else:
+            sLower += "SFC"
         ret = sLower
-    if sUppLow in ["","Upp"]:            
-        sUpper += airspaceProperties["upper"]
+    if sUppLow in ["","Upp"]:
+        if ("upper" in airspaceProperties):
+            sUpper += airspaceProperties["upper"]
+        else:
+            sUpper += "FL999"
         if ("ordinalUpperMaxM" in airspaceProperties):
             sUpper += "|" + airspaceProperties["upperMax"]
         ret = sUpper
@@ -87,7 +101,7 @@ def getSerializeAltM(airspaceProperties:dict) -> str:
     sUpper:str = ""
     if ("upperM" in airspaceProperties):
         sUpper = airspaceProperties["upperM"]
-    return "[{0}m/{1}m]".format(sLower, sUpper)    
+    return "[{0}m/{1}m]".format(sLower, sUpper)
 
 def getVerboseName(cat:dict) -> str:
     #Nouveau format fixé le 13/08/2020 - AN <Type> <Nommage> [Frequences] [([<codeActivity>] / [SeeNOTAM])]
@@ -99,7 +113,7 @@ def getVerboseName(cat:dict) -> str:
     if ("codeActivity" in cat) or ("seeNOTAM" in cat):
         sVerboseName += " ("
     if "codeActivity" in cat:
-        sVerboseName += cat["codeActivity"] 
+        sVerboseName += cat["codeActivity"]
         if "seeNOTAM" in cat:
            sVerboseName += " / "
     bNotam:bool = False
@@ -507,13 +521,37 @@ class AixmAirspaces4_5:
             elif classZone=="TRA":                  #TRA [Temporary Reserved Area (FUA).]
                 classZone="R"
                 typeZone="TRA"
+            elif classZone=="ADIZ":                 #ADIZ [Air Defense Identification Zone.]
+                classZone="R"
+                typeZone="ADIZ"
             elif classZone=="TSA":                  #TSA [Temporary Segregated Area (FUA).]
                 classZone="R"
                 typeZone="TSA"
+            elif classZone=="PROTECT" and theCodeActivity in ["IND-NUCLEAR","IND-OIL"]:   #PROTECT [Airspace protected from specific air traffic.]
+                classZone="P"                       #P = Prohibited in Openair format
+                typeZone="PROTECT"
+            elif classZone=="PROTECT" and theCodeActivity in ["FAUNA"]:   #PROTECT [Airspace protected from specific air traffic.]
+                classZone="GP"                      #GP = Glider-Prohibited in Openair format
+                typeZone="PROTECT"
+            elif classZone=="PROTECT" and theCodeActivity in ["NO-NOISE"]:   #PROTECT [Airspace protected from specific air traffic.]
+                classZone="ZSM"                     #or MSZ - Major Sensibility Zone in new Openair format
+                typeZone="PROTECT"
             elif classZone=="PROTECT":              #PROTECT [Airspace protected from specific air traffic.]
-                classZone="P"
+                #Other case... Use for theCodeActivity in ["","SPORT","GLIDER","PARAGLIDER","PARACHUTE","REFUEL"]
+                classZone="Q"                       #Q = Danger area in Openair format
+                typeZone="PROTECT"
+            elif classZone=="D-OTHER" and theCodeActivity in ["MILOPS","ARTILERY","BLAST","SHOOT"]:              #D-OTHER [Activities of dangerous nature (other than a Danger Area).] --> BIRD AREA, GLIDER AREA etc../..
+                classZone="R"                       #R = Restricted in Openair format
+                if localTypeZone:
+                    typeZone=localTypeZone
+                else:
+                    typeZone=classZone
+            elif classZone=="D-OTHER" and theCodeActivity in ["BIRD"]:              #D-OTHER [Activities of dangerous nature (other than a Danger Area).] --> BIRD AREA, GLIDER AREA etc../..
+                #Other case... Use for theCodeActivity in ["","ACROBAT","ANTIHAIL","ASCENT","BALLOON"]
+                classZone="ZSM"                     #or MSZ - Major Sensibility Zone in new Openair format
                 typeZone="PROTECT"
             elif classZone=="D-OTHER":              #D-OTHER [Activities of dangerous nature (other than a Danger Area).] --> BIRD AREA, GLIDER AREA etc../..
+                #Other case... Use for theCodeActivity in ["","ACROBAT","ANTIHAIL","ASCENT","BALLOON","GLIDER","HANGGLIDER","LASER","PARACHUTE","PARAGLIDER","SPORT","TRG","UAG","ULM"]
                 classZone="Q"                       #Q = Danger area in Openair format
                 if localTypeZone:
                     typeZone=localTypeZone
@@ -550,9 +588,9 @@ class AixmAirspaces4_5:
         #    classZone="{SpecFilter}"
             typeZone=localTypeZone
 
-        if theCodeActivity=="GLIDER":
-            classZone = "W"
-            typeZone="R"
+        if theCodeActivity=="GLIDER" and not classZone in ["PROTECT","D-OTHER"]:
+            classZone = "Q"
+            typeZone="Q"
 
         #Cas spécifique initialement non précisés (ex: "EBKT RMZ" ou "EBKT TMZ" de 'KORTRIJK')
         if ase.txtName:     theName = ase.txtName.string.lower()
@@ -654,7 +692,7 @@ class AixmAirspaces4_5:
 
         #--------------------------------
         #Préfiltrage des zones
-        aExcludeClassVfrZone           = ["PART","SECTOR","FIR","UTA","UIR","OCA","OTA","RAS"]
+        aExcludeClassVfrZone           = ["PART","SECTOR","FIR","UTA","UIR","OCA","OTA","RAS","AMA","POLITICAL"]
         aExcludeTypeFreeFlightZone     = ["FIR","SIV","TRA","TSA"]  #CBA ?
         aExcludeClassFreeFlightZone    = ["F","G","E"]
         aExcludeClassFreeFlightZoneExt = ["F","G"]					#Preserver les 'E' pour capacité d'extention de vols au dessus FL115 (et de 0m jusqu'au FL175/5334m)
@@ -711,7 +749,7 @@ class AixmAirspaces4_5:
             #Map 20200801
             #if theAirspace["UId"] in ["1561273"]:
             #    print("map alt")
-                
+
             #theAirspace.update({"groundEstimatedHeight": "?"})
             low, up = self.setAltitudeZone(sZoneUId, ase, theAirspace)
 
@@ -721,13 +759,13 @@ class AixmAirspaces4_5:
             bLowInfFL115 = bool(low<3505)       #Plancher strictement en dessous FL115/3505m
             bLowInfFL175 = bool(low<5334)       #Plancher strictement en dessous FL175/5334m
             bUppInfFL115 = bool(up<=3505)       #Plafond en dessous, et jusqu'au FL115/3505m
-            
+
             if not bLowInfFL115:                #Zone dont le plancher débute au dessus le FL115/3505m
                 theAirspace.update({"excludeAirspaceByAlt":True})
                 theAirspace.update({"vfrZone":False})
 
             theAirspace.update({"vfrZoneExt":bool(bLowInfFL175 and (not bUppInfFL115))})             #Extension de vol possible jusqu'au FL175/5334m
-            
+
             bPotentialFilter = bfreeFlightZone and bool(up<=5334)       #Marqueur pour filtrage potentiel de zones jusqu'au FL175/5334m
             if bPotentialFilter:
                 theAirspace.update({"potentialFilter4FreeFlightZone":True})
@@ -853,7 +891,9 @@ class AixmAirspaces4_5:
             if ase.Att.txtRmkWorkHr:
                 if ase.Att.txtRmkWorkHr.string != sCodeWorkHr:        #Eviter les doublons de codes ; ex; H24 / H24
                     theAirspace = self.oCtrl.oAixmTools.addProperty(theAirspace, ase.Att, "txtRmkWorkHr", "activationDesc", optional=True)
-        theAirspace = self.oCtrl.oAixmTools.addProperty(theAirspace, ase, "txtRmk", "desc", optional=True)
+            if ase.txtRmk:
+                if ase.txtRmk.string != ".":              #Clean data
+                    theAirspace = self.oCtrl.oAixmTools.addProperty(theAirspace, ase, "txtRmk", "desc", optional=True)
 
 
         #--------------------------------
@@ -982,11 +1022,15 @@ class AixmAirspaces4_5:
            return cstRetError
 
         if oValDistVer is None:     #old - oUomDistVer
+            #Logger une erreur en cas d'absence de valeur du plancher/planfond pour les zones potentiellement utilisable !
+            if (sRefAltMinMax=="") and not (theAirspace["class"] in ["RAS","PART","AMA"]):
+                self.oCtrl.oLog.warning("oValDistVer{0} is None: id={1} Class={2} Type={3} Name={4} ".format(sRefAlt, theAirspace["UId"], theAirspace["class"], theAirspace["type"], theAirspace["name"]), outConsole=False)
+                theAirspace.update({"WarningValDistVer"+sRefAlt:True})
             return cstRetError
 
         cstKeyAlt    = sRefAlt.lower() + sRefAltMinMax              #samples: 'lower' or 'lowerMin' or 'upper' or 'upperMax'
         cstKeyOrdAlt = "ordinal" + sRefAlt + sRefAltMinMax + "M"    #samples: 'ordinalLowerM' or 'ordinalLowerMinM' or 'ordinalUpperM' or 'ordinalUpperMaxM'
-        
+
         #Décodage du référencement d'altitude
         sType:str = ""                      #Defualt value
         if oCodeDistVer is None:
@@ -994,12 +1038,12 @@ class AixmAirspaces4_5:
         elif oCodeDistVer.string == "HEI":  sType = "AGL"       #old ASFC
         elif oCodeDistVer.string == "ALT":  sType = "AMSL"
         #elif oCodeDistVer.string == "STD":  sType = "AMSL"  #Default value for 'R T VALLORBE (GLIDER)' or 'R T LE BRASSUS (GLIDER)'
-            
+
         #Décodage
         altM:int    = None
         orgAltM:int = 0
         sAlt:str    = ""
-        
+
         if oUomDistVer.string == "FL":
             altM = int(float(oValDistVer.string) * aixmReader.CONST.ft * 100)
             if altM == 0:
@@ -1016,7 +1060,7 @@ class AixmAirspaces4_5:
                         altM += aGroundEstimatedHeight[1]    #=lAltMed
                     else:
                         altM += aGroundEstimatedHeight[2]    #=lAltRet
-            
+
         elif oUomDistVer.string == "FT":
             altM = int(float(oValDistVer.string) * aixmReader.CONST.ft)
             if altM == 0:
@@ -1033,7 +1077,7 @@ class AixmAirspaces4_5:
                         altM += aGroundEstimatedHeight[1]    #=lAltMed
                     else:
                         altM += aGroundEstimatedHeight[2]    #=lAltRet
-            
+
         elif oUomDistVer.string in ["M", "SM"]:
             altM = int(oValDistVer.string)
             if altM == 0:
@@ -1050,12 +1094,12 @@ class AixmAirspaces4_5:
                         altM += aGroundEstimatedHeight[1]    #=lAltMed
                     else:
                         altM += aGroundEstimatedHeight[2]    #=lAltRet
-        
+
         theAirspace.update({cstKeyAlt: sAlt})
-        
+
         if altM is None:
-           self.oCtrl.oLog.error("Alt is None: id={0} Name={1}".format(theAirspace["UId"], theAirspace["name"]), outConsole=True)
-           return cstRetError
+            self.oCtrl.oLog.error("altM is None: id={0} Class={1} Type={2} Name={3} ".format(theAirspace["UId"], theAirspace["class"], theAirspace["type"], theAirspace["name"]), outConsole=False)
+            return cstRetError
 
         return [orgAltM, altM]
 
@@ -1089,7 +1133,7 @@ class AixmAirspaces4_5:
         #    sOrdinalUpper += "M"
         aFinalUpper = aAltUpper
         sOrdinalUpper += "M"
-        
+
         #Verrification de conformité des altitudes
         low = aFinalLower[1]
         up  = aFinalUpper[1]
@@ -1128,5 +1172,5 @@ class AixmAirspaces4_5:
             theAirspace.update({"groundEstimatedHeight": aGroundEstimatedHeight})
         theAirspace.update({"lowerM": aFinalLower[1]})
         theAirspace.update({"upperM": aFinalUpper[1]})
-        
+
         return aFinalLower[1], aFinalUpper[1]

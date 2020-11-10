@@ -285,7 +285,8 @@ class Aixm2json4_5:
         if oBorder.Circle:
             lon_c, lat_c = self.oCtrl.oAixmTools.geo2coordinates(oBorder.Circle,
                                            latitude=oBorder.Circle.geoLatCen.string,
-                                           longitude=oBorder.Circle.geoLongCen.string)
+                                           longitude=oBorder.Circle.geoLongCen.string,
+                                           oZone=oZone)
 
             radius = float(oBorder.Circle.valRadius.string)
             radius = self.oCtrl.oAixmTools.convertLength(radius, oBorder.uomRadius.string, "M")   #Convert radius in Meter for GeoJSON format
@@ -303,7 +304,7 @@ class Aixm2json4_5:
 
                 # 'Great Circle' or 'Rhumb Line' segment
                 if codeType in ["GRC", "RHL"]:
-                    lon, lat = self.oCtrl.oAixmTools.geo2coordinates(avx)
+                    lon, lat = self.oCtrl.oAixmTools.geo2coordinates(avx,oZone=oZone)
                     if self.oCtrl.MakePoints4map:
                         pt = Point(lon, lat)
                         points4map.append(self.oCtrl.oAixmTools.make_point(pt, "Point {0} of {1}; type={2}".format(avx_cur, oZone["nameV"], codeType)))
@@ -312,15 +313,16 @@ class Aixm2json4_5:
                 # 'Counter Clockwise Arc' or 'Clockwise Arc'
                 #Nota: 'ABE' = 'Arc By Edge' ne semble pas utilisé dans les fichiers SIA-France et Eurocontrol-Europe
                 elif codeType in ["CCA", "CWA"]:
-                    start = self.oCtrl.oAixmTools.geo2coordinates(avx)
+                    start = self.oCtrl.oAixmTools.geo2coordinates(avx, oZone=oZone)
                     if avx_cur+1 == len(avx_list):
                         stop = g[0]
                     else:
-                        stop = self.oCtrl.oAixmTools.geo2coordinates(avx_list[avx_cur+1])
+                        stop = self.oCtrl.oAixmTools.geo2coordinates(avx_list[avx_cur+1], oZone=oZone)
 
                     center = self.oCtrl.oAixmTools.geo2coordinates(avx,
                                              latitude=avx.geoLatArc.string,
-                                             longitude=avx.geoLongArc.string)
+                                             longitude=avx.geoLongArc.string,
+                                             oZone=oZone)
 
                     Pcenter = Point(center[0], center[1])
                     Pstart = Point(start[0], start[1])
@@ -344,11 +346,11 @@ class Aixm2json4_5:
                 # 'Sequence of geographical (political) border vertexes'
                 elif codeType == "FNT":
                     # geographic borders
-                    start = self.oCtrl.oAixmTools.geo2coordinates(avx)
+                    start = self.oCtrl.oAixmTools.geo2coordinates(avx, oZone=oZone)
                     if avx_cur+1 == len(avx_list):
                         stop = g[0]
                     else:
-                        stop = self.oCtrl.oAixmTools.geo2coordinates(avx_list[avx_cur+1])
+                        stop = self.oCtrl.oAixmTools.geo2coordinates(avx_list[avx_cur+1], oZone=oZone)
 
                     if avx.GbrUid["mid"] in self.geoBorders:
                         fnt = self.geoBorders[avx.GbrUid["mid"]]
@@ -363,7 +365,7 @@ class Aixm2json4_5:
                         g.append(start)
                 else:
                     self.oCtrl.oLog.warning("Default case - GbrUid='{0}' Name={1} of {2}".format(avx.GbrUid["mid"], avx.GbrUid.txtName.string, oZone["nameV"]), outConsole=False)
-                    g.append(self.oCtrl.oAixmTools.geo2coordinates(avx))
+                    g.append(self.oCtrl.oAixmTools.geo2coordinates(avx, oZone=oZone))
 
             if len(g) == 0:
                 self.oCtrl.oLog.error("Geometry vide of {0}\n{1}".format(oZone["nameV"], oBorder.prettify()), outConsole=True)

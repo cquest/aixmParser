@@ -5,7 +5,7 @@ import aixmReader
 
 if __name__ == '__main__':
     ### Context applicatif
-    callingContext      = "Paragliding-OpenAir-FrenchFiles"         #Your app calling context
+    callingContext      = "Paragliding-OpenAir-French-Files"         #Your app calling context
     linkContext         = "http://pascal.bazile.free.fr/paraglidingFolder/divers/GPS/OpenAir-Format/"
     appName             = "aixmParser"                              #or your app name
     appPath             = bpaTools.getFilePath(__file__)            #or your app path
@@ -20,10 +20,7 @@ if __name__ == '__main__':
     srcFile = "../tst/aixm4.5_SIA-FR_map-Airspaces.xml"
     #srcFile = "../../poaff/input/BPa/99999999_BPa_Test4CleaningCatalog_aixm45.xml"
     #srcFile = "../../poaff/input/BPa/99999999_BPa_Test4AppendDelta1_aixm45.xml"
-    #srcFile = "../../poaff/input/SIA/20200813-20200909_aixm4.5_SIA-FR.xml"
-    #srcFile = "../../poaff/input/EuCtrl/20200618_aixm4.5_Eurocontrol-FR.xml"
     #srcFile = "../../poaff/input/FFVP/20200704_FFVP_ParcsNat_BPa_aixm45.xml"
-
 
     ####  quelques options d'appels  ####
     #Simulation des arguments d'appels 'sys.argv' via le tableau 'aArgv'
@@ -43,7 +40,13 @@ if __name__ == '__main__':
     #------- appels standards ---
     #aArgv = [appName, srcFile, "-Fall", aixmReader.CONST.typeAIRSPACES, aixmReader.CONST.optFreeFlight]
     aArgv = [appName, srcFile, "-Fall", "-Tall", aixmReader.CONST.optALL, aixmReader.CONST.optIFR, aixmReader.CONST.optVFR, aixmReader.CONST.optFreeFlight]
-    #aArgv = [appName, srcFile, "-Fall", "-Tall", aixmReader.CONST.typeAIRSPACES, aixmReader.CONST.optALL, aixmReader.CONST.optFreeFlight]
+
+
+    #### poaf - Specifique test for bigData ####
+    #srcFile = "../../poaff/input/SIA/20200813-20200909_aixm4.5_SIA-FR.xml"
+    #srcFile = "../../poaff/input/EuCtrl/20200618_aixm4.5_Eurocontrol-FR.xml"
+    srcFile = "../../poaff/input/EuCtrl/20201105_aixm4.5_Eurocontrol-Euro_BPa.xml"
+    aArgv = [appName, srcFile, "-Fall", aixmReader.CONST.typeAIRSPACES, aixmReader.CONST.optVFR, aixmReader.CONST.optFreeFlight]
 
 
     ####  Ajout de l'option d'appel pour la gestion du Log  ####
