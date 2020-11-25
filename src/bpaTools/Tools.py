@@ -38,9 +38,11 @@ def getFilePath(sFile:str) -> str:
     #return os.path.dirname(sFile) + "/"                  #Non-Fonctionnel sous Linux
     return os.path.dirname(os.path.abspath(sFile)) + "/"  #Fonctionnel sous Linux
 
+#Sample str(ret) -> "2020-11-16 12:50:03.726297"
 def getNow() -> datetime:
     return datetime.datetime.now()
 
+#Sample "2020-11-16T12:45:29.405387"
 def getNowISO() -> str:
     return datetime.datetime.now().isoformat()
 

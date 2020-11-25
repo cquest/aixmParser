@@ -47,7 +47,7 @@ class Logger:
             oLogger.setLevel(logging.DEBUG)
             #oFormatter = logging.Formatter("%(asctime)-15s %(levelname)s %(name)s [%(filename)s:%(funcName)s:%(lineno)d] %(message)s")
             oFormatter = logging.Formatter("%(asctime)-15s %(name)s %(levelname)s %(message)s")
-            oFH = logging.FileHandler(self.sLogFile)
+            oFH = logging.FileHandler(self.sLogFile, encoding='utf-8')
             oFH.setLevel(logging.DEBUG)
             oFH.setFormatter(oFormatter)
             oLogger.addHandler(oFH)

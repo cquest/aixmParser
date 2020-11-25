@@ -411,7 +411,7 @@ class AixmAirspaces4_5:
         #--------------------------------
         #Identifiant et classification globale de la zone
         sZoneUId = ase.AseUid["mid"]
-        groupZone = bool(not ase.valDistVerLower)
+        groupZone = bool((not ase.valDistVerLower) and (not ase.valDistVerUpper))
         if groupZone:
             theAirspace = self.oCtrl.oAixmTools.initProperty("Grouping zone")
             theAirspace.update({"excludeAirspaceNotCoord":True})
