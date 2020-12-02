@@ -76,7 +76,7 @@ def getSerializeAlt(airspaceProperties:dict, sUppLow:str="") -> str:
     sUpper:str = ""
     if sUppLow in ["","Low"]:
         if ("ordinalLowerMinM" in airspaceProperties):
-            sLower += airspaceProperties["lowerMin"] + "|"
+            sLower += airspaceProperties["lowerMin"] + "-"
         if ("lower" in airspaceProperties):
             sLower += airspaceProperties["lower"]
         else:
@@ -88,7 +88,7 @@ def getSerializeAlt(airspaceProperties:dict, sUppLow:str="") -> str:
         else:
             sUpper += "FL999"
         if ("ordinalUpperMaxM" in airspaceProperties):
-            sUpper += "|" + airspaceProperties["upperMax"]
+            sUpper += "-" + airspaceProperties["upperMax"]
         ret = sUpper
     if sUppLow == "":
         ret = "[{0}/{1}]".format(sLower, sUpper)
@@ -474,6 +474,8 @@ class AixmAirspaces4_5:
             elif classZone=="G" and typeZone=="D-OTHER":  #D-OTHER [Activities of dangerous nature (other than a Danger Area).] --> BIRD AREA, GLIDER AREA etc../..
                 classZone="Q"           #Q = Danger area in Openair format
                 typeZone=classZone
+            elif classZone=="OTHER" and typeZone=="RAS":  #D-OTHER [Activities of dangerous nature (other than a Danger Area).] --> BIRD AREA, GLIDER AREA etc../..
+                classZone=typeZone      #RAS [Regulated Airspace (not otherwise covered).
 
         else:
             classZone = ase.AseUid.codeType.string
