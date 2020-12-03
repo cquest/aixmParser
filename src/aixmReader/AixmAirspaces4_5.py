@@ -893,10 +893,10 @@ class AixmAirspaces4_5:
             if ase.Att.txtRmkWorkHr:
                 if ase.Att.txtRmkWorkHr.string != sCodeWorkHr:        #Eviter les doublons de codes ; ex; H24 / H24
                     theAirspace = self.oCtrl.oAixmTools.addProperty(theAirspace, ase.Att, "txtRmkWorkHr", "activationDesc", optional=True)
-            if ase.txtRmk:
-                if ase.txtRmk.string != ".":              #Clean data
-                    theAirspace = self.oCtrl.oAixmTools.addProperty(theAirspace, ase, "txtRmk", "desc", optional=True)
 
+        if ase.txtRmk:
+            if ase.txtRmk.string != ".":              #Clean data
+                theAirspace = self.oCtrl.oAixmTools.addProperty(theAirspace, ase, "txtRmk", "desc", optional=True)
 
         #--------------------------------
         #Traitement spécifique pour signaler les zones non-activables...

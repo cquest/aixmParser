@@ -45,8 +45,8 @@ if __name__ == '__main__':
     #### poaf - Specifique test for bigData ####
     #srcFile = "../../poaff/input/SIA/20200813-20200909_aixm4.5_SIA-FR.xml"
     #srcFile = "../../poaff/input/EuCtrl/20200618_aixm4.5_Eurocontrol-FR.xml"
-    srcFile = "../../poaff/input/EuCtrl/20201105_aixm4.5_Eurocontrol-Euro_BPa.xml"
-    aArgv = [appName, srcFile, "-Fall", aixmReader.CONST.typeAIRSPACES, aixmReader.CONST.optVFR, aixmReader.CONST.optFreeFlight]
+    #srcFile = "../../poaff/input/EuCtrl/20201105_aixm4.5_Eurocontrol-Euro_BPa.xml"
+    #aArgv = [appName, srcFile, "-Fall", aixmReader.CONST.typeAIRSPACES, aixmReader.CONST.optVFR, aixmReader.CONST.optFreeFlight]
 
 
     ####  Ajout de l'option d'appel pour la gestion du Log  ####
