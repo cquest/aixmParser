@@ -45,7 +45,7 @@ def convertJsonCalalogToCSV(cat:dict) -> str:
              "srcClass":0, "srcType":0,
              "class":0, "type":0, "localType":0, "codeActivity":0, "codeMil":0, "codeLocInd":0,
              "name":0, "nameV":0, "desc":0, "Mhz":0, "activationCode":0, "activationDesc":0, "timeScheduling":0,
-             "seeNOTAM":0, "exceptSAT":0, "exceptSUN":0, "exceptHOL":0, "groundEstimatedHeight":0,
+             "declassifiable":0, "seeNOTAM":0, "exceptSAT":0, "exceptSUN":0, "exceptHOL":0, "groundEstimatedHeight":0,
              "lowerMin":0, "lower":0, "lowerM":0, "ordinalLowerMinM":0, "ordinalLowerM":0,
              "upperMax":0, "upper":0, "upperM":0, "ordinalUpperMaxM":0, "ordinalUpperM":0,
              "WarningValDistVerLower":0, "WarningValDistVerUpper":0,
@@ -839,6 +839,10 @@ class AixmAirspaces4_5:
             if ase.Att.codeWorkHr:
                 sCodeWorkHr = ase.Att.codeWorkHr.string
                 theAirspace = self.oCtrl.oAixmTools.addProperty(theAirspace, ase.Att, "codeWorkHr", "activationCode", optional=True)
+
+            if classZone=="D" and typeZone!="LTA" and theAirspace.get("activationCode", None)!="H24":
+                theAirspace.update({"declassifiable":"Yes"})
+
             if ase.Att.Timsh:
                 #Documentation of <Timsh> content
                 #   <codeTimeRef>UTC</codeTimeRef>				#Time reference system
@@ -992,10 +996,6 @@ class AixmAirspaces4_5:
         #--------------------------------
         #Libellé complet de la zone (V=Verbose)
         theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"nameV":getVerboseName(theAirspace)})
-
-        #--------------------------------
-        #Ajout des propriétés pour colorisation de la zone uniquement en mode Draft (car la version finale sous navigateur integre la techno CSS)
-        self.oCtrl.oAixmTools.addColorProperties(theAirspace)
 
         #--------------------------------
         self.oAirspaces[sZoneUId] = theAirspace         #Store new item in global collection
