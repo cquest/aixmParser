@@ -15190,6 +15190,24 @@
 		</Gbv>
 	</Gbr>
 	<Ase>
+		<AseUid mid="25091580">
+			<codeType>RAS</codeType>
+			<codeId>LFSTMZ001</codeId>
+		</AseUid>
+		<txtLocalType>TMZ</txtLocalType>
+		<txtName>SARREBRUCK / (source utf-8) Tests de translation d'accents: à-é-è-î-ô-û</txtName>
+		<codeClass>E</codeClass>
+		<codeDistVerUpper>STD</codeDistVerUpper>
+		<valDistVerUpper>65</valDistVerUpper>
+		<uomDistVerUpper>FL</uomDistVerUpper>
+		<codeDistVerLower>ALT</codeDistVerLower>
+		<valDistVerLower>2500</valDistVerLower>
+		<uomDistVerLower>FT</uomDistVerLower>
+		<txtRmk>0500-2130#
+SUM : - 1HR#
+Excluding the French part of SARREBRUCK CTR.</txtRmk>
+	</Ase>
+	<Ase>
 		<AseUid mid="1560775">
 			<codeType>TMA</codeType>
 			<codeId>LFPT</codeId>
@@ -16359,6 +16377,31 @@ Flying over LUXEUIL SAINT- SAUVEUR AD BLW 1000ft ASFC prohibited H24.</txtRmk>
 		<uomDistVerMnm>FT</uomDistVerMnm>
 		<txtRmk>un test</txtRmk>
 	</Ase>
+	<Abd>
+		<AbdUid mid="25091583">
+			<AseUid mid="25091580">
+				<codeType>RAS</codeType>
+				<codeId>LFSTMZ001</codeId>
+			</AseUid>
+		</AbdUid>
+		<Avx>
+			<GbrUid mid="1545022">
+				<txtName>FRANCE_GERMANY</txtName>
+			</GbrUid>
+			<codeType>FNT</codeType>
+			<geoLat>490946.00N</geoLat>
+			<geoLong>0070158.00E</geoLong>
+			<codeDatum>WGE</codeDatum>
+			<valCrc>8A5A0A9B</valCrc>
+		</Avx>
+		<Avx>
+			<codeType>GRC</codeType>
+			<geoLat>490922.00N</geoLat>
+			<geoLong>0065043.00E</geoLong>
+			<codeDatum>WGE</codeDatum>
+			<valCrc>5F31007E</valCrc>
+		</Avx>
+	</Abd>
 	<Abd>
 		<AbdUid mid="21504881">
 			<AseUid mid="1560775">
