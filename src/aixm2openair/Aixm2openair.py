@@ -43,14 +43,24 @@ def makeOpenair(oAirspace:dict, gpsType:str) -> list:
 
     openair.append("AC {0}".format(theClass))
     openair.append("AN {0}".format(oZone["nameV"]))
-    openair.append('*AAlt ["{0}", "{1}"]'.format(aixmReader.getSerializeAlt(oZone)[1:-1], aixmReader.getSerializeAltM(oZone)[1:-1]))
+    #old openair.append('*AAlt ["{0}", "{1}"]'.format(aixmReader.getSerializeAlt(oZone)[1:-1], aixmReader.getSerializeAltM(oZone)[1:-1]))
+    aAlt:list = []
+    aAlt.append("{0}".format(aixmReader.getSerializeAlt (oZone)[1:-1]))
+    aAlt.append("{0}".format(aixmReader.getSerializeAltM(oZone)[1:-1]))
+    if "freeFlightZoneExt" in oZone:
+        if oZone["freeFlightZoneExt"] and (not oZone["freeFlightZone"]):
+            aAlt.append("ffExt=Yes")
+    if len(aAlt)==3:
+        openair.append('*AAlt ["{0}", "{1}", "{2}"]'.format(aAlt[0], aAlt[1], aAlt[2]))
+    else:
+        openair.append('*AAlt ["{0}", "{1}"]'.format(aAlt[0], aAlt[1]))
     openair.append("*AUID GUId={0} UId={1} Id={2}".format(oZone.get("GUId", "!"), oZone["UId"], oZone["id"]))
     if "desc" in oZone:     openair.append("*ADescr {0}".format(oZone["desc"]))
-    if "Mhz" in oZone:      openair.append("*AMhz {0}".format(json.dumps(oZone["Mhz"])))
+    if "Mhz" in oZone:      openair.append("*AMhz {0}".format(json.dumps(oZone["Mhz"], ensure_ascii=False)))
     if ("activationCode" in oZone) and ("activationDesc" in oZone):       openair.append("*AActiv [{0}] {1}".format(oZone["activationCode"], oZone["activationDesc"]))
     if ("activationCode" in oZone) and not ("activationDesc" in oZone):   openair.append("*AActiv [{0}]".format(oZone["activationCode"]))
     if not("activationCode" in oZone) and ("activationDesc" in oZone):    openair.append("*AActiv {0}".format(oZone["activationDesc"]))
-    if "timeScheduling" in oZone:   openair.append("*ATimes {0}".format(json.dumps(oZone["timeScheduling"])))
+    if "timeScheduling" in oZone:   openair.append("*ATimes {0}".format(json.dumps(oZone["timeScheduling"], ensure_ascii=False)))
     if "exceptSAT" in oZone:        openair.append("*AExSAT {0}".format(oZone["exceptSAT"]))
     if "exceptSUN" in oZone:        openair.append("*AExSUN {0}".format(oZone["exceptSUN"]))
     if "exceptHOL" in oZone:        openair.append("*AExHOL {0}".format(oZone["exceptHOL"]))

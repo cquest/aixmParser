@@ -35,7 +35,9 @@ class AixmTools:
         if sizeMap:
             headMsg = "Write"
             with open(self.oCtrl.sOutPath + sOutFile, "w", encoding=self.oCtrl.sEncoding) as output:
-                output.write(json.dumps({"type":"FeatureCollection", "headerFile":self.getJsonPropHeaderFile(sFileName, context, sizeMap), "features":oGeojson}, ensure_ascii=False))
+                output.write(json.dumps(
+                        {"type":"FeatureCollection", "headerFile":self.getJsonPropHeaderFile(sFileName, context, sizeMap), "features":oGeojson},
+                        ensure_ascii=False))
         else:
             headMsg = "Unwritten"
         self.oCtrl.oLog.info("{0} file {1} - {2} areas in map".format(headMsg, sOutFile, sizeMap), outConsole=True)
@@ -50,8 +52,16 @@ class AixmTools:
             for oKey, oVal in oHeader.items():
                 if isinstance(oVal, dict):
                     sRet += "*" + " "*lLeftMargin + "{0}:\n".format(oKey)
+                    lFileCnt:int = 0
                     for oKey2, oVal2 in oVal.items():
-                        sRet += "*" + " "*2*lLeftMargin + "{0} - {1}\n".format(oKey2, oVal2)
+                        if lFileCnt<5:
+                            lFileCnt += 1
+                            if isinstance(oVal2, dict):
+                                oVal2 = json.dumps(oVal2, ensure_ascii=False)
+                            sRet += "*" + " "*2*lLeftMargin + "{0} - {1}\n".format(oKey2, oVal2)
+                        else:
+                            sRet += "*" + " "*2*lLeftMargin + "../.. and {0} complementary sources files. See Catalog file header for all details.\n".format(len(oHeader)-lFileCnt+1)
+                            break
                 else:
                     sRet += "*" + " "*lLeftMargin + "{0} - {1}\n".format(oKey, oVal)
 
@@ -138,7 +148,6 @@ class AixmTools:
             self.oCtrl.oLog.info("Written file {0}".format(sOutFile), outConsole=True)
             if sPath=="":
                 sPath = self.oCtrl.sOutPath
-            #with open(sPath + sOutFile, "w", encoding=self.oCtrl.sEncoding) as output:
             with open(sPath + sOutFile, "w", encoding=sencoding, errors="replace") as output:
                 output.write(oText)
         return
@@ -582,7 +591,7 @@ class AixmTools:
         return LineString(vertex_list)
 
     def getAirspaceFunctionalKeyName(self, airspaceProperties:dict) -> str:
-        sKey = "{0}.{1}.{2}".format(airspaceProperties["srcClass"], airspaceProperties["srcType"], airspaceProperties["srcName"])
+        sKey = "{0}.{1}.{2}".format(airspaceProperties["srcClass"], airspaceProperties["srcType"], airspaceProperties["name"])
         return sKey
 
     def getAirspaceFunctionalKey(self, airspaceProperties:dict) -> str:

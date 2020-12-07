@@ -2,7 +2,7 @@
 
 import bpaTools
 import aixmReader
-from bs4 import BeautifulSoup
+import json
 try:
     import xmlSIA
 except ImportError:
@@ -18,28 +18,42 @@ def convertJsonCalalogToCSV(cat:dict) -> str:
     for key,val in oHeader.items():
         if isinstance(val, dict):
             for key2,val2 in val.items():
-                csvCol += '{0};'.format(key2)
-                csvVal += '{0};'.format(val2)
+                csvCol += '"{0}";'.format(key2)
+                if isinstance(val2, str):
+                    val2 = val2.replace(chr(34), chr(39))
+                if isinstance(val2, dict):
+                    val2 = json.dumps(val2, ensure_ascii=False)
+                    csvVal += '{0};'.format(val2)
+                else:
+                    csvVal += '"{0}";'.format(val2)
         else:
-            csvCol += '{0};'.format(key)
-            csvVal += '{0};'.format(val)
+            csvCol += '"{0}";'.format(key)
+            if isinstance(val, str):
+                val = val.replace(chr(34), chr(39))
+            if isinstance(val, dict):
+                val = json.dumps(val, ensure_ascii=False)
+                csvVal += '{0};'.format(val)
+            else:
+                csvVal += '"{0}";'.format(val)
     csv = "<Header file>\n{0}\n{1}\n\n<Content>\n".format(csvCol, csvVal)
 
     #Phase 2.2 : Construct a global index on columns (collect all columns in contents for complete header of CSV file...)
     #oCols avec initialisation d'une table d'index avec imposition de l'ordonnancement de colonnes choisies
-    oCols = {"zoneType":0, "groupZone":0, "vfrZone":0, "vfrZoneExt":0, "freeFlightZone":0, "freeFlightZoneExt":0, \
-             "excludeAirspaceNotCoord":0,"excludeAirspaceNotFfArea":0, "geometryType":0, "excludeAirspaceByFilter":0, "excludeAirspaceByAlt":0, "excludeAirspaceByRef":0, \
-             "potentialFilter4FreeFlightZone":0, "orgName":0, "keySrcFile":0, "GUId":0, "UId":0, "id":0, \
-             "srcClass":0, "srcType":0, "srcName":0, "class":0, "type":0, "localType":0, "codeActivity":0, "codeLocInd":0,\
-             "name":0, "nameV":0, "Mhz":0, "groundEstimatedHeight":0, \
-             "lowerMin":0, "lower":0, "lowerM":0, "ordinalLowerMinM":0, "ordinalLowerM":0, \
-             "upperMax":0, "upper":0, "upperM":0, "ordinalUpperMaxM":0, "ordinalUpperM":0, \
-             "exceptSAT":0, "exceptSUN":0, "exceptHOL":0, "seeNOTAM":0, \
-             "lowerType":0, "lowerValue":0, "lowerUnit":0, \
-             "lowerTypeMnm":0,"lowerValueMnm":0,"lowerUnitMnm":0, \
-             "upperType":0, "upperValue":0, "upperUnit":0, \
-             "lowerTypeMax":0,"lowerValueMax":0,"lowerUnitMax":0, \
-             "activationCode":0,"timeScheduling":0,"activationDesc":0,"desc":0 }
+    oCols = {"zoneType":0, "groupZone":0, "vfrZone":0, "vfrZoneExt":0, "freeFlightZone":0, "freeFlightZoneExt":0,
+             "excludeAirspaceNotCoord":0,"excludeAirspaceNotFfArea":0, "geometryType":0, "excludeAirspaceByFilter":0, "excludeAirspaceByAlt":0, "excludeAirspaceByRef":0, "deltaExt":0,
+             "potentialFilter4FreeFlightZone":0, "orgName":0, "keySrcFile":0, "GUId":0, "UId":0, "id":0,
+             "srcClass":0, "srcType":0,
+             "class":0, "type":0, "localType":0, "codeActivity":0, "codeMil":0, "codeLocInd":0,
+             "name":0, "nameV":0, "desc":0, "Mhz":0, "activationCode":0, "activationDesc":0, "timeScheduling":0,
+             "seeNOTAM":0, "exceptSAT":0, "exceptSUN":0, "exceptHOL":0, "groundEstimatedHeight":0,
+             "lowerMin":0, "lower":0, "lowerM":0, "ordinalLowerMinM":0, "ordinalLowerM":0,
+             "upperMax":0, "upper":0, "upperM":0, "ordinalUpperMaxM":0, "ordinalUpperM":0,
+             "WarningValDistVerLower":0, "WarningValDistVerUpper":0,
+             "lowerType":0, "lowerValue":0, "lowerUnit":0,
+             "lowerTypeMnm":0,"lowerValueMnm":0,"lowerUnitMnm":0,
+             "upperType":0, "upperValue":0, "upperUnit":0,
+             "lowerTypeMax":0,"lowerValueMax":0,"lowerUnitMax":0,
+             "use4cfd":0 }
     oCatalog = cat["catalog"]
     for key0,val0 in oCatalog.items():
         for key1,val1 in val0.items():
@@ -57,14 +71,13 @@ def convertJsonCalalogToCSV(cat:dict) -> str:
         for colKey,colVal in oCols.items():
             if colKey in val:
                 utfValue = val[colKey]
-                if colKey in ["desc","activationDesc"]:
-                    utfValue = utfValue.replace(chr(34), chr(39))
-                #if type(utfValue)=="str":
-                #    winValue = utfValue.encode('UTF-8').decode('cp1252')
-                #else:
-                #    winValue = utfValue
-                #csv += '"{0}";'.format(winValue)
-                csv += '"{0}";'.format(utfValue)
+                if isinstance(utfValue, str):
+                     utfValue = utfValue.replace(chr(34), chr(39))
+                if isinstance(utfValue, dict):
+                    utfValue = json.dumps(utfValue, ensure_ascii=False)
+                    csv += '{0};'.format(utfValue)
+                else:
+                    csv += '"{0}";'.format(utfValue)
             else:
                 csv += ';'
 
@@ -439,9 +452,9 @@ class AixmAirspaces4_5:
             theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"srcType":""})
 
         if ase.txtName:
-            theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"srcName":ase.txtName.string})
+            theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"name":ase.txtName.string})
         else:
-            theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"srcName":""})
+            theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"name":""})
 
         if ase.codeActivity:    theCodeActivity = ase.codeActivity.string
         else:                   theCodeActivity = None
@@ -1139,7 +1152,7 @@ class AixmAirspaces4_5:
         #Verrification de conformité des altitudes
         low = aFinalLower[1]
         up  = aFinalUpper[1]
-        if up <= low:
+        if up < low:
             #Eventuelle correction d'altitude après analyse via référentiel
             if (sOrdinalLower in theAirspace) and (sOrdinalUpper in theAirspace):
                 low = aFinalLower[0] + aGroundEstimatedHeight[0]        # orgAlt + AltMin
@@ -1168,6 +1181,8 @@ class AixmAirspaces4_5:
                 aFinalUpper[1] = up
             else:
                 self.oCtrl.oLog.error("Height error: Upper <= Lower; up={0} low={1} for id={2} NameV={3}".format(up, low, sZoneUId, theAirspace["name"]), outConsole=True)
+        elif up == low:
+            self.oCtrl.oLog.warning("Height warning: Upper == Lower; up={0} low={1} for id={2} NameV={3}".format(up, low, sZoneUId, theAirspace["name"]), outConsole=True)
 
         #Stockage des Plancher/Plafond en catalogue
         if (sOrdinalLower in theAirspace) or (sOrdinalUpper in theAirspace):

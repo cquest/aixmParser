@@ -2,6 +2,9 @@
 import os, sys, re, traceback, logging, datetime
 import json
 
+def str2bool(v:str) -> bool:
+  return bool(v.lower() in ("true","t","vrai","v","yes","y","1","-1"))
+
 def theQuit():
     sys.exit()
     return
@@ -99,7 +102,7 @@ def readJsonFile(sFile:str) -> dict:
 
 def writeJsonFile(sFile:str, jdata:dict) -> None:
     jsonFile = open(sFile, "w", encoding="utf-8")
-    json.dump(jdata, jsonFile)
+    json.dump(jdata, jsonFile, ensure_ascii=False)
     jsonFile.close()
     return
 
