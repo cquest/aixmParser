@@ -9,68 +9,110 @@ errLocalisationPoint:list = [-5,45]
 def addColorProperties(prop:dict, oLog:bpaTools.Logger):
     sClass = prop["class"]
 
+    #Red            - #ff0000
+    #medium red     - #ff6480
+    #ligth Red      - #ff8080
+    #Purple         - #800080
+    #medium purple  - #ffb9dc
+    #light purple   - #ff96dc
+    #bordeau        - #aa0014
+    #Gres           - #444444
+    #ligth Gres     - #a0868b
+    #Orange         - #f07800
+    #Blue           - #0000ff
+    #ligth blue     - #ceeffe
+    #bright blue    - #80ffff
+
     #Red and fill
-    if sClass in ["A","B","C","P","CTR","CTR-P","TMA","TMA-P"]:
+    if sClass in ["A","B","C","P","CTR","CTR-P","TMA","TMA-P","TMZ","RMZ/TMZ","TMZ/RMZ"]:
         sStroke = "#ff0000"
         sFill = "#ff8080"
-        nFillOpacity = 0.4
+        if prop.get("lower", None)=="SFC":
+            nFillOpacity = 0.6
+        else:
+            nFillOpacity = 0.3
     #Red and No-Fill
-    elif sClass in ["TMZ","RMZ/TMZ","TMZ/RMZ","CTA","CTA-P","FIR","FIR-P","NO-FIR","PART","CLASS","SECTOR","SECTOR-C","OCA","OCA-P","OTA","OTA-P","UTA","UTA-P","UIR","UIR-P","TSA","CBA","RCA","RAS","TRA","AMA","ASR","ADIZ","POLITICAL","OTHER","AWY"]:
+    elif sClass in ["CTA","CTA-P","FIR","FIR-P","NO-FIR","PART","CLASS","SECTOR","SECTOR-C","OCA","OCA-P","OTA","OTA-P","UTA","UTA-P","UIR","UIR-P","TSA","CBA","RCA","RAS","TRA","AMA","ASR","ADIZ","POLITICAL","OTHER","AWY"]:
         sStroke = "#ff0000"
         sFill = "#ff8080"
         nFillOpacity = 0
     #Purple and No-fill
     elif sClass=="D" and prop.get("type", None)=="LTA":
         sStroke = "#800080"
-        sFill = "#ffb9dc"
+        sFill = "#ff96dc"
         nFillOpacity = 0
     #Red and fill
     elif sClass in ["D","D-AMC"] and prop.get("declassifiable", None)!="Yes":
         sStroke = "#ff0000"
         sFill = "#ff8080"
-        nFillOpacity = 0.4
-    #Purple and fill
+        if prop.get("lower", None)=="SFC":
+            nFillOpacity = 0.6
+        else:
+            nFillOpacity = 0.3
+    #Light-Red and Purple fill
     elif sClass in ["D","D-AMC"] and prop.get("declassifiable", None)=="Yes":
         sStroke = "#ff0000"
         sFill = "#ffb9dc"
-        nFillOpacity = 0.4
+        if prop.get("lower", None)=="SFC":
+            nFillOpacity = 0.6
+        else:
+            nFillOpacity = 0.3
     #Purple and fill
     elif sClass in ["R","R-AMC"] and prop.get("type", None)!="RTBA":
         sStroke = "#800080"
         sFill = "#ffb9dc"
-        nFillOpacity = 0.4
-    #Brun and fill
+        if prop.get("lower", None)=="SFC":
+            nFillOpacity = 0.6
+        else:
+            nFillOpacity = 0.3
+    #Gres and fill
     elif sClass in ["R","R-AMC"] and prop.get("type", None)=="RTBA":
-        sStroke = "#AA0014"
-        sFill = "#AA0014"
-        nFillOpacity = 0.4
-    #Orange and small fill
+        sStroke = "#444444"
+        sFill = "#a0868b"
+        if prop.get("lower", None)=="SFC":
+            nFillOpacity = 0.6
+        else:
+            nFillOpacity = 0.3
+    #Orange and ligth-fill
     elif sClass in ["Q","GP"]:
-        sStroke = "#F07800"
-        sFill = "#555555"
-        nFillOpacity = 0.1
+        sStroke = "#f07800"
+        sFill = "#f07800"
+        if prop.get("lower", None)=="SFC":
+            nFillOpacity = 0.3
+        else:
+            nFillOpacity = 0.1
     #Orange and No-Fill
     elif sClass in ["RMZ","W"]:
-        sStroke = "#F07800"
-        sFill = "#555555"
+        sStroke = "#f07800"
+        sFill = "#f07800"
         nFillOpacity = 0
     #Blue
     elif sClass in ["ZSM","BIRD","PROTECT","D-OTHER","SUR","AER","TRPLA","TRVL","VOL"]:
         sStroke = "#0000ff"
-        sFill = "#80ffff"
-        nFillOpacity = 0.1
+        sFill = "#ceeffe"
+        if prop.get("lower", None)=="SFC":
+            nFillOpacity = 0.4
+        else:
+            nFillOpacity = 0.2
     #Green
     elif sClass in ["E","F","G"]:
         sStroke = "#008040"
         sFill = "#80ff80"
-        nFillOpacity = 0.1
+        if prop.get("lower", None)=="SFC":
+            nFillOpacity = 0.4
+        else:
+            nFillOpacity = 0.2
     else:
         oLog.warning("GeoJSON Color not found for Class={0}".format(sClass), outConsole=False)
         return
 
+    #Quasi transparence pour toutes les zones au dessus de FL115
+    if nFillOpacity!=0 and prop.get("lowerM", None)>=3505:
+            nFillOpacity = 0.1
+
     prop.update({"stroke": sStroke})
     prop.update({"stroke-width": 2})
-    prop.update({"stroke-opacity": 1})
+    prop.update({"stroke-opacity": 0.8})
     prop.update({"fill": sFill})
     prop.update({"fill-opacity": nFillOpacity})
     return

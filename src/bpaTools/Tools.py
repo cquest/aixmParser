@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import os, sys, re, traceback, logging, datetime
+import os, sys, re, traceback, logging, datetime, calendar
 import json
 
 def str2bool(v:str) -> bool:
@@ -37,27 +37,61 @@ def initEvent(sFile:str, oLog:logging=None, isSilent:bool=False) -> None:
 def getFileName(sFile:str) -> str:
     return os.path.basename(sFile).split(".")[0]
 
+def getFileExt(sFile:str) -> str:
+    return os.path.splitext(sFile)[1]
+
 def getFilePath(sFile:str) -> str:
     #return os.path.dirname(sFile) + "/"                  #Non-Fonctionnel sous Linux
     return os.path.dirname(os.path.abspath(sFile)) + "/"  #Fonctionnel sous Linux
 
-#Sample str(ret) -> "2020-11-16 12:50:03.726297"
+
+
+#Samples
+#   str(bpaTools.getNow())                      -> "2020-11-16 12:50:03.726297"
+#   bpaTools.getNow().strftime("%Y%m%d-%H%M%S") -> Specific format "20201208-164204"
 def getNow() -> datetime:
     return datetime.datetime.now()
 
-#Sample "2020-11-16T12:45:29.405387"
+#Sample bpaTools.getNowISO() -> ISO Format "2020-11-16T12:45:29.405387"
 def getNowISO() -> str:
     return datetime.datetime.now().isoformat()
 
+#Samples
+#   bpaTools.getDateNow()                       -> "20201116"
+#   bpaTools.getDateNow(frmt="ymd")             -> "20201116"
+#   bpaTools.getDateNow(frmt="dmy")             -> "16112020"
+#   bpaTools.getDateNow(frmt="dmy")             -> "16112020"
+#   bpaTools.getDateNow(sep="/", frmt="dmy")    -> "16/11/2020"
+#   bpaTools.getDateNow(frmt="%Y%m%d-%H%M%S")   -> Specific format "20201208-164204"
 def getDateNow(sep:str="", frmt="ymd") -> str:
     return getDate(datetime.datetime.now(), sep=sep, frmt=frmt)
 
+#Samples
+#   bpaTools.getDate(datetime.datetime.now())                       -> "20201116"
+#   bpaTools.getDate(datetime.datetime.now(), frmt="ymd")           -> "20201116"
+#   bpaTools.getDate(datetime.datetime.now(), frmt="dmy")           -> "16112020"
+#   bpaTools.getDate(datetime.datetime.now(), frmt="dmy")           -> "16112020"
+#   bpaTools.getDate(datetime.datetime.now(), sep="/", frmt="dmy")  -> "16/11/2020"
+#   bpaTools.getDate(datetime.datetime.now(), "%Y%m%d-%H%M%S")      -> Specific format "20201208-164204"
 def getDate(date:datetime, sep:str="", frmt="ymd") -> str:
     if   frmt=="ymd":
         sFrmt = "%Y" + sep + "%m" + sep + "%d"
     elif frmt=="dmy":
         sFrmt = "%d" + sep + "%m" + sep + "%Y"
+    else:
+        sFrmt = frmt            #Specific format
     return date.strftime(sFrmt)
+
+#Samples
+#   addMonths(datetime.date.today(), 1)
+#   addMonths(datetime.date.today(), 12)
+#   addMonths(datetime.date.today(), 25)
+def addMonths(sourcedate:datetime, months:int):
+    month = sourcedate.month - 1 + months
+    year = sourcedate.year + month // 12
+    month = month % 12 + 1
+    day = min(sourcedate.day, calendar.monthrange(year,month)[1])
+    return datetime.date(year, month, day)
 
 def getVersionFile(versionPath:str="", versionFile:str="_version.py") -> str:
     fileContent = open(versionPath + versionFile, "rt").read()
