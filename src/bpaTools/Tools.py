@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-import os, sys, re, traceback, logging, datetime, calendar
+from datetime import datetime as dt2
+import os, sys, re, traceback, logging, calendar, datetime
 import json
 
 def str2bool(v:str) -> bool:
@@ -44,7 +45,19 @@ def getFilePath(sFile:str) -> str:
     #return os.path.dirname(sFile) + "/"                  #Non-Fonctionnel sous Linux
     return os.path.dirname(os.path.abspath(sFile)) + "/"  #Fonctionnel sous Linux
 
+def getFileModificationDate(sFile:str) -> datetime:
+    try:
+        mtime:float = os.path.getmtime(sFile)
+    except OSError:
+        mtime:float = 0
+    return dt2.fromtimestamp(mtime)
 
+def getFileCreationDate(sFile:str) -> datetime:
+    try:
+        ctime:float = os.path.getctime(sFile)
+    except OSError:
+        ctime:float = 0
+    return dt2.fromtimestamp(ctime)
 
 #Samples
 #   str(bpaTools.getNow())                      -> "2020-11-16 12:50:03.726297"
@@ -192,4 +205,10 @@ def getCommandLineOptions(argv) -> dict:
         argv = argv[1:]                 #Reduce the argument list
     #print(opts)
     return opts
+
+if __name__ == '__main__':
+    sFile = __file__
+    dCre = getFileCreationDate(sFile)
+    dMod = getFileModificationDate(sFile)
+    print(sFile, "\n", dCre, "\n", dMod, "\n", getDate(dMod))
 

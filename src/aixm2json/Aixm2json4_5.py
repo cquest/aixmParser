@@ -24,7 +24,12 @@ def addColorProperties(prop:dict, oLog:bpaTools.Logger):
     #bright blue    - #80ffff
 
     #Red and fill
-    if sClass in ["A","B","C","P","CTR","CTR-P","TMA","TMA-P","TMZ","RMZ/TMZ","TMZ/RMZ"]:
+    if sClass in ["P","ZIT"]:
+        sStroke = "#ff0000"
+        sFill = "#ff8080"
+        nFillOpacity = 0.6
+    #Red and fill
+    elif sClass in ["A","B","C","P","ZIT","CTR","CTR-P","TMA","TMA-P","TMZ","RMZ/TMZ","TMZ/RMZ"]:
         sStroke = "#ff0000"
         sFill = "#ff8080"
         if prop.get("lower", None)=="SFC":
