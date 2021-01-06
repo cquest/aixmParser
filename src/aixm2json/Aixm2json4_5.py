@@ -526,10 +526,10 @@ class Aixm2json4_5:
                     include = (not oZone["vfrZone"]) and (not oZone["groupZone"])
                 elif context=="vfr":
                     include = oZone["vfrZone"]
-                    include = include or oZone.get("vfrZoneExt", False)     		#Exporter l'extension de vol possible en VFR de 0m jusqu'au FL175/5334m
+                    include = include or oZone.get("vfrZoneExt", False)     		#Exporter l'extension de vol possible en VFR de 0m jusqu'au FL195/5944m
                 elif context=="ff":
                     include = oZone["freeFlightZone"]
-                    include = include or oZone.get("freeFlightZoneExt", False) 	    #Exporter l'extension de vol possible en VFR de 0m jusqu'au FL175/5334m
+                    include = include or oZone.get("freeFlightZoneExt", False) 	    #Exporter l'extension de vol possible en VFR de 0m jusqu'au FL195/5944m
                     include = include and (o["geometry"]["coordinates"]!=errLocalisationPoint)
             if include:
                 addColorProperties(o["properties"], self.oCtrl.oLog)                #Ajout des propriétés pour colorisation de la zone

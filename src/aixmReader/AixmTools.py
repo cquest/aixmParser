@@ -75,9 +75,9 @@ class AixmTools:
             if context=="ifr":
                 sRet += "*" + " "*lLeftMargin + "/!\Warning - 'IFR Map' - Cartographie de l'espace aérien IFR (zones majotitairement situées au dessus du niveau FL115)\n"
             elif context=="vfr":
-                sRet += "*" + " "*lLeftMargin + "/!\Warning - 'VFR Map' - Cartographie de l'espace aérien VFR (zones situées de la surface jusqu'au FL175/5334m)\n"
+                sRet += "*" + " "*lLeftMargin + "/!\Warning - 'VFR Map' - Cartographie de l'espace aérien VFR (zones situées de la surface jusqu'au FL195/5944m)\n"
             elif context=="ff":
-                sRet += "*" + " "*lLeftMargin + "/!\Warning - 'Free Flight Map' - Version VFR spécifique Parapente/Deltaplane (zones situées en dessous le niveau FL175 avec filtrage des zones de type 'E, F, G et W')\n"
+                sRet += "*" + " "*lLeftMargin + "/!\Warning - 'Free Flight Map' - Version VFR spécifique Parapente/Deltaplane (zones situées en dessous le niveau FL195 avec filtrage des zones de type 'E, F, G et W')\n"
             else:
                 sRet += "*" + " "*lLeftMargin + "(i)Information - 'ALL Map' - Cartographie complète de l'espace aérien (IFR + VFR)\n"
 

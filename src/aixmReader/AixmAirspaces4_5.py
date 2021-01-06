@@ -44,7 +44,7 @@ def convertJsonCalalogToCSV(cat:dict) -> str:
              "potentialFilter4FreeFlightZone":0, "orgName":0, "keySrcFile":0, "GUId":0, "UId":0, "id":0,
              "srcClass":0, "srcType":0,
              "class":0, "type":0, "localType":0, "codeActivity":0, "codeMil":0, "codeLocInd":0,
-             "name":0, "nameV":0, "desc":0, "Mhz":0, "activationCode":0, "activationDesc":0, "timeScheduling":0,
+             "srcName":0, "name":0, "nameV":0, "desc":0, "Mhz":0, "activationCode":0, "activationDesc":0, "timeScheduling":0,
              "declassifiable":0, "seeNOTAM":0, "exceptSAT":0, "exceptSUN":0, "exceptHOL":0, "groundEstimatedHeight":0,
              "lowerMin":0, "lower":0, "lowerM":0, "ordinalLowerMinM":0, "ordinalLowerM":0,
              "upperMax":0, "upper":0, "upperM":0, "ordinalUpperMaxM":0, "ordinalUpperM":0,
@@ -88,19 +88,19 @@ def getSerializeAlt(airspaceProperties:dict, sUppLow:str="") -> str:
     sLower:str = ""
     sUpper:str = ""
     if sUppLow in ["","Low"]:
-        if ("ordinalLowerMinM" in airspaceProperties):
+        if airspaceProperties.get("ordinalLowerMinM", False):
             sLower += airspaceProperties["lowerMin"] + "-"
-        if ("lower" in airspaceProperties):
+        if airspaceProperties.get("lower", False):
             sLower += airspaceProperties["lower"]
         else:
             sLower += "SFC"
         ret = sLower
     if sUppLow in ["","Upp"]:
-        if ("upper" in airspaceProperties):
+        if airspaceProperties.get("upper", False):
             sUpper += airspaceProperties["upper"]
         else:
             sUpper += "FL999"
-        if ("ordinalUpperMaxM" in airspaceProperties):
+        if airspaceProperties.get("ordinalUpperMaxM", False):
             sUpper += "-" + airspaceProperties["upperMax"]
         ret = sUpper
     if sUppLow == "":
@@ -138,9 +138,9 @@ def getVerboseName(cat:dict) -> str:
         sVerboseName += ")"
     if ("ordinalLowerMinM" in cat) and ("ordinalUpperMaxM" in cat):
         sVerboseName += " " + getSerializeAlt(cat)
-    elif "ordinalLowerMinM" in cat:
+    elif cat.get("ordinalLowerMinM", False):
         sVerboseName += " Lower(" + getSerializeAlt(cat, "Low") + ")"
-    elif "ordinalUpperMaxM" in cat:
+    elif cat.get("ordinalUpperMaxM", False):
         sVerboseName += " Upper(" + getSerializeAlt(cat, "Upp") + ")"
     return sVerboseName
 
@@ -478,8 +478,14 @@ class AixmAirspaces4_5:
                 typeZone="CTA"
             elif typeZone=="CTR-P":     #CTR-P [Part of CTR.]
                 typeZone="CTR"
+            elif typeZone=="FIR-P":     #FIR-P [Part of an FIR.]
+                typeZone="FIR"
+            elif typeZone=="UTA-P":     #UTA-P [Part of UTA.]
+                typeZone="UTP"
+            elif typeZone=="R-AMC":     #R-AMC [AMC Manageable Restricted Area.]
+                typeZone="R"
             elif typeZone=="CLASS":     #CLASS [Airspace having a specified class.]
-                typeZone=classZone
+                typeZone=classZone      #Doubler l'info 'Class' ds le 'Type de zone'
 
             if classZone=="G" and theCodeActivity=="GLIDER":
                 classZone = "W"
@@ -487,7 +493,7 @@ class AixmAirspaces4_5:
             elif classZone=="G" and typeZone=="D-OTHER":  #D-OTHER [Activities of dangerous nature (other than a Danger Area).] --> BIRD AREA, GLIDER AREA etc../..
                 classZone="Q"           #Q = Danger area in Openair format
                 typeZone=classZone
-            elif classZone=="OTHER" and typeZone=="RAS":  #D-OTHER [Activities of dangerous nature (other than a Danger Area).] --> BIRD AREA, GLIDER AREA etc../..
+            elif classZone=="OTHER" and typeZone=="RAS": #RAS [Regulated Airspace (not otherwise covered).
                 classZone=typeZone      #RAS [Regulated Airspace (not otherwise covered).
 
         else:
@@ -557,7 +563,7 @@ class AixmAirspaces4_5:
                 typeZone="PROTECT"
             elif classZone=="D-OTHER" and theCodeActivity in ["MILOPS","ARTILERY","BLAST","SHOOT"]:              #D-OTHER [Activities of dangerous nature (other than a Danger Area).] --> BIRD AREA, GLIDER AREA etc../..
                 classZone="R"                       #R = Restricted in Openair format
-                if localTypeZone:
+                if localTypeZone and (not bpaTools.isFloat(localTypeZone)):                                     #Exclure cas des: '60020', '8001' etc...
                     typeZone=localTypeZone
                 else:
                     typeZone=classZone
@@ -603,23 +609,48 @@ class AixmAirspaces4_5:
         #    classZone="{SpecFilter}"
             typeZone=localTypeZone
 
-        if theCodeActivity=="GLIDER" and not classZone in ["PROTECT","D-OTHER"]:
+        if theCodeActivity=="GLIDER" and (not classZone in ["W", "PROTECT", "D-OTHER"]):
             classZone = "Q"
             typeZone="Q"
 
-        #Cas spécifique initialement non précisés (ex: "EBKT RMZ" ou "EBKT TMZ" de 'KORTRIJK')
-        if ase.txtName:     theName = ase.txtName.string.lower()
-        else:               theName = ""
-        if theName.find("RADIO MANDATORY ZONE".lower()) >= 0:
+        #--------------------------------
+        #Cleaning du Nommage de la zone
+        if ase.txtName:
+            theSrcName:str = ase.txtName.string
+            cleanName:str = theSrcName
+            if cleanName[-(6+len(typeZone)):]=="CLASS "+typeZone:
+                cleanName = (cleanName[:-(6+len(typeZone))]).strip()
+            if len(typeZone)>2 and cleanName[-len(typeZone):]==typeZone:
+                cleanName = (cleanName[:-len(typeZone)]).strip()
+            if len(typeZone)>2 and cleanName[:len(typeZone)]==typeZone:
+                cleanName = (cleanName[len(typeZone):]).strip()
+        else:
+            theSrcName = cleanName = ""
+
+        #Map 20210106
+        #if theAirspace["id"] in ["LECBFIR_E"]:
+        #    print()
+
+        tmpName = cleanName.lower()
+        if (tmpName[:4]=="FIR ".lower()) and (classZone in ["E","F","G"]):
+            classZone="G"         #20210106
+            typeZone="FIR"        #20210106
+            cleanName = cleanName[4:]
+        elif (tmpName[-4:]==" FIR".lower()) and (classZone in ["E","F","G"]):
+            classZone="G"         #20210106
+            typeZone="FIR"        #20210106
+            cleanName = cleanName[:-4]
+        if tmpName.find("RADIO MANDATORY ZONE".lower()) >= 0:
             classZone="RMZ"         #20200802  - "R"
             typeZone=classZone      #20200802  - "RMZ"
-        elif (theName.find("RMZ".lower()) >= 0) and (classZone in ["E","F","G"]):
+        elif (tmpName.find("RMZ".lower()) >= 0) and (classZone in ["E","F","G"]):
             classZone="RMZ"         #20200802  - "R"
             typeZone=classZone      #20200802  - "RMZ"
-        if theName.find("TRANSPONDER MANDATORY ZONE".lower()) >= 0:
+
+        if tmpName.find("TRANSPONDER MANDATORY ZONE".lower()) >= 0:
             classZone="TMZ"         #20200802  - "P"
             typeZone=classZone      #20200802  - "TMZ"
-        elif (theName.find("TMZ".lower()) >= 0) and (classZone in ["E","F","G"]):
+        elif (tmpName.find("TMZ".lower()) >= 0) and (classZone in ["E","F","G"]):
             classZone="TMZ"         #20200802  - "P"
             typeZone=classZone      #20200802  - "TMZ"
 
@@ -710,7 +741,7 @@ class AixmAirspaces4_5:
         aExcludeClassVfrZone           = ["PART","SECTOR","FIR","UTA","UIR","OCA","OTA","RAS","AMA","POLITICAL"]
         aExcludeTypeFreeFlightZone     = ["FIR","SIV","TRA","TSA"]  #CBA ?
         aExcludeClassFreeFlightZone    = ["F","G","E"]
-        aExcludeClassFreeFlightZoneExt = ["F","G"]					#Preserver les 'E' pour capacité d'extention de vols au dessus FL115 (et de 0m jusqu'au FL175/5334m)
+        aExcludeClassFreeFlightZoneExt = ["F","G"]					#Preserver les 'E' pour capacité d'extention de vols au dessus FL115 (et de 0m jusqu'au FL195/5944m)
         vfrZoneFilter = bool(classZone in aExcludeClassVfrZone)
         freeFlightZoneFilter = bool(vfrZoneFilter or \
                                     (classZone in aExcludeClassFreeFlightZone) or \
@@ -728,17 +759,10 @@ class AixmAirspaces4_5:
         theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"freeFlightZoneExt":bfreeFlightZoneExt})
 
         #--------------------------------
-        #Détermination du Nommage de la zone
+        #Stockage du Nommage de la zone
         if ase.txtName:
-            theSrcName = ase.txtName.string
-            theName = theSrcName
-            if theName[-(6+len(typeZone)):]=="CLASS "+typeZone:
-                theName = (theName[:-(6+len(typeZone))]).strip()
-            if len(typeZone)>2 and theName[-len(typeZone):]==typeZone:
-                theName = (theName[:-len(typeZone)]).strip()
-            if len(typeZone)>2 and theName[:len(typeZone)]==typeZone:
-                theName = (theName[len(typeZone):]).strip()
-            theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"name":theName})
+            theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"srcName":theSrcName})
+            theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"name":cleanName})
         else:
             theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"name":ase.AseUid.codeId.string})
 
@@ -772,16 +796,17 @@ class AixmAirspaces4_5:
         #Eventuel filtrage complémentaire pour requalification des zones 'vfrZone' & 'freeFlightZone' (zones spécifiques Vol-Libre Parapente/Delta)
         if bvfrZone and ("lowerValue" in theAirspace) and ("upperValue" in theAirspace):
             bLowInfFL115 = bool(low<3505)       #Plancher strictement en dessous FL115/3505m
-            bLowInfFL175 = bool(low<5334)       #Plancher strictement en dessous FL175/5334m
+            #bLowInfFL175 = bool(low<5334)       #Plancher strictement en dessous FL175/5334m
+            bLowInfFL195 = bool(low<5943)       #Plancher strictement en dessous FL195/5944m
             bUppInfFL115 = bool(up<=3505)       #Plafond en dessous, et jusqu'au FL115/3505m
 
             if not bLowInfFL115:                #Zone dont le plancher débute au dessus le FL115/3505m
                 theAirspace.update({"excludeAirspaceByAlt":True})
                 theAirspace.update({"vfrZone":False})
 
-            theAirspace.update({"vfrZoneExt":bool(bLowInfFL175 and (not bUppInfFL115))})             #Extension de vol possible jusqu'au FL175/5334m
+            theAirspace.update({"vfrZoneExt":bool(bLowInfFL195 and (not bUppInfFL115))})             #Extension de vol possible jusqu'au FL195/5944m
 
-            bPotentialFilter = bfreeFlightZone and bool(up<=5334)       #Marqueur pour filtrage potentiel de zones jusqu'au FL175/5334m
+            bPotentialFilter = bfreeFlightZone and bool(up<=5944)       #Marqueur pour filtrage potentiel de zones jusqu'au FL195/5944m
             if bPotentialFilter:
                 theAirspace.update({"potentialFilter4FreeFlightZone":True})
 
@@ -800,7 +825,7 @@ class AixmAirspaces4_5:
                 theAirspace.update({"freeFlightZone":bool((not bExclude) and bLowInfFL115)})     #Zone non-exclue et dont le plancher débute en dessous FL115/3505m
 
             if bfreeFlightZoneExt:
-                theAirspace.update({"freeFlightZoneExt":bool((not bExclude) and (bLowInfFL175 and (not bUppInfFL115)))})  #Extension de vol possible jusqu'au FL175/5334m
+                theAirspace.update({"freeFlightZoneExt":bool((not bExclude) and (bLowInfFL195 and (not bUppInfFL115)))})  #Extension de vol possible jusqu'au FL195/5944m
 
         #--------------------------------
         #Verification des eventuels decalages d'altitudes
@@ -872,6 +897,41 @@ class AixmAirspaces4_5:
                 #Tentative de construction d'un format 'comprehensible par l'humain'...
                 #   cas 1 : UTC(01/01->31/12) ANY(08:30->16:00)
                 #   cas 2 : UTC(01/01->31/12) MON to FRI(08:30->16:00)
+                """ standard aixm-4.5 output samples              // associate to POAF convertion samples
+        		<Att>
+        			<codeWorkHr>TIMSH</codeWorkHr>
+            		<Timsh>                                       '*ATimes {"1": ["UTC(01/01->31/12)", "WD(08:00->18:00)"], "2":...}'
+            			<codeTimeRef>UTCW</codeTimeRef>
+            			<dateValidWef>01-01</dateValidWef>
+            			<dateValidTil>31-12</dateValidTil>
+            			<codeDay>WD</codeDay>
+            			<codeDayTil>WD</codeDayTil>
+            			<timeWef>08:00</timeWef>
+            			<timeTil>18:00</timeTil>
+            		</Timsh>
+            		<Timsh>                                       '*ATimes {{"1":... , "2": ["UTC(EDLST->SDLST)", "SAT to SUN(08:30->16:00)"]}'
+            			<codeTimeRef>UTC</codeTimeRef>
+            			<dateValidWef>EDLST</dateValidWef>
+            			<dateValidTil>SDLST</dateValidTil>
+            			<codeDay>SAT</codeDay>
+            			<codeDayTil>SUN</codeDayTil>
+            			<timeWef>08:30</timeWef>
+            			<timeTil>16:00</timeTil>
+            		</Timsh>
+                    <Timsh>                                       '*ATimes {{"1":... , "2":... , "3": ["UTC(01/01->31/12)", "ANY(SR/30/E->SS/30/L)"]}'
+            			<codeTimeRef>UTC</codeTimeRef>
+            			<dateValidWef>01-01</dateValidWef>
+            			<dateValidTil>31-12</dateValidTil>
+            			<codeDay>ANY</codeDay>
+            			<codeEventWef>SR</codeEventWef>
+            			<timeRelEventWef>30</timeRelEventWef>
+            			<codeCombWef>E</codeCombWef>
+            			<codeEventTil>SS</codeEventTil>
+            			<timeRelEventTil>30</timeRelEventTil>
+            			<codeCombTil>L</codeCombTil>
+            		</Timsh>
+                </Att>
+                """
                 oGlobTimsh:dict = {}
                 #Interprétation de toutes les occurances de <Timsh>
                 oLstTsh = ase.Att.find_all("Timsh", recursive=False)

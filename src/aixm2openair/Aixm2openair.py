@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 import json
+import decimal
+from decimal import Decimal
 
 import bpaTools
 from shapely.geometry import LineString, Point
@@ -67,9 +69,9 @@ def makeOpenair(oAirspace:dict, gpsType:str) -> list:
     if "exceptHOL" in oZone:        openair.append("*AExHOL {0}".format(oZone["exceptHOL"]))
     if "seeNOTAM" in oZone:         openair.append("*ASeeNOTAM {0}".format(oZone["seeNOTAM"]))
     openair.append("AH {0}".format(parseAlt("AH", gpsType, oZone)))
-    if "ordinalUpperMaxM" in oZone:     openair.append("*AH2 {0}".format(oZone["upperMax"]))
+    if oZone.get("ordinalUpperMaxM", False):     openair.append("*AH2 {0}".format(oZone["upperMax"]))
     openair.append("AL {0}".format(parseAlt("AL", gpsType, oZone)))
-    if "ordinalLowerMinM" in oZone:     openair.append("*AL2 {0}".format(oZone["lowerMin"]))
+    if oZone.get("ordinalLowerMinM", False):     openair.append("*AL2 {0}".format(oZone["lowerMin"]))
     if "geometry" in oAirspace:
         openair += oAirspace["geometry"]
     return openair
@@ -231,9 +233,10 @@ class Aixm2openair:
 
             lat1, lon1 = bpaTools.GeoCoordinates.geoDd2dms(lat_c,"lat", lon_c,"lon", ":"," ")
             openair.append("V X={0} {1}".format(lat1, lon1))
-            radius = float(oBorder.Circle.valRadius.string)
-            radius = self.oCtrl.oAixmTools.convertLength(radius, oBorder.uomRadius.string, "NM")   #Convert radius in Nautical Mile for Openair format
-            openair.append("DC {0}".format(radius))
+            radius:float = float(oBorder.Circle.valRadius.string)
+            radius = self.oCtrl.oAixmTools.convertLength(radius, oBorder.uomRadius.string, "NM")    #Convert radius in Nautical Mile for Openair format
+            radius2:Decimal = Decimal(radius).quantize(Decimal('0.1'), decimal.ROUND_UP)            #Arrondi suppérieur
+            openair.append("DC {0}".format(radius2))
             self.geoAirspaces.append({"type":"Openair", "properties":oZone, "geometry":openair})
             return
 
@@ -329,6 +332,11 @@ class Aixm2openair:
                 else:
                     self.oCtrl.oLog.warning("Missing geoBorder GbrUid='{0}' Name={1} of {2}".format(avx.GbrUid["mid"], avx.GbrUid.txtName.string, oZone["nameV"]), outConsole=False)
                     g.append(start)
+                    lon, lat = start
+                    lat1, lon1 = bpaTools.GeoCoordinates.geoDd2dms(lat,"lat", lon,"lon", ":"," ")
+                    sPoint = "DP {0} {1}".format(lat1, lon1)
+                    lastPoint = sPoint
+                    openair.append(sPoint)
             else:
                 self.oCtrl.oLog.warning("Default case - GbrUid='{0}' Name={1} of {2}".format(avx.GbrUid["mid"], avx.GbrUid.txtName.string, oZone["nameV"]), outConsole=False)
                 lon, lat = self.oCtrl.oAixmTools.geo2coordinates(avx, oZone=oZone)
@@ -392,10 +400,10 @@ class Aixm2openair:
                         include = (not oZone["vfrZone"]) and (not oZone["groupZone"])
                     elif context=="vfr":
                         include = oZone["vfrZone"]
-                        include = include or oZone.get("vfrZoneExt", False)   			#Exporter l'extension de vol possible en VFR de 0m jusqu'au FL175/5334m
+                        include = include or oZone.get("vfrZoneExt", False)   			#Exporter l'extension de vol possible en VFR de 0m jusqu'au FL195/5944m
                     elif context=="ff":
                         include = oZone["freeFlightZone"]
-                        include = include or oZone.get("freeFlightZoneExt", False)		#Exporter l'extension de vol possible en VFR de 0m jusqu'au FL175/5334m
+                        include = include or oZone.get("freeFlightZoneExt", False)		#Exporter l'extension de vol possible en VFR de 0m jusqu'au FL195/5944m
                 if include==True and exceptDay!="":
                     if exceptDay in oZone:                              include = False
                 if include==True:

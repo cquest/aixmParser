@@ -1,7 +1,24 @@
 #!/usr/bin/env python3
 from datetime import datetime as dt2
 import os, sys, re, traceback, logging, calendar, datetime
-import json
+import json, unicodedata
+
+def isInteger(s:str) -> bool:
+    try:
+        n:int = int(s)
+        return True
+    except ValueError:
+        return False
+
+def isFloat(s:str) -> bool:
+    try:
+        n:float = float(s)
+        return True
+    except ValueError:
+        return False
+
+def cleanAccent(s:str) -> str:
+    return unicodedata.normalize('NFKD', s).encode('ASCII', 'ignore')
 
 def str2bool(v:str) -> bool:
   return bool(v.lower() in ("true","t","vrai","v","yes","y","1","-1"))
@@ -34,6 +51,41 @@ def initEvent(sFile:str, oLog:logging=None, isSilent:bool=False) -> None:
     elif not isSilent:
         print(msg)
     return
+
+#Extract data, samples:
+#   getContentOf("*AActiv [HX]  ...", "[", "]") -> "HX"
+#   getContentOf("UTC(01/01->31/12)", "(", ")") -> "01/01->31/12"
+#   getContentOf("tyty et toto sur ", "(", ")") -> None
+def getContentOf(sSrc:str, sSepLeft:str, sSepRight:str, retSep:bool=False) -> str:
+    lIdxLeft  = sSrc.find(sSepLeft)
+    lIdxRight = sSrc.find(sSepRight)
+    if lIdxLeft>=0 and lIdxRight>=0:
+        if retSep:
+            return sSrc[lIdxLeft:lIdxRight+len(sSepRight)]
+        else:
+            return sSrc[lIdxLeft+len(sSepLeft):lIdxRight]
+    else:
+        return None
+
+#Extract data, samples:
+#   getLeftOf("UTC(01/01->31/12)", "(") -> "UTC"
+#   getLeftOf("tyty et toto sur ", "(",) -> None
+def getLeftOf(sSrc:str, sFind:str) -> str:
+    lIdxFind = sSrc.find(sFind)
+    if lIdxFind>=0:
+        return sSrc[:lIdxFind]
+    else:
+        return None
+
+#Extract data, samples:
+#   getRightOf("*AActiv [HX] tyty et toto", "]") -> " tyty et toto"
+#   getRightOf("tyty et toto sur ", ")",) -> None
+def getRightOf(sSrc:str, sFind:str) -> str:
+    lIdxFind = sSrc.find(sFind)
+    if lIdxFind>=0:
+        return sSrc[lIdxFind+1]
+    else:
+        return None
 
 def getFileName(sFile:str) -> str:
     return os.path.basename(sFile).split(".")[0]

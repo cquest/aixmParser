@@ -21,6 +21,9 @@ if __name__ == '__main__':
     #srcFile = "../../poaff/input/BPa/99999999_BPa_Test4CleaningCatalog_aixm45.xml"
     #srcFile = "../../poaff/input/BPa/99999999_BPa_Test4AppendDelta1_aixm45.xml"
     #srcFile = "../../poaff/input/FFVP/20200704_FFVP_ParcsNat_BPa_aixm45.xml"
+    #srcFile = "../../poaff/input/FFVL/20210104_FFVL_ParcBauges_BPa_aixm45.xml"
+    srcFile = "../../poaff/input/BPa/20210106_LTA-FrenchSurfaceS-HR_BPa_aixm45.xml"
+
 
     ####  quelques options d'appels  ####
     #Simulation des arguments d'appels 'sys.argv' via le tableau 'aArgv'
