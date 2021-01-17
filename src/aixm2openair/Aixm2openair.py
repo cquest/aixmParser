@@ -40,8 +40,8 @@ def makeOpenair(oAirspace:dict, gpsType:str) -> list:
     #1/ Specific translations for Openair format
     if theClass=="D" and theType=="CTR":    theClass="CTR"     #CTR CONTROL TRAFFIC AREAS
     #2/ Specific translations for Openair format
-    if   theType=="RMZ":                    theClass="RMZ"
-    elif theType=="TMZ":                    theClass="TMZ"
+    #if   theType=="RMZ":                    theClass="RMZ"
+    #elif theType=="TMZ":                    theClass="TMZ"
 
     openair.append("AC {0}".format(theClass))
     openair.append("AN {0}".format(oZone["nameV"]))
@@ -62,16 +62,16 @@ def makeOpenair(oAirspace:dict, gpsType:str) -> list:
     if ("activationCode" in oZone) and ("activationDesc" in oZone):       openair.append("*AActiv [{0}] {1}".format(oZone["activationCode"], oZone["activationDesc"]))
     if ("activationCode" in oZone) and not ("activationDesc" in oZone):   openair.append("*AActiv [{0}]".format(oZone["activationCode"]))
     if not("activationCode" in oZone) and ("activationDesc" in oZone):    openair.append("*AActiv {0}".format(oZone["activationDesc"]))
-    if "declassifiable" in oZone:   openair.append("*ADecla {0}".format(oZone["declassifiable"]))
+    if bool(oZone.get("declassifiable",  False)):   openair.append("*ADecla Yes")
     if "timeScheduling" in oZone:   openair.append("*ATimes {0}".format(json.dumps(oZone["timeScheduling"], ensure_ascii=False)))
-    if "exceptSAT" in oZone:        openair.append("*AExSAT {0}".format(oZone["exceptSAT"]))
-    if "exceptSUN" in oZone:        openair.append("*AExSUN {0}".format(oZone["exceptSUN"]))
-    if "exceptHOL" in oZone:        openair.append("*AExHOL {0}".format(oZone["exceptHOL"]))
-    if "seeNOTAM" in oZone:         openair.append("*ASeeNOTAM {0}".format(oZone["seeNOTAM"]))
+    if bool(oZone.get("exceptSAT", False)):         openair.append("*AExSAT Yes")
+    if bool(oZone.get("exceptSUN", False)):         openair.append("*AExSUN Yes")
+    if bool(oZone.get("exceptHOL", False)):         openair.append("*AExHOL Yes")
+    if bool(oZone.get("seeNOTAM",  False)):         openair.append("*ASeeNOTAM Yes")
     openair.append("AH {0}".format(parseAlt("AH", gpsType, oZone)))
-    if oZone.get("ordinalUpperMaxM", False):     openair.append("*AH2 {0}".format(oZone["upperMax"]))
+    if oZone.get("ordinalUpperMaxM", False):        openair.append("*AH2 {0}".format(oZone["upperMax"]))
     openair.append("AL {0}".format(parseAlt("AL", gpsType, oZone)))
-    if oZone.get("ordinalLowerMinM", False):     openair.append("*AL2 {0}".format(oZone["lowerMin"]))
+    if oZone.get("ordinalLowerMinM", False):        openair.append("*AL2 {0}".format(oZone["lowerMin"]))
     if "geometry" in oAirspace:
         openair += oAirspace["geometry"]
     return openair

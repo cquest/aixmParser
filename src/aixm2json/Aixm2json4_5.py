@@ -6,7 +6,7 @@ from shapely.geometry import LineString, Point
 errLocalisationPoint:list = [-5,45]
 
 #geojson Colors attributes
-def addColorProperties(prop:dict, oLog:bpaTools.Logger):
+def addColorProperties(prop:dict, dstProp:dict, oLog:bpaTools.Logger):
     sClass = prop["class"]
 
     #Red            - #ff0000
@@ -47,7 +47,7 @@ def addColorProperties(prop:dict, oLog:bpaTools.Logger):
         sFill = "#ff96dc"
         nFillOpacity = 0
     #Red and fill
-    elif sClass in ["D","D-AMC"] and prop.get("declassifiable", None)!="Yes":
+    elif sClass in ["D","D-AMC"] and not bool(prop.get("declassifiable", False)):
         sStroke = "#ff0000"
         sFill = "#ff8080"
         if prop.get("lower", None)=="SFC":
@@ -55,7 +55,7 @@ def addColorProperties(prop:dict, oLog:bpaTools.Logger):
         else:
             nFillOpacity = 0.3
     #Light-Red and Purple fill
-    elif sClass in ["D","D-AMC"] and prop.get("declassifiable", None)=="Yes":
+    elif sClass in ["D","D-AMC"] and bool(prop.get("declassifiable", False)):
         sStroke = "#ff0000"
         sFill = "#ffb9dc"
         if prop.get("lower", None)=="SFC":
@@ -92,7 +92,7 @@ def addColorProperties(prop:dict, oLog:bpaTools.Logger):
         sFill = "#f07800"
         nFillOpacity = 0
     #Blue
-    elif sClass in ["ZSM","BIRD","PROTECT","D-OTHER","SUR","AER","TRPLA","TRVL","VOL"]:
+    elif sClass in ["ZSM","BIRD","PROTECT","D-OTHER","SUR","AER","TRPLA","TRVL","VOL","REFUEL"]:
         sStroke = "#0000ff"
         sFill = "#ceeffe"
         if prop.get("lower", None)=="SFC":
@@ -100,7 +100,7 @@ def addColorProperties(prop:dict, oLog:bpaTools.Logger):
         else:
             nFillOpacity = 0.2
     #Green
-    elif sClass in ["E","F","G"]:
+    elif sClass in ["E","F","G","SIV","FIS"]:
         sStroke = "#008040"
         sFill = "#80ff80"
         if prop.get("lower", None)=="SFC":
@@ -115,11 +115,11 @@ def addColorProperties(prop:dict, oLog:bpaTools.Logger):
     if nFillOpacity!=0 and prop.get("lowerM", None)>=3505:
             nFillOpacity = 0.1
 
-    prop.update({"stroke": sStroke})
-    prop.update({"stroke-width": 2})
-    prop.update({"stroke-opacity": 0.8})
-    prop.update({"fill": sFill})
-    prop.update({"fill-opacity": nFillOpacity})
+    dstProp.update({"stroke": sStroke})
+    dstProp.update({"stroke-width": 2})
+    dstProp.update({"stroke-opacity": 0.8})
+    dstProp.update({"fill": sFill})
+    dstProp.update({"fill-opacity": nFillOpacity})
     return
 
 
@@ -428,7 +428,7 @@ class Aixm2json4_5:
                         points4map.append(self.oCtrl.oAixmTools.make_point(pt, "Point {0} of {1}; type={2}".format(avx_cur, oZone["nameV"], codeType)))
                     g.append([lon, lat])
 
-                # 'Counter Clockwise Arc' or 'Clockwise Arc'
+                # 'Counter Clockwise Arc' or 'ClockWise Arc'
                 #Nota: 'ABE' = 'Arc By Edge' ne semble pas utilisé dans les fichiers SIA-France et Eurocontrol-Europe
                 elif codeType in ["CCA", "CWA"]:
                     start = self.oCtrl.oAixmTools.geo2coordinates(avx, oZone=oZone)
@@ -532,8 +532,17 @@ class Aixm2json4_5:
                     include = include or oZone.get("freeFlightZoneExt", False) 	    #Exporter l'extension de vol possible en VFR de 0m jusqu'au FL195/5944m
                     include = include and (o["geometry"]["coordinates"]!=errLocalisationPoint)
             if include:
-                addColorProperties(o["properties"], self.oCtrl.oLog)                #Ajout des propriétés pour colorisation de la zone
-                geojson.append(o)
+                #Extract single parts of properties
+                oSingleCat:dict = {}
+                aSinglePorperties:list = ["nameV","class","type","lower","upper","lowerM","upperM","activationCode","desc","UId","id"]  #Exclude: zoneType, groupZone, srcClass, srcType, vfrZone, vfrZoneExt, freeFlightZone, freeFlightZoneExt, srcName, name; etc...
+                for sProp in aSinglePorperties:
+                    value = o["properties"].get(sProp, None)
+                    if value!=None:
+                        oSingleCat.update({sProp:value})
+                addColorProperties(o["properties"], oSingleCat, self.oCtrl.oLog)      #Ajout des propriétés pour colorisation de la zone
+                oAs = o["geometry"]
+                oArea:dict = {"type":"Feature", "properties":oSingleCat, "geometry":oAs}
+                geojson.append(oArea)
             barre.update(idx)
         barre.reset()
         if geojson:

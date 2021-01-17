@@ -251,18 +251,27 @@ class AixmTools:
         if srcRef == dstRef:
             return length
 
-        if   dstRef=="M" and srcRef=="NM":
+        #Just for documentation
+        #CONST.nm = 1852                # Nautic Mile to Meter
+        #CONST.ft = 0.3048              # Foot to Meter
+
+        #Use for GeoJSON format
+        if   dstRef=="M" and srcRef=="NM":                      #1,6 NM = 2963,2 M
             length = length * aixmReader.CONST.nm
-        elif dstRef=="M" and srcRef=="KM":
+        elif dstRef=="M" and srcRef=="KM":                      #1.6 KM = 1600 M
             length = length * 1000
-        elif dstRef=="M" and srcRef=="FT":
+        elif dstRef=="M" and srcRef=="FT":                      #1.6 FT = 0,48768 M
             length = length * aixmReader.CONST.ft
-        elif dstRef=="NM" and srcRef=="KM":
+
+        #Use for Openair format
+        elif dstRef=="NM" and srcRef=="KM":                     #1.6 KM = 0,863931 NM
             length = (length * 1000) / aixmReader.CONST.nm
-        elif dstRef=="NM" and srcRef=="M":
+        elif dstRef=="NM" and srcRef=="M":                      #1.6 M = 0,000863931 NM
             length = length / aixmReader.CONST.nm
-        elif dstRef=="NM" and srcRef=="FT":
-            length = (length * aixmReader.CONST.ft) / aixmReader.CONST.ft
+        elif dstRef=="NM" and srcRef=="FT":                     #1.6 FT = 0,000263326 NM
+            length = (length * aixmReader.CONST.ft) / aixmReader.CONST.nm
+
+        #Raise error
         else:
             self.oCtrl.oLog.critical("convertLength() error value={0} srcRef={1} srcRef={2}}".format(length, srcRef, dstRef), outConsole=False)
 

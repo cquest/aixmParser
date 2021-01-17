@@ -22,7 +22,9 @@ if __name__ == '__main__':
     #srcFile = "../../poaff/input/BPa/99999999_BPa_Test4AppendDelta1_aixm45.xml"
     #srcFile = "../../poaff/input/FFVP/20200704_FFVP_ParcsNat_BPa_aixm45.xml"
     #srcFile = "../../poaff/input/FFVL/20210104_FFVL_ParcBauges_BPa_aixm45.xml"
-    srcFile = "../../poaff/input/BPa/20210106_LTA-FrenchSurfaceS-HR_BPa_aixm45.xml"
+    #srcFile = "../../poaff/input/BPa/20210114_LTA-French1-HR_BPa_aixm45.xml"
+    #srcFile = "../../poaff/input/BPa/20201210_BPa_ZonesComplementaires_aixm45.xml"
+    srcFile = "../../poaff/input/BPa/20210116_BPa_FR-SIA-SUPAIP_aixm45.xml"
 
 
     ####  quelques options d'appels  ####
@@ -48,7 +50,7 @@ if __name__ == '__main__':
     #### poaf - Specifique test for bigData ####
     #srcFile = "../../poaff/input/SIA/20200813-20200909_aixm4.5_SIA-FR.xml"
     #srcFile = "../../poaff/input/EuCtrl/20200618_aixm4.5_Eurocontrol-FR.xml"
-    #srcFile = "../../poaff/input/EuCtrl/20201105_aixm4.5_Eurocontrol-Euro_BPa.xml"
+    #srcFile = "../../poaff/input/EuCtrl/20201231_aixm4.5_Eurocontrol-Euro_BPa.xml"
     #aArgv = [appName, srcFile, "-Fall", aixmReader.CONST.typeAIRSPACES, aixmReader.CONST.optVFR, aixmReader.CONST.optFreeFlight]
 
 

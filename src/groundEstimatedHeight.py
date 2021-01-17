@@ -142,7 +142,7 @@ class GroundEstimatedHeight:
 
         #self.oLog.info("aElevation={}".format(aElevation), outConsole=False)
         if lCptError > 60:
-             print("{0} errors in call elevation_data.get_elevation() - name={1}".format(lCptError, oZone[self.sProp]["name"]))
+             print("{0} errors in call elevation_data.get_elevation() - name={1}".format(lCptError, oZone[self.sProp]["nameV"]))
              self.oLog.warning("{0} errors in call elevation_data.get_elevation()\nProperties={1}\naElevation{2}".format(lCptError, oZone[self.sProp], aElevation), outConsole=False)
 
         eSortedElevation = sorted(aElevation)
@@ -159,7 +159,7 @@ class GroundEstimatedHeight:
         geoJSON = []
         geoJSON.append(oZone)
         prop = {}
-        prop.update({"name":"Square line"})
+        prop.update({"nameV":"Square line"})
         prop.update({"lAltMin":lAltMin})
         prop.update({"lAltMax":lAltMax})
         prop.update({"lAltMed":lAltMed})
