@@ -506,6 +506,8 @@ class Aixm2json4_5:
         return
 
     def saveAirspacesFilter(self, aContext) -> None:
+        if not self.geoAirspaces:                                   #Contrôle si le fichier est vide
+            return
         context = aContext[0]
         sMsg = "Prepare GeoJSON file - {0}".format(aContext[1])
         self.oCtrl.oLog.info(sMsg)
@@ -534,7 +536,7 @@ class Aixm2json4_5:
             if include:
                 #Extract single parts of properties
                 oSingleCat:dict = {}
-                aSinglePorperties:list = ["nameV","class","type","lower","upper","lowerM","upperM","activationCode","desc","UId","id"]  #Exclude: zoneType, groupZone, srcClass, srcType, vfrZone, vfrZoneExt, freeFlightZone, freeFlightZoneExt, srcName, name; etc...
+                aSinglePorperties:list = ["nameV","class","type","lower","upper","ordinalLowerM","ordinalUpperM","lowerM","lowerMin","upperM","upperMax","activationCode","desc","declassifiable","GUId","UId","id"]  #Exclude: zoneType, groupZone, srcClass, srcType, vfrZone, vfrZoneExt, freeFlightZone, freeFlightZoneExt, srcName, name; etc...
                 for sProp in aSinglePorperties:
                     value = o["properties"].get(sProp, None)
                     if value!=None:
@@ -553,10 +555,11 @@ class Aixm2json4_5:
     #Ces simples 'Point remarquable' sont supprimés de la cartographie freefligth (ex: un VOR, un émmzteur radio, un centre de piste)
     #Idem, suppression des 'lignes' (ex: Axe d'approche d'un aérodrome ou autres...)
     def cleanAirspacesCalalog(self, airspacesCatalog) -> None:
-        self.oAirspacesCatalog = airspacesCatalog
-        if self.oAirspacesCatalog.cleanAirspacesCalalog:     #Contrôle si l'optimisation est déjà réalisée
+        if not self.geoAirspaces:                                   #Contrôle si le fichier est vide
             return
-
+        self.oAirspacesCatalog = airspacesCatalog
+        if self.oAirspacesCatalog.cleanAirspacesCalalog:            #Contrôle si l'optimisation est déjà réalisée
+            return
         sMsg = "Clean catalog"
         self.oCtrl.oLog.info(sMsg)
         barre = bpaTools.ProgressBar(len(self.geoAirspaces), 20, title=sMsg, isSilent=self.oCtrl.oLog.isSilent)

@@ -35,10 +35,10 @@ def makeOpenair(oAirspace:dict, gpsType:str) -> list:
     openair = []
     oZone = oAirspace.get("properties", oAirspace)
     theClass = oZone["class"]
-    theType = oZone["type"]
 
+    #theType = oZone["type"]
     #1/ Specific translations for Openair format
-    if theClass=="D" and theType=="CTR":    theClass="CTR"     #CTR CONTROL TRAFFIC AREAS
+    #if theClass=="D" and theType=="CTR":    theClass="CTR"     #CTR CONTROL TRAFFIC AREAS
     #2/ Specific translations for Openair format
     #if   theType=="RMZ":                    theClass="RMZ"
     #elif theType=="TMZ":                    theClass="TMZ"
@@ -52,13 +52,31 @@ def makeOpenair(oAirspace:dict, gpsType:str) -> list:
     if "freeFlightZoneExt" in oZone:
         if oZone["freeFlightZoneExt"] and (not oZone["freeFlightZone"]):
             aAlt.append("ffExt=Yes")
+    #if "lowerM" in oZone:
+    #    if float(oZone.get("lowerM", 0)) > 3504:  #FL115 = 3505m
+    #        aAlt.append("ffExt=Yes")
     if len(aAlt)==3:
         openair.append('*AAlt ["{0}", "{1}", "{2}"]'.format(aAlt[0], aAlt[1], aAlt[2]))
     else:
         openair.append('*AAlt ["{0}", "{1}"]'.format(aAlt[0], aAlt[1]))
-    openair.append("*AUID GUId={0} UId={1} Id={2}".format(oZone.get("GUId", "!"), oZone["UId"], oZone["id"]))
+
+    sGUId:str = oZone.get("srcGUId", None)
+    if sGUId==None:     sGUId = oZone.get("GUId", "!")
+    sUId:str = oZone.get("srcUId", None)
+    if sUId==None:      sUId:str = oZone.get("UId", "!")
+    sId:str = oZone.get("id", "!")
+    openair.append("*AUID GUId={0} UId={1} Id={2}".format(sGUId, sUId, sId))
+
     if "desc" in oZone:     openair.append("*ADescr {0}".format(oZone["desc"]))
-    if "Mhz" in oZone:      openair.append("*AMhz {0}".format(json.dumps(oZone["Mhz"], ensure_ascii=False)))
+    if "Mhz" in oZone:
+        if isinstance(oZone["Mhz"], str):
+            sDict:str = bpaTools.getContentOf(oZone["Mhz"], "{", "}", True)
+            oAMhz:dict = json.loads(sDict)
+        elif isinstance(oZone["Mhz"], dict):
+            oAMhz:dict = oZone["Mhz"]
+        else:
+            oAMhz:dict = None
+        openair.append("*AMhz {0}".format(json.dumps(oAMhz, ensure_ascii=False)))
     if ("activationCode" in oZone) and ("activationDesc" in oZone):       openair.append("*AActiv [{0}] {1}".format(oZone["activationCode"], oZone["activationDesc"]))
     if ("activationCode" in oZone) and not ("activationDesc" in oZone):   openair.append("*AActiv [{0}]".format(oZone["activationCode"]))
     if not("activationCode" in oZone) and ("activationDesc" in oZone):    openair.append("*AActiv {0}".format(oZone["activationDesc"]))
@@ -235,7 +253,18 @@ class Aixm2openair:
             openair.append("V X={0} {1}".format(lat1, lon1))
             radius:float = float(oBorder.Circle.valRadius.string)
             radius = self.oCtrl.oAixmTools.convertLength(radius, oBorder.uomRadius.string, "NM")    #Convert radius in Nautical Mile for Openair format
-            radius2:Decimal = Decimal(radius).quantize(Decimal('0.1'), decimal.ROUND_UP)            #Arrondi suppérieur
+            #Rappel: 'Bulle de quiétude' - La FFVL a négocié avec les LPO un espace protégé de 150m (0.081 MN - Milles Nautics) autour et au dessus des nids d'oiseaux. De mon coté, je retiens 0.1 MN = 185m
+            nInt, nDec = str(radius).split(".")
+            if radius > 1:                          #Au delà d'un rayon de 1850 mètres (1 Mile Nautic)
+                if len(nDec)>3:                     #Reste de division du type '0.01'
+                    radius2:Decimal = Decimal(radius).quantize(Decimal('0.1'), decimal.ROUND_UP)            #Arrondi suppérieur
+                else:
+                    radius2:Decimal = radius        #Pas besoin d'arrondi
+            else:
+                if len(nDec)>4:                     #Reste de division du type '0.001'
+                    radius2:Decimal = Decimal(radius).quantize(Decimal('0.01'), decimal.ROUND_05UP)        #Arrondi suppérieur au delà du demi
+                else:
+                    radius2:Decimal = radius        #Pas besoin d'arrondi
             openair.append("DC {0}".format(radius2))
             self.geoAirspaces.append({"type":"Openair", "properties":oZone, "geometry":openair})
             return
@@ -373,6 +402,8 @@ class Aixm2openair:
         return
 
     def saveAirspacesFilter2(self, aContext:list, gpsType:str="", exceptDay:str="") -> None:
+        if not self.geoAirspaces:                                   #Contrôle si le fichier est vide
+            return
         context = aContext[0]
         sMsg = "Prepare Openair file - {0} / {1} / {2}".format(aContext[1], gpsType, exceptDay)
         self.oCtrl.oLog.info(sMsg)
@@ -418,6 +449,8 @@ class Aixm2openair:
     #Ces simples 'Point remarquable' sont supprimés de la cartographie freefligth (ex: un VOR, un émmzteur radio, un centre de piste)
     #Idem, suppression des 'lignes' (ex: Axe d'approche d'un aérodrome ou autres...)
     def cleanAirspacesCalalog(self, airspacesCatalog) -> None:
+        if not self.geoAirspaces:                                   #Contrôle si le fichier est vide
+            return
         self.oAirspacesCatalog = airspacesCatalog
         #if self.oAirspacesCatalog.cleanAirspacesCalalog:     #Contrôle si l'optimisation est déjà réalisée
         #    return

@@ -279,8 +279,10 @@ class AixmTools:
 
 
     def getField(self, o, inputname, outputname=None, optional=False):
-        if (o is None) and (not self.oCtrl.oLog is None):
+        if (not optional) and (o is None) and (not self.oCtrl.oLog is None):
             self.oCtrl.oLog.error("Object is none !? in={0} out={1}\n{2}".format(inputname, outputname, o), outConsole=True)
+            return None
+        elif optional and (o is None):
             return None
         if self.oCtrl:
             if self.oCtrl.oAixm.openType == "lxml":

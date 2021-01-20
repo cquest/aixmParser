@@ -24,7 +24,8 @@ if __name__ == '__main__':
     #srcFile = "../../poaff/input/FFVL/20210104_FFVL_ParcBauges_BPa_aixm45.xml"
     #srcFile = "../../poaff/input/BPa/20210114_LTA-French1-HR_BPa_aixm45.xml"
     #srcFile = "../../poaff/input/BPa/20201210_BPa_ZonesComplementaires_aixm45.xml"
-    srcFile = "../../poaff/input/BPa/20210116_BPa_FR-SIA-SUPAIP_aixm45.xml"
+    #srcFile = "../../poaff/input/BPa/20210116_BPa_FR-SIA-SUPAIP_aixm45.xml"
+    srcFile = "../../poaff/input/BPa/20210120_BPa_FR-ZSM_Protection-des-rapaces_aixm45.xml"
 
 
     ####  quelques options d'appels  ####

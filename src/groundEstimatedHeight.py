@@ -172,7 +172,7 @@ class GroundEstimatedHeight:
         return [lAltMin,lAltMed,lAltRet,lAltMax], geoJSON
 
 
-    def parseUnknownGroundHeightRef(self) -> None:
+    def parseUnknownGroundHeightRef(self, sGeoJsonSrcFile:str=None) -> None:
         #Chargement des éléments inconnus du référetentiel
         sSrcFileName = self.refPath + self.sUnknownGroundHeightFileName
         if not os.path.exists(sSrcFileName):
@@ -222,11 +222,14 @@ class GroundEstimatedHeight:
                 oGroundEstimatedHeight = oJson[self.sRefe]        #Ne récupère que les datas du fichier
 
             #Chargement des zones avec description des bordures
-            sGeoJsonFileName = self.srcPath + self.headFileName + "airspaces-all.geojson"
-            if not os.path.exists(sGeoJsonFileName):
-                sGeoJsonFileName = self.srcPath + self.headFileName + "airspaces-vfr.geojson"
-            if not os.path.exists(sGeoJsonFileName):
-                sGeoJsonFileName = self.srcPath + self.headFileName + "airspaces-freeflight.geojson"
+            if sGeoJsonSrcFile:
+                sGeoJsonFileName:str = sGeoJsonSrcFile
+            else:
+                sGeoJsonFileName:str = self.srcPath + self.headFileName + "airspaces-all.geojson"
+                if not os.path.exists(sGeoJsonFileName):
+                    sGeoJsonFileName = self.srcPath + self.headFileName + "airspaces-vfr.geojson"
+                if not os.path.exists(sGeoJsonFileName):
+                    sGeoJsonFileName = self.srcPath + self.headFileName + "airspaces-freeflight.geojson"
             if not os.path.exists(sGeoJsonFileName):
                 self.oLog.error("File not found - {0} ".format(sGeoJsonFileName), outConsole=True)
                 return

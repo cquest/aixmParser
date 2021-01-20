@@ -433,6 +433,10 @@ class AixmAirspaces4_5:
         theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"groupZone":groupZone})
         theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"UId":sZoneUId})
         theAirspace = self.oCtrl.oAixmTools.addProperty(theAirspace, ase.AseUid, "codeId", "id")
+        #Partie spécifique
+        theAirspace = self.oCtrl.oAixmTools.addProperty(theAirspace, ase.PoaffAdding, "GUId", "srcGUId", optional=True)
+        theAirspace = self.oCtrl.oAixmTools.addProperty(theAirspace, ase.PoaffAdding, "UId", "srcUId", optional=True)
+        theAirspace = self.oCtrl.oAixmTools.addProperty(theAirspace, ase.PoaffAdding, "Mhz", "Mhz", optional=True)
 
         #--------------------------------
         #Détermination du responsable organisationnel de la zone
