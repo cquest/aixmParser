@@ -239,7 +239,18 @@ class Aixm2openair:
         g = []          #in memory
         openair = []    #geometry
 
-        if oBorder.Circle:
+        #Init
+        bIsSpecCircle:bool = False
+        bIsCircle:bool = bool(oBorder.Circle)   #Zone uniqumement contituée d'un cercle
+        if not bIsCircle:
+            #Extraction des vecteurs
+            avx_list = oBorder.find_all("Avx", recursive=False)
+
+            #Si la zone est 'Danger' ou 'Vol libre et Vol a voile' ; et uniquement déclarée sous forme d'un 'Point' ; alors reconstituer un cercle !
+            if len(avx_list)==1 and oZone.get("class",None) in ["Q","W"]:   bIsSpecCircle = True
+
+        #Construction d'un cercle standard
+        if bIsCircle:
             #Openair sample
             #V X=48:55:37 N 002:50:02 E
             #DC 2
@@ -269,8 +280,27 @@ class Aixm2openair:
             self.geoAirspaces.append({"type":"Openair", "properties":oZone, "geometry":openair})
             return
 
+        #Construction spécifique d'un cercle sur la base d'un Point unique
+        elif bIsSpecCircle:
+            lon_c, lat_c = self.oCtrl.oAixmTools.geo2coordinates(avx_list[0], oZone=oZone)
+            lat1, lon1 = bpaTools.GeoCoordinates.geoDd2dms(lat_c,"lat", lon_c,"lon", ":"," ")
+            openair.append("V X={0} {1}".format(lat1, lon1))
+
+            #radius in Nautical Mile for Openair format / Depend of area type
+            radius:float = float(0.54)              #Fixe un rayon de 1000m par défaut
+            if   oZone["type"] in ["TRVL"]:         #TRVL Treuil-Vol-Libre
+                radius = float(1.08)                #Fixe un rayon de 2000m
+            elif oZone["type"] in ["TRPLA"]:        #TRPLA Treuil Planeurs
+                radius = float(2.7)                 #Fixe un rayon de 5000m
+            elif oZone["type"] in ["PJE"]:          #PJE=Parachute Jumping Exercise
+                radius = float(0.54)                #Fixe un rayon de 1000s
+
+            openair.append("DC {0}".format(radius))
+            self.geoAirspaces.append({"type":"Openair", "properties":oZone, "geometry":openair})
+            return
+
+        #Construction d'un tracé sur la base d'une suite de Points et/ou Arcs
         #else:
-        avx_list = oBorder.find_all("Avx", recursive=False)
         firstPoint = lastPoint = None
         for avx_cur in range(0,len(avx_list)):
             avx = avx_list[avx_cur]

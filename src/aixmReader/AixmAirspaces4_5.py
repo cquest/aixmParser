@@ -42,9 +42,9 @@ def convertJsonCalalogToCSV(cat:dict) -> str:
     oCols = {"zoneType":0, "groupZone":0, "vfrZone":0, "vfrZoneExt":0, "freeFlightZone":0, "freeFlightZoneExt":0,
              "excludeAirspaceNotCoord":0,"excludeAirspaceNotFfArea":0, "geometryType":0, "excludeAirspaceByFilter":0, "excludeAirspaceByAlt":0, "excludeAirspaceByRef":0, "deltaExt":0,
              "potentialFilter4FreeFlightZone":0, "orgName":0, "keySrcFile":0, "GUId":0, "UId":0, "id":0,
-             "srcClass":0, "srcType":0,
-             "class":0, "type":0, "localType":0, "codeActivity":0, "codeMil":0, "codeLocInd":0,
-             "srcName":0, "name":0, "nameV":0, "desc":0, "Mhz":0, "activationCode":0, "activationDesc":0, "timeScheduling":0,
+             "srcClass":0, "srcType":0, "srcCodeActivity":0,"srcLocalType":0,"srcCodeMil":0, "srcCodeLocInd":0,"srcName":0,
+             "class":0, "type":0, "codeActivity":0,
+             "name":0, "nameV":0, "desc":0, "Mhz":0, "activationCode":0, "activationDesc":0, "timeScheduling":0,
              "declassifiable":0, "seeNOTAM":0, "exceptSAT":0, "exceptSUN":0, "exceptHOL":0, "groundEstimatedHeight":0,
              "lowerMin":0, "lower":0, "lowerM":0, "ordinalLowerMinM":0, "ordinalLowerM":0,
              "upperMax":0, "upper":0, "upperM":0, "ordinalUpperMaxM":0, "ordinalUpperM":0,
@@ -117,8 +117,11 @@ def getSerializeAltM(airspaceProperties:dict) -> str:
     return "[{0}m/{1}m]".format(sLower, sUpper)
 
 def getVerboseName(cat:dict) -> str:
-    #Nouveau format fixé le 13/08/2020 - AN <Type> <Nommage> [Frequences] [([<codeActivity>] / [SeeNOTAM])]
-    sVerboseName:str = "{0} {1}".format(cat["type"], cat["name"])
+    #Revision format 22/01/2021 - AN <Type> <Nommage> [Frequences] [([<codeActivity>] / [SeeNOTAM])] - <Type> affiché si différent de la classe !
+    if  (cat["class"] in ["P","R","Q","TMZ","RMZ","ZSM"]) or (cat["type"]!=cat["class"]):
+        sVerboseName:str = "{0} {1}".format(cat["type"], cat["name"])
+    else:
+        sVerboseName:str = "{0}".format(cat["name"])
     if xmlSIA and ("Mhz" in cat):
         sFreq = xmlSIA.getMasterFrequecy(cat["Mhz"], cat["type"])
         if sFreq:
@@ -463,15 +466,22 @@ class AixmAirspaces4_5:
         #--------------------------------------------------------
         #Gestion et homogénéisation des Classes et Types de zones
         #--------------------------------------------------------
-        typeZone = ase.AseUid.codeType.string
-        if ase.codeClass:       classZone = ase.codeClass.string
-        else:                   classZone = None
-        if ase.codeActivity:    theCodeActivity = ase.codeActivity.string
-        else:                   theCodeActivity = None
-        if ase.txtLocalType:    localTypeZone = ase.txtLocalType.string     #ZIT, TMZ; RMZ ...
-        else:                   localTypeZone = None
-        if ase.codeMil:         theCodeMil = ase.codeMil.string             #MIL, CIVIL, OTHER ...
-        else:                   theCodeMil = None
+        typeZone:str        = ase.AseUid.codeType.string
+        classZone:str       = None
+        theCodeActivity:str = None
+        localTypeZone:str   = None
+        theCodeMil:str      = None
+        theDesc:str         = None
+        cleanName:str       = None
+        if ase.codeClass:                           classZone       = ase.codeClass.string
+        if ase.codeActivity:                        theCodeActivity = ase.codeActivity.string       #FAUNA, IND-NUCLEAR, IND-OIL ...
+        if ase.txtLocalType:                        localTypeZone   = ase.txtLocalType.string       #ZIT, TMZ; RMZ ...
+        if ase.codeMil:                             theCodeMil      = ase.codeMil.string            #MIL, CIVIL, OTHER ...
+        if ase.txtRmk and ase.txtRmk.string!=".":   theDesc         = ase.txtRmk.string             #Clean data
+        if ase.txtName:                             cleanName       = ase.txtName.string
+        else:                                       cleanName       = ase.AseUid.codeId.string      #Fix default name
+        theSrcName:str          = cleanName
+        theSrcCodeActivity:str  = theCodeActivity
 
         #Map 20200801
         #if theAirspace["id"] in ["LECBFIR_E"]:
@@ -480,34 +490,45 @@ class AixmAirspaces4_5:
         #Phase 1 via 'type de zone' - Homogénéisation des classe & type de zones aériennes
         if typeZone in ["TMA", "TMA-P"]:        #TMA [Terminal Control Area.] / #TMA-P [Part of TMA.]
             typeZone="TMA"
-            if not classZone:   classZone="G"
+            if not classZone:   classZone="G"   #G - Espace a caractère particulier
 
         elif typeZone in ["CTR","CTR-P"]:       #CTR [Control Zone.] / #CTR-P [Part of CTR.]
             typeZone="CTR"
-            if not classZone:   classZone="G"
+            if not classZone:   classZone="G"   #G - Espace a caractère particulier
 
         elif typeZone in ["CTA","CTA-P"]:       #CTA [Control Area.] / #CTA-P [Part of a CTA.]
             typeZone="CTA"
-            if not classZone:   classZone="G"
+            if not classZone:   classZone="G"   #G - Espace a caractère particulier
 
         elif typeZone=="CBA":                   #CBA [Cross Border Area (FUA).]
             #typeZone="CBA"                     #No change
-            if not classZone:   classZone="G"
+            if not classZone:   classZone="G"   #G - Espace a caractère particulier
+
+        elif typeZone=="RTBA":                  ##RTBA = Réseau Très Basse Altitude
+            #typeZone="RTBA"                    #No change
+            if not classZone:   classZone="R"   #R [Restricted Area.]
+            None
 
         #Cases typeZone=="R" - Restricted
-        elif typeZone=="R" and localTypeZone in ["ZRT"]:    ##ZRT = Zone Réglementée Temporaire
+        if typeZone=="R" and theCodeActivity in ["IND-NUCLEAR","IND-OIL"]:
+            typeZone="PROTECT"                  #PROTECT [Airspace protected from specific air traffic.]
+            classZone="P"                       #P = Prohibited in Openair format
+        elif typeZone=="R" and localTypeZone in ["ZRT"]:    #ZRT = Zone Réglementée Temporaire
             classZone = typeZone
             typeZone = localTypeZone
-        elif typeZone in ["R","R-AMC"]:         #R [Restricted Area.] / #R-AMC [AMC Manageable Restricted Area.]
+        elif typeZone in ["R","R-AMC"]:         #R [Restricted Area.] / #R-AMC [AMC Manageable Restricted Area.] / TRA = Temporary Reserved Area
             if classZone==None and theCodeActivity in ["NATURE"]:
                 typeZone = theCodeActivity
-                classZone="GP"                      #GP = Glider-Prohibited in Openair format
+                classZone="GP"                  #GP = Glider-Prohibited in Openair format
             else:
-                typeZone="R"                        #R = Restricted in Openair format
+                typeZone="R"                    #R = Restricted in Openair format
                 if not classZone:   classZone=typeZone
+        elif typeZone in ["TRA","TSA"]:         #TRA [Temporary Reserved Area] / TSA [Temporary Segregated Area (FUA).]
+            #typeZone="TRA" / "TSA"             #No change
+            if not classZone:   classZone="R"   #R = Restricted in Openair format
 
-        elif typeZone in ["D","D-AMC","A","W"]:     #D [Danger Area.] / #D-AMC [AMC Manageable Danger Area.] / #A [Alert Area.] / #W [Warning Area.]
-            typeZone="Q"                            #Q = Danger area in Openair format
+        if typeZone in ["D","D-AMC","A","W"]:   #D [Danger Area.] / #D-AMC [AMC Manageable Danger Area.] / #A [Alert Area.] / #W [Warning Area.]
+            typeZone="Q"                        #Q = Danger area in Openair format
             if not classZone:   classZone=typeZone
 
         elif typeZone=="P":                     #P [Prohibited Area.]
@@ -517,8 +538,8 @@ class AixmAirspaces4_5:
         elif typeZone=="ZIT":                   #ZIT [Zone d'Interdiction Temporaire]
             if not classZone:   classZone="P"   #P = Prohibited in Openair format
 
-        #Cases typeZone=="PROTECT" - #PROTECT [Airspace protected from specific air traffic.]
-        elif typeZone=="PROTECT" and theCodeActivity in ["IND-NUCLEAR","IND-OIL"]:
+        #Cases typeZone=="PROTECT" -            #PROTECT [Airspace protected from specific air traffic.]
+        if typeZone=="PROTECT" and theCodeActivity in ["IND-NUCLEAR","IND-OIL"]:
             #typeZone="PROTECT"                 #No change
             classZone="P"                       #P = Prohibited in Openair format
         elif typeZone=="PROTECT" and theCodeActivity in ["FAUNA"]:
@@ -531,66 +552,113 @@ class AixmAirspaces4_5:
             #typeZone="PROTECT"                 #No change
             classZone="ZSM"                     #ZSM or MSZ - Major Sensibility Zone in new Openair format
         elif typeZone in ["PROTECT","PART","RAS","TSA"] and theCodeActivity in ["REFUEL"]:
-            #typeZone="PROTECT"                 #No change
-            classZone="REFUEL"                  #Special for exclude area
+            #typeZone="..."                     #No change
+            classZone="Q"                       #Q = Danger area in Openair format
         elif typeZone=="PROTECT":
             #Other case... Use for theCodeActivity in ["","SPORT","PARACHUTE"]
             #typeZone="PROTECT"                 #No change
             classZone="Q"                       #Q = Danger area in Openair format
 
         #Cases typeZone=="D-OTHER"  -    #D-OTHER [Activities of dangerous nature (other than a Danger Area).] --> BIRD AREA, GLIDER AREA etc../..
-        elif typeZone=="D-OTHER" and localTypeZone=="ZIT":  #ZIT [Zone d'Interdiction Temporaire]
+        if typeZone=="D-OTHER" and localTypeZone=="ZIT":  #ZIT [Zone d'Interdiction Temporaire]
             typeZone=localTypeZone
             if not classZone:   classZone="P"               #P = Prohibited in Openair format
-        #BPa - 20210111 - Std "Q" affectation for "MILOPS","ARTILERY","BLAST","SHOOT"
-        #elif typeZone=="D-OTHER" and theCodeActivity in ["MILOPS","ARTILERY","BLAST","SHOOT"]:
-        #    typeZone="R"                        #R = Restricted in Openair format
-        #    if not classZone:   classZone=typeZone
+
+        if typeZone in ["D-OTHER","A","Q"] and localTypeZone in ["TRVL","TRPLA","PJE","TRA"]:  #TRVL=Treuil-Vol-Libre ; TRPLA=Treuil Planeurs; PJE=Parachute Jumping Exercise ; TRA=Temporary Reserved Area
+            typeZone=localTypeZone
+            if not classZone:   classZone="Q"           #Q = Danger area in Openair format
+            if   localTypeZone in ["TRVL","TRPLA"]:
+                cleanName = "Treuil/Tow " + cleanName   #Complétude du nommage
+            elif localTypeZone in ["PJE"]:
+                cleanName = "Saut/Jump " + cleanName    #Complétude du nommage
+            if theCodeActivity in [None,"","TOWING"]:
+                if   localTypeZone in ["TRVL"]:
+                    theCodeActivity="PARAGLIDER"
+                elif localTypeZone in ["TRPLA"]:
+                    theCodeActivity="GLIDER"
+                elif localTypeZone in ["PJE"]:
+                    theCodeActivity="PARACHUTE"
+                else:
+                    aTockenAgricu:list = ["agricultural"]
+                    aTockenParachuteAsc:list = ["parasailing","parascending"]   #Parachute ascensionnel
+                    aTockenParachute:list = ["parajumping"]                     #Parachute
+                    aTockenGlider:list = ["glider","gliding","gliding area"]    #Planeurs
+                    aTockenParaglider:list = ["paraglider","paragliding","para gliding","free flying","hanggliding","hang gliding"]
+                    if   any(sTocken in theDesc.lower() for sTocken in aTockenAgricu):          theCodeActivity="AGRICULTURAL"
+                    elif any(sTocken in theDesc.lower() for sTocken in aTockenParachuteAsc):    theCodeActivity="PARASCENDING"
+                    elif any(sTocken in theDesc.lower() for sTocken in aTockenParachute):       theCodeActivity="PARACHUTE"
+                    elif any(sTocken in theDesc.lower() for sTocken in aTockenGlider):          theCodeActivity="GLIDER"
+                    elif any(sTocken in theDesc.lower() for sTocken in aTockenParaglider):      theCodeActivity="PARAGLIDER"
+
+        if typeZone=="D-OTHER" and theCodeActivity in ["GLIDER","PARAGLIDER","HANGGLIDER"]:
+            typeZone="Q"                            #Q = Danger area in Openair format
+            if not classZone:   classZone=typeZone
         elif typeZone=="D-OTHER" and theCodeActivity in ["BIRD","BIRD-MGR"]:
             typeZone="PROTECT"
-            if not classZone:   classZone="ZSM"                    #ZSM or MSZ - Major Sensibility Zone in new Openair format
-        elif typeZone=="D-OTHER" and theCodeActivity in ["GLIDER","PARAGLIDER","HANGGLIDER"]:
-            typeZone="Q"                        #Q = Danger area in Openair format
-            if not classZone:   classZone="W"   #Filtrage spécifique pour : Vol à voile + vol libre
-        elif typeZone=="D-OTHER" and localTypeZone=="LTA":
+            if not classZone:   classZone="ZSM"                     #ZSM or MSZ - Major Sensibility Zone in new Openair format
+        elif typeZone=="D-OTHER" and localTypeZone=="LTA":          #LTA = Lower Traffic Area
             typeZone=localTypeZone
-            if not classZone:   classZone="G"
+            if not classZone:   classZone="G"                       #G - Espace a caractère particulier
         elif typeZone=="D-OTHER" and localTypeZone=="SIV":          #SIV - Service d'Information de Vol
             typeZone=localTypeZone
             if not classZone:   classZone=typeZone
+        elif typeZone=="D-OTHER" and theCodeActivity in [None] and localTypeZone=="BAL":          #BAL = BALLOON
+            typeZone=localTypeZone
+            theCodeActivity="BALLOON"
+            if not classZone:   classZone="Q"                       #Q = Danger area in Openair format
         elif typeZone=="D-OTHER":
             #Other case... Use for theCodeActivity in ["","ACROBAT","ANTIHAIL","ASCENT","BALLOON","GLIDER","HANGGLIDER","LASER","PARACHUTE","PARAGLIDER","SPORT","TRG","UAG","ULM"]
-            if not classZone:   classZone="Q"   #Q = Danger area in Openair format
+            if not classZone:   classZone="Q"                       #Q = Danger area in Openair format
             if localTypeZone and len(localTypeZone)<10 and (not bpaTools.isFloat(localTypeZone)):                                     #Exclure cas des: '60020', '8001' etc...
                 typeZone=localTypeZone
             else:
                 typeZone=classZone
 
-        #Cases typeZone=="RAS"
-        if typeZone=="RAS" and localTypeZone in ["TMZ","TMZ-EX","RTMZ"]:    ##TMZ = Transponder Mandatory Zone / "RTMZ" = Radio + Transponder Mandatory Zone
+        #Cases typeZone==RAS = Regulated Airspace (not otherwise covered)
+        if typeZone in ["RAS","PART"]  and localTypeZone in ["ATZ","ATZ/RMZ"]:          #ATZ = Aerodrome Traffic Zone
+            if  classZone in [None,"E","G","OTHER"]:
+                classZone = "D"
+                typeZone = localTypeZone
+
+        if typeZone in ["RAS","PART"] and localTypeZone in ["TMZ","TMZ-EX","RTMZ"]:    #TMZ = Transponder Mandatory Zone / RTMZ = Radio + Transponder Mandatory Zone
             if  classZone in [None,"E","G"]:
                 classZone = "TMZ"
                 typeZone = classZone
             elif typeZone in ["PART"]:
                 #classZone - No change !
                 typeZone = "TMZ"
-        elif typeZone=="RAS" and localTypeZone in ["RMZ"]:    #"RMZ" = Radio Mandatory Zone
+
+        if typeZone in ["RAS","PART"] and localTypeZone in ["RMZ","TIZ","TIZ-P"]:      #RMZ = Radio Mandatory Zone
             if  classZone in [None,"E","G"]:
                 classZone = "RMZ"
                 typeZone = classZone
-        elif localTypeZone and localTypeZone.find("/RMZ")>=0 and localTypeZone.find("TMZ")<0:     #Case: "ATZ/RMZ","EEKA FIZ/RMZ","EEKE FIZ/RMZ", "TIZ/RMZ", "TIA/RMZ"...
+
+        if localTypeZone and localTypeZone!="ATZ/RMZ" and (localTypeZone.find("/RMZ")>=0 and localTypeZone.find("TMZ")<0):     #Case: "EEKA FIZ/RMZ","EEKE FIZ/RMZ", "TIZ/RMZ", "TIA/RMZ"...
             if  classZone in [None,"E","G"]:
-                classZone = "RMZ"                           #"RMZ" = Radio Mandatory Zone
+                classZone = "RMZ"                                   #"RMZ" = Radio Mandatory Zone
                 typeZone = classZone
-        elif typeZone=="RAS" and localTypeZone in ["FIS"]:    #"FIS" Flight information service
+
+        if typeZone=="RAS" and localTypeZone in ["FIS"]:          #FIS Flight information service
             if  classZone in [None,"E","G"]:
-                classZone = "G"
+                classZone = "G"                                     #G - Espace a caractère particulier
+                typeZone = localTypeZone
+        elif typeZone=="RAS" and localTypeZone in ["SPORT","SPORT-P"]:
+            if  classZone in [None,"E","G"]:
+                classZone = "Q"
                 typeZone = localTypeZone
         elif typeZone=="RAS":                  #RAS [Regulated Airspace (not otherwise covered).]
             #typeZone="RAS"                    #No change
             if not classZone:   classZone=typeZone
 
-        elif typeZone=="PART":                  #PART [Part of an airspace (used in airspace aggregations).]
+        if typeZone in ["RAS","PART"] and theCodeActivity in ["GLIDER","SPORT","SPORT-P"]:
+            if not classZone:   classZone="Q"                       #Q = Danger area in Openair format
+            if localTypeZone in ["DROP ZONE"]:
+                typeZone="PJE"                                      #PJE=Parachute Jumping Exercise
+                theCodeActivity="PARACHUTE"
+            else:
+                typeZone=classZone
+
+        if typeZone=="PART":                    #PART [Part of an airspace (used in airspace aggregations).]
             #typeZone="PART"                    #No change
             if not classZone:   classZone=typeZone
 
@@ -622,14 +690,6 @@ class AixmAirspaces4_5:
             #typeZone="OTA"                    #No change
             if not classZone:   classZone=typeZone
 
-        elif typeZone=="TRA":                   #TRA [Temporary Reserved Area (FUA).]
-            #typeZone="TRA"                     #No change
-            if not classZone:   classZone=typeZone
-
-        elif typeZone=="TSA":                   #TSA [Temporary Segregated Area (FUA).]
-            #typeZone="TSA"                     #No change
-            if not classZone:   classZone=typeZone
-
         elif typeZone=="AMA":                  #AMA [Minimum Altitude Area.]
             #typeZone="AMA"                    #No change
             if not classZone:   classZone=typeZone
@@ -641,6 +701,10 @@ class AixmAirspaces4_5:
         elif typeZone=="POLITICAL":             #POLITICAL [Political/administrative area.]
             #typeZone="POLITICAL"               #No change
             if not classZone:   classZone=typeZone
+
+        elif typeZone=="TFC-HELI":              #TFC-HELI Helicopter/Gyrocopter traffic
+            #typeZone="TFC-HELI"                #No change
+            if not classZone:   classZone="Q"   #Q = Danger area in Openair format
 
         #Cases typeZone=="CLASS"
         elif typeZone=="CLASS":     #CLASS [Airspace having a specified class.]
@@ -656,26 +720,12 @@ class AixmAirspaces4_5:
             theCodeActivity="MILOPS"
 
 
-        #Phase 3 via 'code d'activité' - Analyses particulières
-        if theCodeActivity in ["GLIDER","PARAGLIDER","HANGGLIDER"]:
-            if   classZone=="W" and typeZone=="Q":
-                None    #No change - Goog values !
-            elif classZone=="R" and typeZone=="R":
-                classZone = "W"         #Favoriser la capacité de filtrage/effacement des alertes pour zones: Vol-à-voile & vol-libre
-                typeZone = "Q"
-            elif classZone=="Q" and typeZone in ["Q","PROTECT"]:
-                classZone = "W"         #Favoriser la capacité de filtrage/effacement des alertes pour zones: Vol-à-voile & vol-libre
-                typeZone = "Q"
-            elif classZone in ["G","PART","RAS","TSA"]:
-                classZone = "W"         #Favoriser la capacité de filtrage/effacement des alertes pour zones: Vol-à-voile & vol-libre
-            #else:
-            #    self.oCtrl.oLog.warning("'GLIDER activity': id={0} Class={1} Type={2} theCodeActivity={3}".format(theAirspace["UId"], classZone, typeZone, theCodeActivity), outConsole=False)
-
+        #Phase 3 homogénéisation de la classe pour les zones dangereuses via leur 'code d'activité'
+        if classZone=="G" and theCodeActivity in ["GLIDER","PARAGLIDER","HANGGLIDER","PARASCENDING","PARACHUTE","DROP","BALLOON"]:
+            classZone="Q"                       #Q = Danger area in Openair format
 
         #Phase 4 - Cleaning du Nommage de la zone
         if ase.txtName:
-            theSrcName:str = ase.txtName.string
-            cleanName:str = theSrcName
             tmpName = cleanName.lower()
 
             if typeZone in ["RMZ","TMZ"]:
@@ -696,7 +746,7 @@ class AixmAirspaces4_5:
 
             tmpName = cleanName.lower()
         else:
-            theSrcName = cleanName = tmpName = ""
+            tmpName = ""
 
 
         #Phase 5 - Cleaning du Nommage de la zone
@@ -833,12 +883,21 @@ class AixmAirspaces4_5:
             if tmpName.find(typeZone.lower())>=0:           #Suppression complémentaire des: 'SECTOR',
                 cleanName = cleanName.replace(typeZone, "").strip()
 
-        #Rectification specifique de certaines zones !
-        if classZone==typeZone and typeZone=="PART":
-            if theAirspace["id"] in ["EBR06B","EBR07B"]:
-                classZone = "R"
-        if classZone==typeZone and typeZone=="R":
-            if tmpName.find("prohibited for all aircraft".lower()) >= 0:
+
+        #Rectification spécifique de certaines zones ! (suite a pointage manuel des zones...)
+        if theAirspace["id"] in ["EBR06B","EBR07B"]:                    #Belgum: PART FLORENNES + PART KLEINE-BROGEL
+            classZone = "R"
+            typeZone = classZone
+        elif theAirspace["id"] in [
+                "LSGG1","LSGG2","LSGG3","LSGG4","LSGG5","LSGG6","LSGG7","LSGG4.1","LSZH1","LSZH2","LSZH3","LSZH4A","LSZH4C","LSZH6","LSZH8","LSZH9","LSZH10","LSZH11","LSZH12","LSZH13","LSZH4B","LSZH5","LSZH7","LSZH14","LSZH15",
+                "ENRO1","ENRO2"]:
+            classZone = "C"
+            typeZone = classZone
+        elif theAirspace["id"] in ["EDNY"]:
+            classZone = "D"
+            typeZone = classZone
+        if theDesc and classZone==typeZone and typeZone=="R":
+            if theDesc.lower().find("prohibited for all aircraft".lower())>=0:        #Exp for Belgium ! EBR54, EBR55, EBR56
                 classZone = "P"
                 typeZone = classZone
 
@@ -906,10 +965,69 @@ class AixmAirspaces4_5:
 
         #ase.txtLocalType or ? Format
         #-------------------------------------------
-            #TMZ = Transponder Mandatory Zone / "RTMZ" = Radio + Transponder Mandatory Zone
-            #SIV - Service d'Information de Vol
-            #FIS - Flight information service
-            #HPZ is used in some States in order to designate 'Helicopter Protected Zone'
+            ########----- Extraire ces données dans les fichiers standard d'espaces aériens !
+            #TMZ = Transponder Mandatory Zone
+            #RTMZ = Radio + Transponder Mandatory Zone
+            #RMZ = Radio Mandatory Zone
+            #ATZ/RMZ = Systématiquement transcodé en RMZ !
+            #ZIT = Zone d'Interdiction Temporaire
+            #ZRT = Zone Réglementée Temporaire
+            #TRA = Temporary Reserved Area
+            #LTA = Lower Traffic Area
+            #ZSM = Zone de Sensibilité Majeure (or MSZ Major Sensibility Zone) Specific for new Openair format
+            #AREA / AREA A1, A2, ... = Non significatif car zone géographique (majoritairement utilisé en complément du type 'PROTECT')
+            #DANGER AREA = Zone dangereuse (correspond aux type = 'D')
+            #CTR = Correspond aux 'CTR'
+            #CTRMIL = Correspond aux 'CTR' au status millitaire (CodeMil=MIL)
+            #CONTROL TOWER ZONE = Correspond aux 'CTR'
+            #CONTROL ZONE = Correspond aux 'CTR'
+            #CONTROL AREA = = Correspond aux 'CTA'
+            #HPZ = Helicopter Protected Zone = Systématiquement associé à CodeActivity = 'TFC-HELI', type "RAS" = Regulated Airspace (not otherwise covered)
+            #HTZ = Helicopter Traffic Zone (idem HPZ ci-dessus)
+            #MCTR = CTR millitaire - Systématiquement class=D, type=CTR, codeMil=MIL
+            #MTA = ? - systématiquement asocié au type 'TRA'
+            #MTMA = ? systématiquement asocié au type 'TMA'
+            #PROHIBITED AREA - systematiquement associé au type=P = Prohibited
+            #ATZ = Aerodrome Traffic Zone ! A transcoder en 'D'
+            ########----- Extraire ces données dans un fichier spécifique 'ZONES DANGEREUSES'
+            #------------ Ressortir dans ce fichier specifique toutes zones class: 'Q', 'VV' + 'VL'
+            #AER = Radio controlled model flying / Espace de vol radio commandé
+            #SUR = Contient des points d'attention comme les Prisons (exp= 'SUR 480' == 'Prison Grasse' )
+            #PRN - Police, rescue activity or nature reserve management operations (Police and Nottinghamshire Fire and Rescue Service)
+            #PROTECT ...
+            #SPORT - Homogeneisation a traiter selon les cas !
+            #PJE = Parachute Jumping Exercise
+            #DROP ZONE = Systématiquement associé à CodeActivity = 'SPORT' et donc transcodable en 'PJE' !
+            #MODEL AIRCRAFT / MODEL FLYING = associé à CodeActivity = 'SPORT' systématiquement associé à la class=Q
+            #TRVL = Treuil Vol Libre
+            #TRPLA = Treuil Planeurs
+            #GLIDER AREA / GLIDER FLYING ... = Systématiquement associé à CodeActivity = 'GLIDER'
+            #SPECIAL GLIDERS ZONE -  = Systématiquement associé à CodeActivity = 'GLIDER'
+            #PARAGLIDING ZONE, systématiquement associé à type='PARAGLIDER', donc a ressortir en 'VL'
+            #BAL = BALLOON = BALLOONING... = Hot air balloons
+            #SPECIAL PROCEDURES FOR BALLOON FLIGHT
+            ########----- Ne pas extraire ces données informatives !
+            #QNH = QNH forecast area
+            #SIV = Service d'Information de Vol
+            #FIS = Flight information service
+            #FLIGHT INFORMATION SECTOR
+            #AERODROME TRAFFIC ZONE = (idem ci-dessus)
+            #AFIZ = is an airspace of defined dimensions in which AFIS is provided to IFR flights
+            #AOR / AOR-P / AOR-S = Area of Responsibility - https://en.wikipedia.org/wiki/Area_of_responsibility
+            #AREA OF RESPONSIBILITY (idem AOR ci-dessus)
+            #AREA MINIMUM ALTITUDE
+            #AWACS = Airborne Warning and Control System (système aéroporté de détection et de contrôle)
+            #BVLOS  = Beyond Visual Line of Sight / opérations qui s'effectuent hors vue du télépilote
+            #DELEGATION / DELEGATED AREA... = Zone de délégation
+            #DLG-ATS = BPascal suppose -> DELEGATION + ATS Air traffic services
+            #NPZ = ? - probablement No Planing Zone
+            #FBZ - Flight Buffer Zone (FBZ)
+            #FRA = ?
+            #MRT = ?
+            #MRVA = ?
+            #MVA-S / MVA-P = ?
+            #OAT = ? - systematiquement asocié a type='SECTOR'
+
 
 
         #ase.codeActivity or CODE_ACTIVITY Format
@@ -978,19 +1096,21 @@ class AixmAirspaces4_5:
         theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"class":classZone})
         theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"type":typeZone})
         if localTypeZone!=None:
-            theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"localType":localTypeZone})
+            theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"srcLocalType":localTypeZone})
+        if theSrcCodeActivity!=None:
+            theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"srcCodeActivity":theSrcCodeActivity})
         if theCodeActivity!=None:
             theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"codeActivity":theCodeActivity})
         if theCodeMil!=None:
-            theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"codeMil":theCodeMil})
+            theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"srcCodeMil":theCodeMil})
 
 
         #--------------------------------
         #Préfiltrage des zones
         aExcludeClassVfrZone           = ["FIR","NO-FIR","ADIZ","UTA","UIR","OTA","SIV","SECTOR","PART","FIS","OCA","AWY","TRA","TSA","RAS","AMA","POLITICAL","REFUEL"]
-        aExcludeTypeFreeFlightZone     = ["FIR","NO-FIR","ADIZ","UTA","UIR","OTA","SIV","SECTOR","PART","FIS"]  #OCA+CBA+CTA+RAS a garder!
-        aExcludeClassFreeFlightZone    = ["E","F","W"]      #"G" - Preserver les 'G' pour affichage des zones à caractères particuliers
-        aExcludeClassFreeFlightZoneExt = ["F"]			    #"G"+"E"   - Preserver 'G' + 'E' pour capacité d'extention de vols au dessus FL115 (et de 0m jusqu'au FL195/5944m)
+        aExcludeTypeFreeFlightZone     = ["FIR","NO-FIR","ADIZ","UTA","UIR","OTA","SIV","SECTOR","PART","FIS"]  #OCA+CBA+CTA+RAS+PJE+TRA+TRPLA+TRVL a garder!
+        aExcludeClassFreeFlightZone    = ["E","F"]          #G+W - Preserver les 'G' pour zones à caractères particuliers + 'W' pour zones Vol à voile + vol libre
+        aExcludeClassFreeFlightZoneExt = ["F"]			    #G+E - Preserver G+W + 'E' pour capacité d'extention de vols au dessus FL115 (et de 0m jusqu'au FL195/5944m)
         vfrZoneFilter = bool(classZone in aExcludeClassVfrZone)
         freeFlightZoneFilter = bool(vfrZoneFilter or \
                                     (classZone in aExcludeClassFreeFlightZone) or \
@@ -1009,11 +1129,9 @@ class AixmAirspaces4_5:
 
         #--------------------------------
         #Stockage du Nommage de la zone
-        if ase.txtName:
-            theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"srcName":theSrcName})
-            theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"name":cleanName})
-        else:
-            theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"name":ase.AseUid.codeId.string})
+        theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"srcName":theSrcName})
+        theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"name":cleanName})
+
 
         #--------------------------------
         #Décodage des plancher/Plafond avec estimlation des altitudes en mètres (exclusion des regroupement de zones qui n'ont pas ces caractéristiques...)
@@ -1106,7 +1224,7 @@ class AixmAirspaces4_5:
 
         #--------------------------------
         #Zones complémentaire avec remarques et description des activations
-        theAirspace = self.oCtrl.oAixmTools.addProperty(theAirspace, ase, "codeLocInd", "codeLocInd", optional=True)        #LFFF, LIMM
+        theAirspace = self.oCtrl.oAixmTools.addProperty(theAirspace, ase, "codeLocInd", "srcCodeLocInd", optional=True)        #LFFF, LIMM
         if ase.Att:
             sCodeWorkHr:str=""
             if ase.Att.codeWorkHr:

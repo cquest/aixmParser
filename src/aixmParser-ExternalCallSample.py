@@ -22,10 +22,12 @@ if __name__ == '__main__':
     #srcFile = "../../poaff/input/BPa/99999999_BPa_Test4AppendDelta1_aixm45.xml"
     #srcFile = "../../poaff/input/FFVP/20200704_FFVP_ParcsNat_BPa_aixm45.xml"
     #srcFile = "../../poaff/input/FFVL/20210104_FFVL_ParcBauges_BPa_aixm45.xml"
+    #srcFile = "../../poaff/input/FFVL/20201204_FFVL_ZonesComplementaires_aixm45.xml"
     #srcFile = "../../poaff/input/BPa/20210114_LTA-French1-HR_BPa_aixm45.xml"
     #srcFile = "../../poaff/input/BPa/20201210_BPa_ZonesComplementaires_aixm45.xml"
     #srcFile = "../../poaff/input/BPa/20210116_BPa_FR-SIA-SUPAIP_aixm45.xml"
-    srcFile = "../../poaff/input/BPa/20210120_BPa_FR-ZSM_Protection-des-rapaces_aixm45.xml"
+    #srcFile = "../../poaff/input/BPa/20210127_BPa_FR-ZSM_Protection-des-rapaces_aixm45.xml"
+    srcFile = "../../poaff/input/Tests/99999999_BPa_Test4Circles_aixm45.xml"
 
 
     ####  quelques options d'appels  ####

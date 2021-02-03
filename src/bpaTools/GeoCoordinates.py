@@ -13,7 +13,7 @@ import math
 #       format long  "44:14.4667 N"       (parfois existant en Openair --> DP 44:14.4667 N 3:25.7667 E)
 #       format court "4414.4667N"
 #   4/ (D.d) en degrés décimaux     ex: 45,219722
-#       Convertion des structures sources de type String en Float permet 
+#       Convertion des structures sources de type String en Float permet
 #       Exemple de conversion (DMS) "473604N" = (D.d) 47.601111
 #   Paramètres
 #       [latitude], [longitude] : paramètres de Coordonnées optionnelles qui acceptent les types de formats : (DMS), (DMS.d) et (DM.d) (comme précisé ci-dessus...)
@@ -58,11 +58,11 @@ def geoStr2dd(latitude=None, longitude=None, digit:int=8) -> float:
                 if latRef == "S":
                     lat = -lat
             lat = round(lat, digit)
-        
+
         #-- longitude --
         if longitude == None:
             lon = longitude
-        else:        
+        else:
             lon = longitude.replace(" ","")     #Cleaning
             lon = lon.replace(",","")           #Cleaning
             lonRef = lon[-1].upper()
@@ -88,13 +88,13 @@ def geoStr2dd(latitude=None, longitude=None, digit:int=8) -> float:
                 if lonRef in ["W","O"]:
                     lon = -lon
             lon = round(lon, digit)
-                
+
         return lat, lon
     except:
         raise
 
 
-def geoDd2dms(dd1,ref1, dd2,ref2, sep1="", sep2="", digit:int=0) -> str:  
+def geoDd2dms(dd1,ref1, dd2,ref2, sep1="", sep2="", digit:int=0) -> str:
     if not ref1 in ["lat","lon"]:   raise Exception("Invalid input - ref1")
     if not ref2 in ["lat","lon"]:   raise Exception("Invalid input - ref2")
     def toDMS(dd, ref) -> str:
@@ -111,21 +111,30 @@ def geoDd2dms(dd1,ref1, dd2,ref2, sep1="", sep2="", digit:int=0) -> str:
             lmin = 0
             ldeg +=1
         aRes = math.modf(lsec)
-        if digit == 0 or aRes[0] < 0.00001 :
-            sSec = "{0:0=2d}".format(int(lsec))
+        if digit == 0 or aRes[0] < 0.00001:
+            if sep1=="":
+                sSec = "{0:0=2d}".format(int(lsec))
+            else:
+                sSec = "{0}".format(int(lsec))
         else:
             frmtDigit = "{0:." + str(digit) + "f}"    #ex: "{0:.6f}" si digit=6
             aDig = (frmtDigit.format(aRes[0])).split(".")
             sSec = "{0:0=2d}.{1}".format(int(aRes[1]), aDig[1])
         if ref == "lat":
-            ret = "{0:0=2d}{1}{2:0=2d}{3}{4}".format(ldeg, sep1, lmin, sep1, sSec)
+            if sep1=="":
+                ret = "{0:0=2d}{1}{2:0=2d}{3}{4}".format(ldeg, sep1, lmin, sep1, sSec)
+            else:
+                ret = "{0}{1}{2}{3}{4}".format(ldeg, sep1, lmin, sep1, sSec)
             if dd < 0:
                 sRef = "S"
             else:
                 sRef = "N"
             ret = "{0}{1}{2}".format(ret, sep2, sRef)
         elif ref == "lon":
-            ret = "{0:0=3d}{1}{2:0=2d}{3}{4}".format(ldeg, sep1, lmin, sep1, sSec)
+            if sep1=="":
+                ret = "{0:0=3d}{1}{2:0=2d}{3}{4}".format(ldeg, sep1, lmin, sep1, sSec)
+            else:
+                ret = "{0}{1}{2}{3}{4}".format(ldeg, sep1, lmin, sep1, sSec)
             if dd < 0:
                 sRef = "W"
             else:
@@ -135,19 +144,22 @@ def geoDd2dms(dd1,ref1, dd2,ref2, sep1="", sep2="", digit:int=0) -> str:
             raise Exception("Invalid input")
         return ret
     try:
-        return toDMS(dd1,ref1), toDMS(dd2,ref2)   
+        return toDMS(dd1,ref1), toDMS(dd2,ref2)
     except:
         raise
 
 
-def geoDd2dmd(dd1,ref1, dd2,ref2, sep1="", sep2="", digit:int=8) -> str:  
+def geoDd2dmd(dd1,ref1, dd2,ref2, sep1="", sep2="", digit:int=8) -> str:
     def toDMD(dd, ref) -> str:
         dd1 = abs(float(dd))
         ldeg = int(dd1)
         lmind = (dd1 - ldeg) * 60
         frmtDigit = "{2:." + str(digit) + "f}"    #ex: "{2:.8f}"
         if ref == "lat":
-            msg = "{0:0=2d}{1}" + frmtDigit
+            if sep1=="":
+                msg = "{0:0=2d}{1}" + frmtDigit
+            else:
+                msg = "{0}{1}" + frmtDigit
             ret = msg.format(ldeg, sep1, lmind)
             if dd < 0:
                 sRef = "S"
@@ -155,7 +167,10 @@ def geoDd2dmd(dd1,ref1, dd2,ref2, sep1="", sep2="", digit:int=8) -> str:
                 sRef = "N"
             ret = "{0}{1}{2}".format(ret, sep2, sRef)
         elif ref == "lon":
-            msg = "{0:0=3d}{1}" + frmtDigit
+            if sep1=="":
+                msg = "{0:0=3d}{1}" + frmtDigit
+            else:
+                msg = "{0}{1}" + frmtDigit
             ret = msg.format(ldeg, sep1, lmind)
             if dd < 0:
                 sRef = "W"
@@ -166,23 +181,23 @@ def geoDd2dmd(dd1,ref1, dd2,ref2, sep1="", sep2="", digit:int=8) -> str:
             raise Exception("Invalid input")
         return ret
     try:
-        return toDMD(dd1,ref1), toDMD(dd2,ref2)   
+        return toDMD(dd1,ref1), toDMD(dd2,ref2)
     except:
         raise
 
 
 if __name__ == '__main__':
     #(DMS)  DP 47:36:04 N 000:25:56 W           dms2dd --> 47.601111, -0.432222  /  dmd --> 47:36.0666660 N, 0:25.9333320 W
-    
+
     lat, lon = geoStr2dd(" 7:7.4833333N ", " 0:5.15W ")
     print("( D.d-->D.d)", lat, lon)
-    
+
     lat0 = "473604N"
     lon0 = "0002556W"
-    
+
     lat1, lon1 = geoStr2dd(lat0)
     print("(DMS--->D.d)", lat0, "-->", lat1, lon1)
-    
+
     lat1, lon1 = geoStr2dd(None,lon0)
     print("(DMS--->D.d)", lon0, "-->", lat1, lon1)
 
@@ -192,34 +207,47 @@ if __name__ == '__main__':
     #test autres formats d'entrées
     lat, lon = geoStr2dd("4736.0666660 N", "00025.9333320 W")
     print("(DM.d-->D.d)", lat, lon)
-    
+
     lat, lon = geoStr2dd("47.601111 N", "000.432222 W")
     print("( D.d-->D.d)", lat, lon)
-    
+
     lat3, lon3 = geoDd2dmd(lat1,"lat", lon1,"lon")
     print("( D.d->DM.d)", lat1, lon1, "-->", lat3, lon3)
     lat3, lon3 = geoDd2dmd(lat1,"lat", lon1,"lon", ":", ",", 2)
     print("( D.d->DM.d)", lat1, lon1, "-->", lat3, lon3)
-    
+
     print()
-    
     lat2, lon2 = geoDd2dms(lat1,"lat", lon1,"lon")
     print("(D.d->DMS short)", lat1, lon1, "-->", lat2, lon2)
-    
+
     lat2, lon2 = geoDd2dms(lat1,"lat", lon1,"lon", ":"," ")
     print("(D.d->DMS long )", lat1, lon1, "-->", lat2, lon2)
 
     lat2, lon2 = geoDd2dms(lat1,"lat", lon1,"lon", digit=4)
     print("(D.d->DMS digit=4)", lat1, lon1, "-->", lat2, lon2)
-    
+
+    latb, lonb = geoStr2dd("4:36:0 N", "1:25:0 W")
+    lat2, lon2 = geoDd2dms(latb,"lat", lonb,"lon", ":"," ")
+    print("(DMS->DMS)", latb, lonb, "-->", lat2, lon2)
+
     print()
-    
+    latSrc = "4:36:21.1254 N"
+    lonSrc = "1:25:12.2547 W"
+    latb, lonb = geoStr2dd(latSrc, lonSrc)
+    latDst, lonDst = geoDd2dms(latb,"lat", lonb,"lon", ":"," ", digit=4)
+    print("(DMS->DMS)", latSrc, lonSrc, "-->", latDst, lonDst)
+    if latSrc==latDst and lonSrc==lonDst:
+        print("Glop glop, c'est juste ;-)")
+    else:
+        print("Pas glop, erreur :-(")
+
+    print()
     lat, lon = geoStr2dd("47: 36: 04n", "000 :25 : 56, w")
     print("( D.d-->D.d)", lat, lon)
     lat, lon = geoStr2dd(" 47 :36:04,  N", "0: 25:56 , o")
     print("( D.d-->D.d)", lat, lon)
     lat, lon = geoStr2dd("7: 5: 04,  s", " 0:5: 56, e")
     print("( D.d-->D.d)", lat, lon)
-    
+
 
 

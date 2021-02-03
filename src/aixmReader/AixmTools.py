@@ -54,14 +54,15 @@ class AixmTools:
                     sRet += "*" + " "*lLeftMargin + "{0}:\n".format(oKey)
                     lFileCnt:int = 0
                     for oKey2, oVal2 in oVal.items():
-                        if lFileCnt<5:
+                        #Demande de Léo 01/2021, sortir toutes les références des fichiers
+                        #if lFileCnt<5:
                             lFileCnt += 1
                             if isinstance(oVal2, dict):
                                 oVal2 = json.dumps(oVal2, ensure_ascii=False)
                             sRet += "*" + " "*2*lLeftMargin + "{0} - {1}\n".format(oKey2, oVal2)
-                        else:
-                            sRet += "*" + " "*2*lLeftMargin + "../.. and {0} complementary sources files. See Catalog file header for all details.\n".format(len(oHeader)-lFileCnt+1)
-                            break
+                        #else:
+                        #    sRet += "*" + " "*2*lLeftMargin + "../.. and {0} complementary sources files. See Catalog file header for all details.\n".format(len(oHeader)-lFileCnt+1)
+                        #    break
                 else:
                     sRet += "*" + " "*lLeftMargin + "{0} - {1}\n".format(oKey, oVal)
 
@@ -336,11 +337,12 @@ class AixmTools:
     def _getNbrSegment(self, radius):
         assert(isinstance(radius, float))
 
-        nbSegments = (2*radius*aixmReader.CONST.pi)/100              #Nombre de segments de 100 mètres (Circonférence/100)
+        nbSegments = (2*radius*aixmReader.CONST.pi)/1000              #Nombre de segments de 1000 mètres (Circonférence/1000)
         if nbSegments<40:                           nbSegments = 10 if self.oCtrl.Draft else 40
-        elif nbSegments>=40 and nbSegments<300:     nbSegments = nbSegments/4 if self.oCtrl.Draft else nbSegments
-        elif nbSegments>=300 and nbSegments<1000:   nbSegments = nbSegments/6 if self.oCtrl.Draft else nbSegments/1.5
-        else:                                       nbSegments = nbSegments/10 if self.oCtrl.Draft else nbSegments/2
+        elif nbSegments>=40 and nbSegments<150:     nbSegments = nbSegments/2 if self.oCtrl.Draft else nbSegments
+        elif nbSegments>=150 and nbSegments<300:    nbSegments = nbSegments/4 if self.oCtrl.Draft else nbSegments/1.5
+        elif nbSegments>=300 and nbSegments<1000:   nbSegments = nbSegments/6 if self.oCtrl.Draft else nbSegments/3
+        else:                                       nbSegments = nbSegments/10 if self.oCtrl.Draft else nbSegments/4
         return int(nbSegments)
 
 

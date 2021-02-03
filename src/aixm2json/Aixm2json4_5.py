@@ -79,7 +79,7 @@ def addColorProperties(prop:dict, dstProp:dict, oLog:bpaTools.Logger):
         else:
             nFillOpacity = 0.3
     #Orange and ligth-fill
-    elif sClass in ["Q","GP"]:
+    elif sClass in ["GP","Q","VV","VL","BA","PA"]:
         sStroke = "#f07800"
         sFill = "#f07800"
         if prop.get("lower", None)=="SFC":
@@ -100,7 +100,7 @@ def addColorProperties(prop:dict, dstProp:dict, oLog:bpaTools.Logger):
         else:
             nFillOpacity = 0.2
     #Green
-    elif sClass in ["E","F","G","SIV","FIS"]:
+    elif sClass in ["E","F","G","SIV","FIS","FFVL","FFVP"]:
         sStroke = "#008040"
         sFill = "#80ff80"
         if prop.get("lower", None)=="SFC":
@@ -400,7 +400,18 @@ class Aixm2json4_5:
         g = []              #geometry
         points4map = []
 
-        if oBorder.Circle:
+        #Init
+        bIsSpecCircle:bool = False
+        bIsCircle:bool = bool(oBorder.Circle)   #Zone uniqumement contituée d'un cercle
+        if not bIsCircle:
+            #Extraction des vecteurs
+            avx_list = oBorder.find_all("Avx", recursive=False)
+
+            #Si la zone est 'Danger' ou 'Vol libre et Vol a voile' ; et uniquement déclarée sous forme d'un 'Point' ; alors reconstituer un cercle !
+            if len(avx_list)==1 and oZone.get("class",None) in ["Q","W"]:   bIsSpecCircle = True
+
+        #Construction d'un cercle standard
+        if bIsCircle:
             lon_c, lat_c = self.oCtrl.oAixmTools.geo2coordinates(oBorder.Circle,
                                            latitude=oBorder.Circle.geoLatCen.string,
                                            longitude=oBorder.Circle.geoLongCen.string,
@@ -414,8 +425,28 @@ class Aixm2json4_5:
                 points4map.append(self.oCtrl.oAixmTools.make_point(Pcenter, "Circle Center of {0}".format(oZone["nameV"])))
             g = self.oCtrl.oAixmTools.make_arc(Pcenter, radius)
             geom = {"type":"Polygon", "coordinates":[g]}
+
+        #Construction spécifique d'un cercle sur la base d'un Point unique
+        elif bIsSpecCircle:
+            lon_c, lat_c = self.oCtrl.oAixmTools.geo2coordinates(avx_list[0],oZone=oZone)
+
+            #Radius in Meter for GeoJSON format / Depend of area type
+            radius:float = float(1000)              #Fixe un rayon de 1000m par défaut
+            if   oZone["type"] in ["TRVL"]:         #TRVL Treuil-Vol-Libre
+                radius = float(2000)                #Fixe un rayon de 2000m
+            elif oZone["type"] in ["TRPLA"]:        #TRPLA Treuil Planeurs
+                radius = float(5000)                #Fixe un rayon de 5000m
+            elif oZone["type"] in ["PJE"]:          #PJE=Parachute Jumping Exercise
+                radius = float(1000)                #Fixe un rayon de 1000s
+
+            Pcenter = Point(lon_c, lat_c)
+            if self.oCtrl.MakePoints4map:
+                points4map.append(self.oCtrl.oAixmTools.make_point(Pcenter, "Circle Center of {0}".format(oZone["nameV"])))
+            g = self.oCtrl.oAixmTools.make_arc(Pcenter, radius)
+            geom = {"type":"Polygon", "coordinates":[g]}
+
+        #Construction d'un tracé sur la base d'une suite de Points et/ou Arcs
         else:
-            avx_list = oBorder.find_all("Avx", recursive=False)
             for avx_cur in range(0,len(avx_list)):
                 avx = avx_list[avx_cur]
                 codeType = avx.codeType.string
@@ -486,7 +517,7 @@ class Aixm2json4_5:
                     g.append(self.oCtrl.oAixmTools.geo2coordinates(avx, oZone=oZone))
 
             if len(g) == 0:
-                self.oCtrl.oLog.error("Geometry vide of {0}\n{1}".format(oZone["nameV"], oBorder.prettify()), outConsole=True)
+                self.oCtrl.oLog.error("Empty geometry of {0}\n{1}".format(oZone["nameV"], oBorder.prettify()), outConsole=True)
                 geom = None
             elif len(g) == 1:
                 geom = {"type":"Point", "coordinates":g[0]}
@@ -536,7 +567,11 @@ class Aixm2json4_5:
             if include:
                 #Extract single parts of properties
                 oSingleCat:dict = {}
-                aSinglePorperties:list = ["nameV","class","type","lower","upper","ordinalLowerM","ordinalUpperM","lowerM","lowerMin","upperM","upperMax","activationCode","desc","declassifiable","GUId","UId","id"]  #Exclude: zoneType, groupZone, srcClass, srcType, vfrZone, vfrZoneExt, freeFlightZone, freeFlightZoneExt, srcName, name; etc...
+                aSinglePorperties:list = ["name", "nameV", "class", "type", "codeActivity",
+                                          "lower", "lowerMin", "ordinalLowerM", "lowerM",
+                                          "upper", "upperMax", "ordinalUpperM", "upperM",
+                                          "desc", "activationCode", "activationDesc", "declassifiable", "timeScheduling", "Mhz",
+                                          "GUId", "UId", "id"]  #Exclude: zoneType, groupZone, srcClass, srcType, vfrZone, vfrZoneExt, freeFlightZone, freeFlightZoneExt, srcName; etc...
                 for sProp in aSinglePorperties:
                     value = o["properties"].get(sProp, None)
                     if value!=None:

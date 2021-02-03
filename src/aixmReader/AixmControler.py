@@ -43,7 +43,7 @@ class CONST:
 
 
 class AixmControler:
-        
+
     def __init__(self, sSrcFile, sOutPath, sOutHeadFile="", oLog=None):
         bpaTools.initEvent(__file__, oLog)
         self.srcFile = sSrcFile             #Source file
@@ -52,7 +52,7 @@ class AixmControler:
         if sOutHeadFile!="":
             self.sOutHeadFile += "@"
         self.oLog = oLog                    #Log file
-        
+
         self.oAixm = None                   #Lecteur xml du fichier source
         self.oAixmTools = None              #Utilitaire pour geojson
         self.sEncoding = "utf-8"            #Encoding du fichier source
@@ -62,7 +62,7 @@ class AixmControler:
         self.__FreeFlight = False           #Generation spécifique pour le Vol Libre avec différents filtrages (E, F, G...)
         self.__Draft = False                #Limitation du nombre de segmentation des arcs et cercles en geojson
         self.__MakePoints4map = False       #Construction de points complémentaires pour mise au point de la sorties geojson
-        
+
         self.digit4roundArc = 6                         #Précision du nombre de digit pour les arrondis des Arcs/Cercles
         self.digit4roundPoint = self.digit4roundArc     #Précision du nombre de digit pour les arrondis des Points
         return
@@ -87,7 +87,7 @@ class AixmControler:
     def MakePoints4map(self, bValue):
         assert(isinstance(bValue, bool))
         self.__MakePoints4map = bValue
-        self.digit4roundPoint = 15 if self.__MakePoints4map else self.digit4roundArc 
+        self.digit4roundPoint = 15 if self.__MakePoints4map else self.digit4roundArc
         if bValue:
             self.oLog.warning("/!\ Complementary points for Map", outConsole=True)
         return
@@ -100,19 +100,19 @@ class AixmControler:
         assert(isinstance(bValue, bool))
         self.__ALL = bValue
         return
-    
+
     @property
     def IFR(self):
-        return self.__IFR    
+        return self.__IFR
     @IFR.setter
     def IFR(self, bValue):
         assert(isinstance(bValue, bool))
         self.__IFR = bValue
         return
-    
+
     @property
     def VFR(self):
-        return self.__VFR    
+        return self.__VFR
     @VFR.setter
     def VFR(self, bValue):
         assert(isinstance(bValue, bool))
@@ -121,14 +121,14 @@ class AixmControler:
 
     @property
     def FreeFlight(self):
-        return self.__FreeFlight    
+        return self.__FreeFlight
     @FreeFlight.setter
     def FreeFlight(self, bValue):
         assert(isinstance(bValue, bool))
         self.__FreeFlight = bValue
         return
 
-    
+
     def getFactory(self, context, out=None):
         if self.oAixm == None:
             return
@@ -144,7 +144,7 @@ class AixmControler:
             else:
                 sys.stderr.write("Sorry, only aixm 4.5 are supported at this time.\n")
                 traceback.print_exc(file=sys.stdout)
-                sys.exit()                  
+                sys.exit()
         if out=="geojson":
             if self.oAixm.srcVersion == "4.5":
                 return aixm2json.Aixm2json4_5(self)
@@ -155,7 +155,7 @@ class AixmControler:
             else:
                 sys.stderr.write("Sorry, only aixm 4.5 are supported at this time.\n")
                 traceback.print_exc(file=sys.stdout)
-                sys.exit()      
+                sys.exit()
         elif out=="openair":
             return aixm2openair.Aixm2openair(self)
         else:
@@ -177,65 +177,65 @@ class AixmControler:
         return
 
 
-    def execParser(self, oOpts):
+    def execParser(self, oOpts, bOnlyCatalogConstruct:bool=False):
         self.ALL = bool(CONST.optALL in oOpts)
         self.IFR = bool(CONST.optIFR in oOpts)
         self.VFR = bool(CONST.optVFR in oOpts)
         self.FreeFlight = bool(CONST.optFreeFlight in oOpts)
         self.Draft = bool(CONST.optDraft in oOpts)
         self.MakePoints4map = bool(CONST.optMakePoints4map in oOpts)
-        
+
         bExec = False
-        
+
         #############################################################################################
         #Phase0 - Mise au point pour sorties geojson (sans lecture de fichier source)
         if CONST.optTstGeojson in oOpts:
             o2jsonTst = aixm2json.Aixm2jsonTst(self)
             o2jsonTst.testAll()
             return True
-            
+
         #############################################################################################
         #Phase0 - Lecture du fichier aixm source
         found = any(item in (CONST.frmtGEOJSON, CONST.frmtOPENAIR, CONST.frmtALL) for item in oOpts.keys())
         if found:
             self.oAixm = aixmReader.AixmReader(self)
-        
+
         #############################################################################################
         #Phase1 'geojson simplifiée'
         found = any(item in (CONST.frmtGEOJSON, CONST.frmtALL) for item in oOpts.keys())
         if found:
             o2json = self.getFactory("parser", "geojson")       #Récupération dynamique du parser aixm/geojson associé au format du fichier source
-            
+
             #Phase1.1 - Traitement des Obstacles à la navigation aérienne
             found = any(item in (CONST.typeOBSTACLES, CONST.typeALL) for item in oOpts.keys())
             if found :
                 o2json.parseObstacles()
                 bExec = True
-    
+
             #Phase1.2 - Traitement des Aérodromes
             found = any(item in (CONST.typeAERODROMES, CONST.typeALL) for item in oOpts.keys())
             if found :
                 o2json.parseAerodromes()
                 bExec = True
-    
+
             #Phase1.3 - Traitement des Centres de pistes
             found = any(item in (CONST.typeRUNWAYCENTER, CONST.typeALL) for item in oOpts.keys())
             if found :
                 o2json.parseRunwayCenterLinePosition()
                 bExec = True
-    
+
             #Phase1.4 - Traitement des Tours de contrôles
             found = any(item in (CONST.typeCTRLTOWERS, CONST.typeALL) for item in oOpts.keys())
             if found :
                 o2json.parseControlTowers()
                 bExec = True
-    
+
             #Phase1.5 - Traitement des Aires de stationnement d'avions
             found = any(item in (CONST.typeGATESTANDS, CONST.typeALL) for item in oOpts.keys())
             if found :
                 o2json.parseGateStands()
                 bExec = True
-    
+
             #Phase1.6 - Traitement de Bordures géographique
             found = any(item in (CONST.typeGEOBORDER, CONST.typeALL) for item in oOpts.keys())
             if found :
@@ -246,13 +246,16 @@ class AixmControler:
         #Phase2 - Traitements complexes concernant les espaces aériens (sorties multi-formats)
         found = any(item in (CONST.typeAIRSPACES, CONST.typeALL) for item in oOpts.keys())
         if found:
-            oAs = self.getFactory("reader")     #Récupération dynamique du lecteur geojson associé au format du fichier source
-            oAs.initAirspacesCatalogIdx()       #Initialisation des index pour construction du catalogue
-            oAs.initAirspacesBordersIdx()       #Initialisation de l'index des bordures de zones
-            oAs.loadAirspacesCatalog()          #Lecture/Chargement de toutes les zones aériennes (classification & Propriétés)
-            oAs.ctrlReferentialContent()        #Contrôle de cohérence des référentiels
-            oAs.saveAirspacesCalalog()          #Construction des catalogues
-            oAs.clearAirspaceIdx()              #Libération de mémoire
+            oAs = self.getFactory("reader")                                     #Récupération dynamique du lecteur geojson associé au format du fichier source
+            oAs.initAirspacesCatalogIdx()                                       #Initialisation des index pour construction du catalogue
+            if not bOnlyCatalogConstruct:   oAs.initAirspacesBordersIdx()       #Initialisation de l'index des bordures de zones
+            oAs.loadAirspacesCatalog()                                          #Lecture/Chargement de toutes les zones aériennes (classification & Propriétés)
+            bOnlyCatalogConstruct:          oAs.ctrlReferentialContent()        #Contrôle de cohérence des référentiels
+            oAs.saveAirspacesCalalog()                                          #Construction des catalogues
+            oAs.clearAirspaceIdx()                                              #Libération de mémoire
+
+            if bOnlyCatalogConstruct:
+                return True
 
             #En cas d'err, interruption nécessaire pour mise à niveau du référentiel 'refGroundEstimatedHeight.json'
             criticalErrCatalog = self.oLog.CptCritical
