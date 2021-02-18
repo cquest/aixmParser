@@ -1,6 +1,15 @@
 #!/usr/bin/env python3
 
-import bpaTools
+try:
+    import bpaTools
+except ImportError:
+    import os, sys
+    sLocalSrc:str = "../"                                       #Include local modules/librairies
+    module_dir = os.path.dirname(__file__)
+    sys.path.append(os.path.join(module_dir, sLocalSrc))
+    import bpaTools
+
+
 import aixmReader
 
 import math
@@ -185,7 +194,13 @@ class AixmTools:
         return prop
 
 
-    def geo2coordinates(self, o, latitude=None, longitude=None, oZone=None) -> list:
+    #outputFormat enumeration: [
+    #   ""              = Native format                                                     (without change)
+    #   "dd"            = Degrés décimaux (D.d)
+    #   "dmd"           = Degrés minutes décimaux (DM.d)
+    #   "DDMMSS.ssX"    = Short (DMS.d) - Standard serialize without separator
+    #   "DD:MM:SS.ssX"  = Long  (DMS.d) - Optimized Serialize with separators (use for Openair format)
+    def geo2coordinates(self, outputFormat:str, o, latitude=None, longitude=None, oZone:dict=None) -> list:
         """ codeDatum or CODE_DATUM Format:
             WGE [WGS-84 (GRS-80).]
             WGC [WGS-72.]
@@ -213,16 +228,17 @@ class AixmTools:
             U [Other datum or unknown..]
         """
         #Ctrl du référentiel des coordonnées
-        codedatum = o.find("codeDatum", recursive=False)
-        if codedatum == None:
-            codedatum = o.parent.find("codeDatum", recursive=False)
-        if codedatum == None:
-            self.oCtrl.oLog.critical("geo2coordinates() codeDatum not found ! {0}".format(o), outConsole=True)
-        codedatum = codedatum.string
-        if not codedatum in ("WGE","U","WGC","NAW"):
-            self.oCtrl.oLog.critical("geo2coordinates() codedatum is {0}\n{1}".format(codedatum, o), outConsole=False)
-            if type(oZone)==dict:
-                oZone.update({"CriticalCodedatum":codedatum})
+        if o:
+            codedatum = o.find("codeDatum", recursive=False)
+            if codedatum == None:
+                codedatum = o.parent.find("codeDatum", recursive=False)
+            if codedatum == None:
+                self.oCtrl.oLog.critical("geo2coordinates() codeDatum not found ! {0}".format(o), outConsole=True)
+            codedatum = codedatum.string
+            if not codedatum in ("WGE","U","WGC","NAW"):
+                self.oCtrl.oLog.critical("geo2coordinates() codedatum is {0}\n{1}".format(codedatum, o), outConsole=False)
+                if type(oZone)==dict:
+                    oZone.update({"CriticalCodedatum":codedatum})
 
         if latitude:
             sLat = latitude
@@ -240,9 +256,50 @@ class AixmTools:
                 self.oCtrl.oLog.critical("geo2coordinates() geoLong not found ! {0}".format(o), outConsole=True)
             sLon = sLon.string
 
-        lat, lon = bpaTools.GeoCoordinates.geoStr2dd(sLat, sLon, self.oCtrl.digit4roundPoint)
-        return [lon, lat]
-
+        """ # Aixm LATITUDE native format:
+                •DDMMSS.ssX: ‘000000.00N’, ‘131415.5S’, ’455959.9988S’, ‘900000.00N’.
+                •DDMMSSX: ‘000000S’, ’261356N’, ‘900000S’.
+                •DDMM.mm...X : ‘0000.0000S’, ’1313.12345678S’, ‘1234.9S’, ‘9000.000S’.
+                •DDMMX: ‘0000N’, ’1313S’, ‘1234N’, ‘9000S’.
+                •DD.dd...X : ‘00.00000000N’, ’13.12345678S’, ‘34.9N’, ‘90.000S’.
+            # Aixm LONGITUDE native format:
+                •DDDMMSS.ssY: ‘0000000.00E’, ‘0010101.1E’, ’1455959.9967W’, ‘1800000.00W’.
+                •DDDMMSSY: ‘0000000W’, ’1261356E’, ‘1800000E’.
+                •DDDMM.mm...Y : ‘00000.0000W’, ’01313.12345678E’, ‘11234.9E’, ‘18000.000W’.
+                •DDDMMY: ‘00000E’, ’01313W’, ‘11234E’, ‘18000W’.
+                •DDD.dd...Y : ‘000.00000000W’, ’113.12345678E’, ‘134.9W’, ‘180.000W’.
+        """
+        try:
+            if outputFormat=="":
+                return [sLat, sLon]
+            elif outputFormat=="dd":
+                if self.oCtrl:
+                    iDigit:int = self.oCtrl.digit4roundPoint
+                else:
+                    iDigit:int = 6
+                lat, lon = bpaTools.GeoCoordinates.geoStr2coords(sLat, sLon, outFrmt=outputFormat)
+                return [round(lat, iDigit), round(lon, iDigit)]
+            elif outputFormat=="dmd":
+                sLat2, sLon2 = bpaTools.GeoCoordinates.geoStr2coords(sLat, sLon, outFrmt=outputFormat)
+                return [sLon2, sLat2]
+            elif outputFormat in ["dms", "DDMMSS.ssX",]:
+                sLat2, sLon2 = bpaTools.GeoCoordinates.geoStr2coords(sLat, sLon, outFrmt="dms")
+                return [sLat2, sLon2]
+            elif outputFormat=="D:M:S.ssX":
+                sLat2, sLon2 = bpaTools.GeoCoordinates.geoStr2coords(sLat, sLon, outFrmt="dms", sep1=":", sep2="", bOptimize=True)
+                return [sLat2, sLon2]
+            elif outputFormat=="DD:MM:SS.ssX":
+                sLat2, sLon2 = bpaTools.GeoCoordinates.geoStr2coords(sLat, sLon, outFrmt="dms", sep1=":", sep2=" ", bOptimize=False)
+                return [sLat2, sLon2]
+            else:
+                if self.oCtrl:
+                    self.oCtrl.oLog.error("geo2coordinates() outputFormat error '{0}'".format(outputFormat), outConsole=True)
+                else:
+                    print("geo2coordinates() outputFormat error '{0}'".format(outputFormat))
+        except Exception as err:
+            sErrMsg:str = "geo2coordinates() {0}\n{1}".format(err, o)
+            self.oCtrl.oLog.critical(sErrMsg.format(err, o), outConsole=False)
+            raise Exception(sErrMsg)
 
     def convertLength(self, length:float, srcRef:str, dstRef:str) -> float:
         srcRef = srcRef.upper()
@@ -339,10 +396,17 @@ class AixmTools:
 
         nbSegments = (2*radius*aixmReader.CONST.pi)/1000              #Nombre de segments de 1000 mètres (Circonférence/1000)
         if nbSegments<40:                           nbSegments = 10 if self.oCtrl.Draft else 40
-        elif nbSegments>=40 and nbSegments<150:     nbSegments = nbSegments/2 if self.oCtrl.Draft else nbSegments
-        elif nbSegments>=150 and nbSegments<300:    nbSegments = nbSegments/4 if self.oCtrl.Draft else nbSegments/1.5
-        elif nbSegments>=300 and nbSegments<1000:   nbSegments = nbSegments/6 if self.oCtrl.Draft else nbSegments/3
-        else:                                       nbSegments = nbSegments/10 if self.oCtrl.Draft else nbSegments/4
+        elif nbSegments>=40 and nbSegments<100:     nbSegments = 20 if self.oCtrl.Draft else nbSegments
+        elif nbSegments>=100 and nbSegments<200:    nbSegments = 20 if self.oCtrl.Draft else nbSegments/2
+        elif nbSegments>=200 and nbSegments<300:    nbSegments = 30 if self.oCtrl.Draft else nbSegments/3
+        elif nbSegments>=300 and nbSegments<400:    nbSegments = 30 if self.oCtrl.Draft else nbSegments/4
+        elif nbSegments>=400 and nbSegments<500:    nbSegments = 30 if self.oCtrl.Draft else nbSegments/5
+        elif nbSegments>=500 and nbSegments<600:    nbSegments = 40 if self.oCtrl.Draft else nbSegments/6
+        elif nbSegments>=600 and nbSegments<700:    nbSegments = 40 if self.oCtrl.Draft else nbSegments/7
+        elif nbSegments>=700 and nbSegments<800:    nbSegments = 40 if self.oCtrl.Draft else nbSegments/8
+        elif nbSegments>=800 and nbSegments<900:    nbSegments = 50 if self.oCtrl.Draft else nbSegments/9
+        elif nbSegments>=900 and nbSegments<1000:   nbSegments = 50 if self.oCtrl.Draft else nbSegments/10
+        else:                                       nbSegments = 50 if self.oCtrl.Draft else 100
         return int(nbSegments)
 
 
@@ -364,20 +428,29 @@ class AixmTools:
         if (not clockwiseArc) and (stop_angle < start_angle):
             stop_angle  = stop_angle+360
 
-        g = []
+        g  = []
         numsegments = self._getNbrSegment(radius)
         angles = np.linspace(start_angle, stop_angle, numsegments)
         polygon = geog.propagate(Pcenter, angles, radius)
-        #print(json.dumps(mapping(Polygon(polygon))))
-        #print(json.dumps(mapping(LineString(polygon))))
+        ##   #print(json.dumps(mapping(Polygon(polygon))))
+        ##   #print(json.dumps(mapping(LineString(polygon))))
         for o in polygon:
             g.append([round(o[0],self.oCtrl.digit4roundArc), round(o[1],self.oCtrl.digit4roundArc)])
+
+        #Other function - https://stackoverflow.com/questions/30762329/how-to-create-polygons-with-arcs-in-shapely-or-a-better-library
+        #theta = np.radians(angles)
+        #x = Pcenter.x + (radius * np.cos(theta))
+        #y = Pcenter.y + (radius * np.sin(theta))
+        #polygon = LineString(np.column_stack([x, y]))
+        #for o in polygon.coords:
+        #    g.append([round(o[0],self.oCtrl.digit4roundArc), round(o[1],self.oCtrl.digit4roundArc)])
+
         return g
 
     """
     Construct array of coords for make Arc or Circle
         Pcenter, Pstart and Pstop : Points of arc = Point([lon,lat]) in float values
-        radius: is a float value in meters (par défaut, est calculé avec l'écart entre Pstart et Pcenter)
+        radius: is a float value in meters (par défaut, est calculé avec les écarts entre Pstart/Pstop et Pcenter)
         clockwiseArc : is boolean value ; True='Clockwise Arc' and False='Counter Clockwise Arc'
     """
     def make_arc2(self, Pcenter, Pstart, Pstop, radius=0.0, clockwiseArc=True):
@@ -395,12 +468,16 @@ class AixmTools:
 
         # Convert to local meters
         srs = Proj(proj="ortho", lat_0=latC, lon_0=lonC)
+
         center_x, center_y = transform(p1=self.pWGS, p2=srs, x=latC, y=lonC)
-        start_x, start_y = transform(p1=self.pWGS, p2=srs, x=latS, y=lonS)
-        stop_x, stop_y = transform(p1=self.pWGS, p2=srs, x=latE, y=lonE)
+        start_x,   start_y = transform(p1=self.pWGS, p2=srs, x=latS, y=lonS)
+        stop_x,     stop_y = transform(p1=self.pWGS, p2=srs, x=latE, y=lonE)
 
         if radius==0:
-            radius = math.sqrt(start_x**2+start_y**2)
+            radiusS = math.sqrt(start_x**2+start_y**2)      #Rayon au point d'entrée
+            radiusE = math.sqrt(stop_x**2+stop_y**2)        #Rayon au point de sortie
+            radius = (radiusS + radiusE) / 2                #Moyenne des 2 rayons pour réalignement systématique...
+            #radius = radiusS
 
         #Calcul des angles de départ et d'arrivées en degrés
         degStart = math.degrees(math.atan2(start_y-center_y, start_x-center_x))
@@ -408,10 +485,10 @@ class AixmTools:
 
         g = self.make_arc(Pcenter, radius, degStart, degStop, clockwiseArc)
 
-        #Ajout complémentaire des points Start et Stop afin de que "le Polygon" finale se referme parfaitement
-        if g[0][0]!=Pstart.x or g[0][1]!=Pstart.y:
+        #Ajout complémentaire des points Start et Stop afin de respecter les points d'entrée/sortie de l'arc
+        if (g[0][0], g[0][1]) != (Pstart.x, Pstart.y):
             g.insert(0, [Pstart.x, Pstart.y])
-        if g[-1][0]!=Pstop.x or g[-1][1]!=Pstop.y:
+        if (g[-1][0], g[-1][1]) != (Pstop.x, Pstop.y):
             g.append([Pstop.x, Pstop.y])
 
         return g
@@ -442,8 +519,8 @@ class AixmTools:
 
         g = self.make_arc(Pcenter, radius, start_angle, stop_angle)
 
-        #Ajout complémentaire du point Start afin de que le Polygon soit parfaitement fermer
-        if g[0][0]!=Pstart.x or g[0][1]!=Pstart.y:
+        #Ajout complémentaire du point Start afin de respecter le point d'entrée de l'arc
+        if (g[0][0], g[0][1]) != (Pstart.x, Pstart.y):
             g.insert(0, [Pstart.x, Pstart.y])
 
         return g
@@ -556,4 +633,31 @@ class AixmTools:
         else:
             sKey = None
         return sKey
+
+if __name__ == '__main__':
+    """ # Aixm LATITUDE native format:
+            •DDMMSS.ssX: ‘000000.00N’, ‘131415.5S’, ’455959.9988S’, ‘900000.00N’.
+            •DDMMSSX: ‘000000S’, ’261356N’, ‘900000S’.
+            •DDMM.mm...X : ‘0000.0000S’, ’1313.12345678S’, ‘1234.9S’, ‘9000.000S’.
+            •DDMMX: ‘0000N’, ’1313S’, ‘1234N’, ‘9000S’.
+            •DD.dd...X : ‘00.00000000N’, ’13.12345678S’, ‘34.9N’, ‘90.000S’.
+        # Aixm LONGITUDE native format:
+            •DDDMMSS.ssY: ‘0000000.00E’, ‘0010101.1E’, ’1455959.9967W’, ‘1800000.00W’.
+            •DDDMMSSY: ‘0000000W’, ’1261356E’, ‘1800000E’.
+            •DDDMM.mm...Y : ‘00000.0000W’, ’01313.12345678E’, ‘11234.9E’, ‘18000.000W’.
+            •DDDMMY: ‘00000E’, ’01313W’, ‘11234E’, ‘18000W’.
+            •DDD.dd...Y : ‘000.00000000W’, ’113.12345678E’, ‘134.9W’, ‘180.000W’.
+        """
+    aPoints:list = [["131415S", "0010101E"],
+                    ["131415.5S", "0010101.1E"],
+                    ["455959.9988S", "1455959.9967W"],
+                ]
+
+    oTools = AixmTools(None)
+    for aPt in aPoints:
+        print(oTools.geo2coordinates("", None, aPt[0], aPt[1]))
+        print(oTools.geo2coordinates("DD:MM:SS.ssX", None, aPt[0], aPt[1]))
+        print(oTools.geo2coordinates("dd", None, aPt[0], aPt[1]))
+        print("---")
+
 

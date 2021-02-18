@@ -161,7 +161,7 @@ class Aixm2json4_5:
                 prop = self.oCtrl.oAixmTools.addProperty(prop, uni.OrgUid, "txtName", "organisationAuthority")
                 prop = self.oCtrl.oAixmTools.addProperty(prop, uni, "codeType", "codeType")
                 prop = self.oCtrl.oAixmTools.addProperty(prop, uni.UniUid, "txtName", "name")
-                geom = {"type":"Point", "coordinates":self.oCtrl.oAixmTools.geo2coordinates(uni)}
+                geom = {"type":"Point", "coordinates":self.oCtrl.oAixmTools.geo2coordinates("dd", uni)[::-1]}
                 return {"type":"Feature", "properties":prop, "geometry":geom}
             else:
                 self.oCtrl.oLog.warning("Missing TWR coordinates {0}".format(uni.UniUid), outConsole=False)
@@ -201,7 +201,7 @@ class Aixm2json4_5:
         prop = self.oCtrl.oAixmTools.addProperty(prop, ahp, "txtNameCitySer", "cityServing", optional=True)
         prop = self.oCtrl.oAixmTools.addProperty(prop, ahp, "txtNameAdmin", "nameAdmin", optional=True)
         prop = self.oCtrl.oAixmTools.addProperty(prop, ahp, "txtRmk", "remark", optional=True)
-        geom = {"type":"Point", "coordinates":self.oCtrl.oAixmTools.geo2coordinates(ahp)}
+        geom = {"type":"Point", "coordinates":self.oCtrl.oAixmTools.geo2coordinates("dd", ahp)[::-1]}
         return {"type":"Feature", "properties":prop, "geometry":geom}
 
     def parseObstacles(self) -> None:
@@ -234,7 +234,7 @@ class Aixm2json4_5:
         prop = self.oCtrl.oAixmTools.addProperty(prop, obs, "valHgt", "height", optional=True)
         prop = self.oCtrl.oAixmTools.addProperty(prop, obs, "uomDistVer", "verticalUnit")
         prop = self.oCtrl.oAixmTools.addProperty(prop, obs, "txtRmk", "remark", optional=True)
-        geom = {"type":"Point", "coordinates":self.oCtrl.oAixmTools.geo2coordinates(obs.ObsUid)}
+        geom = {"type":"Point", "coordinates":self.oCtrl.oAixmTools.geo2coordinates("dd", obs.ObsUid)[::-1]}
         return {"type":"Feature", "properties":prop, "geometry":geom}
 
     def parseRunwayCenterLinePosition(self) -> None:
@@ -262,7 +262,7 @@ class Aixm2json4_5:
         prop = self.oCtrl.oAixmTools.addProperty(prop, rcp.RcpUid.RwyUid, "txtDesig", "designator")
         prop = self.oCtrl.oAixmTools.addProperty(prop, rcp, "valElev", "elevation", optional=True)
         prop = self.oCtrl.oAixmTools.addProperty(prop, rcp, "uomDistVer", "verticalUnit", optional=True)
-        geom = {"type":"Point", "coordinates":self.oCtrl.oAixmTools.geo2coordinates(rcp.RcpUid)}
+        geom = {"type":"Point", "coordinates":self.oCtrl.oAixmTools.geo2coordinates("dd", rcp.RcpUid)[::-1]}
         return {"type":"Feature", "properties":prop, "geometry":geom}
 
     def parseGateStands(self) -> None:
@@ -292,7 +292,7 @@ class Aixm2json4_5:
         prop = self.oCtrl.oAixmTools.addProperty(prop, gsd, "codeType")
         prop = self.oCtrl.oAixmTools.addProperty(prop, gsd, "txtDescrRestrUse", optional=True)
         prop = self.oCtrl.oAixmTools.addProperty(prop, gsd, "txtRmk", optional=True)
-        geom = {"type":"Point", "coordinates":self.oCtrl.oAixmTools.geo2coordinates(gsd)}
+        geom = {"type":"Point", "coordinates":self.oCtrl.oAixmTools.geo2coordinates("dd", gsd)[::-1]}
         return {"type":"Feature", "properties":prop, "geometry":geom}
 
     def parseGeographicBorders(self) -> None:
@@ -329,7 +329,7 @@ class Aixm2json4_5:
         for gbv in gbr.find_all("Gbv", recursive=False):
             if gbv.codeType.string not in ("GRC", "END"):
                 self.oCtrl.oLog.critical("Not recognized codetype\n{0}".format(gbv), outConsole=True)
-            g.append(self.oCtrl.oAixmTools.geo2coordinates(gbv))
+            g.append(self.oCtrl.oAixmTools.geo2coordinates("dd", gbv)[::-1])
             l.append((g[-1][0], g[-1][1]))
         geom = {"type":"LineString", "coordinates":g}
         return ({"type":"Feature", "properties":prop, "geometry":geom}, l)
@@ -412,10 +412,11 @@ class Aixm2json4_5:
 
         #Construction d'un cercle standard
         if bIsCircle:
-            lon_c, lat_c = self.oCtrl.oAixmTools.geo2coordinates(oBorder.Circle,
-                                           latitude=oBorder.Circle.geoLatCen.string,
-                                           longitude=oBorder.Circle.geoLongCen.string,
-                                           oZone=oZone)
+            lat_c, lon_c = self.oCtrl.oAixmTools.geo2coordinates("dd",
+                                                                 oBorder.Circle,
+                                                                 latitude=oBorder.Circle.geoLatCen.string,
+                                                                 longitude=oBorder.Circle.geoLongCen.string,
+                                                                 oZone=oZone)
 
             radius = float(oBorder.Circle.valRadius.string)
             radius = self.oCtrl.oAixmTools.convertLength(radius, oBorder.uomRadius.string, "M")   #Convert radius in Meter for GeoJSON format
@@ -424,11 +425,12 @@ class Aixm2json4_5:
             if self.oCtrl.MakePoints4map:
                 points4map.append(self.oCtrl.oAixmTools.make_point(Pcenter, "Circle Center of {0}".format(oZone["nameV"])))
             g = self.oCtrl.oAixmTools.make_arc(Pcenter, radius)
+            oZone.update({"name":str(len(g)) + " Segments - " + oZone.get("name")})
             geom = {"type":"Polygon", "coordinates":[g]}
 
         #Construction spécifique d'un cercle sur la base d'un Point unique
         elif bIsSpecCircle:
-            lon_c, lat_c = self.oCtrl.oAixmTools.geo2coordinates(avx_list[0],oZone=oZone)
+            lat_c, lon_c = self.oCtrl.oAixmTools.geo2coordinates("dd", avx_list[0],oZone=oZone)
 
             #Radius in Meter for GeoJSON format / Depend of area type
             radius:float = float(1000)              #Fixe un rayon de 1000m par défaut
@@ -437,7 +439,7 @@ class Aixm2json4_5:
             elif oZone["type"] in ["TRPLA"]:        #TRPLA Treuil Planeurs
                 radius = float(5000)                #Fixe un rayon de 5000m
             elif oZone["type"] in ["PJE"]:          #PJE=Parachute Jumping Exercise
-                radius = float(1000)                #Fixe un rayon de 1000s
+                radius = float(1000)                #Fixe un rayon de 1000m
 
             Pcenter = Point(lon_c, lat_c)
             if self.oCtrl.MakePoints4map:
@@ -453,7 +455,7 @@ class Aixm2json4_5:
 
                 # 'Great Circle' or 'Rhumb Line' segment
                 if codeType in ["GRC", "RHL"]:
-                    lon, lat = self.oCtrl.oAixmTools.geo2coordinates(avx,oZone=oZone)
+                    lat, lon = self.oCtrl.oAixmTools.geo2coordinates("dd", avx, oZone=oZone)
                     if self.oCtrl.MakePoints4map:
                         pt = Point(lon, lat)
                         points4map.append(self.oCtrl.oAixmTools.make_point(pt, "Point {0} of {1}; type={2}".format(avx_cur, oZone["nameV"], codeType)))
@@ -462,16 +464,17 @@ class Aixm2json4_5:
                 # 'Counter Clockwise Arc' or 'ClockWise Arc'
                 #Nota: 'ABE' = 'Arc By Edge' ne semble pas utilisé dans les fichiers SIA-France et Eurocontrol-Europe
                 elif codeType in ["CCA", "CWA"]:
-                    start = self.oCtrl.oAixmTools.geo2coordinates(avx, oZone=oZone)
+                    start = self.oCtrl.oAixmTools.geo2coordinates("dd", avx, oZone=oZone)[::-1]
                     if avx_cur+1 == len(avx_list):
                         stop = g[0]
                     else:
-                        stop = self.oCtrl.oAixmTools.geo2coordinates(avx_list[avx_cur+1], oZone=oZone)
+                        stop = self.oCtrl.oAixmTools.geo2coordinates("dd", avx_list[avx_cur+1], oZone=oZone)[::-1]
 
-                    center = self.oCtrl.oAixmTools.geo2coordinates(avx,
-                                             latitude=avx.geoLatArc.string,
-                                             longitude=avx.geoLongArc.string,
-                                             oZone=oZone)
+                    center = self.oCtrl.oAixmTools.geo2coordinates("dd",
+                                                                   avx,
+                                                                   latitude=avx.geoLatArc.string,
+                                                                   longitude=avx.geoLongArc.string,
+                                                                   oZone=oZone)[::-1]
 
                     Pcenter = Point(center[0], center[1])
                     Pstart = Point(start[0], start[1])
@@ -486,20 +489,20 @@ class Aixm2json4_5:
                     radius = float(avx.valRadiusArc.string)
                     radius = self.oCtrl.oAixmTools.convertLength(radius, oBorder.uomRadiusArc.string, "M")   #Convert radius in Meter for GeoJSON format
 
-                    #Test non-concluant - Tentative d'amélioration des arc par recalcul systématique du rayon sur la base des coordonnées des points
-                    #arc = self.oCtrl.oAixmTools.make_arc2(Pcenter, Pstart, Pstop, 0.0, (codeType=="CWA"))
-                    arc = self.oCtrl.oAixmTools.make_arc2(Pcenter, Pstart, Pstop, radius, (codeType=="CWA"))
+                    #Amélioration de l'alignement des arcs par recalcul systématique du rayon sur la base des coordonnées d'entrée et de sortie d'arc
+                    arc = self.oCtrl.oAixmTools.make_arc2(Pcenter, Pstart, Pstop, 0.0, (codeType=="CWA"))
+                    #arc = self.oCtrl.oAixmTools.make_arc2(Pcenter, Pstart, Pstop, radius, (codeType=="CWA"))   #Sans recalcul - Des erreurs d'alignement !
                     for o in arc:
                         g.append(o)
 
                 # 'Sequence of geographical (political) border vertexes'
                 elif codeType == "FNT":
                     # geographic borders
-                    start = self.oCtrl.oAixmTools.geo2coordinates(avx, oZone=oZone)
+                    start = self.oCtrl.oAixmTools.geo2coordinates("dd", avx, oZone=oZone)[::-1]
                     if avx_cur+1 == len(avx_list):
                         stop = g[0]
                     else:
-                        stop = self.oCtrl.oAixmTools.geo2coordinates(avx_list[avx_cur+1], oZone=oZone)
+                        stop = self.oCtrl.oAixmTools.geo2coordinates("dd", avx_list[avx_cur+1], oZone=oZone)[::-1]
 
                     if avx.GbrUid["mid"] in self.geoBorders:
                         fnt = self.geoBorders[avx.GbrUid["mid"]]
@@ -514,7 +517,7 @@ class Aixm2json4_5:
                         g.append(start)
                 else:
                     self.oCtrl.oLog.warning("Default case - GbrUid='{0}' Name={1} of {2}".format(avx.GbrUid["mid"], avx.GbrUid.txtName.string, oZone["nameV"]), outConsole=False)
-                    g.append(self.oCtrl.oAixmTools.geo2coordinates(avx, oZone=oZone))
+                    g.append(self.oCtrl.oAixmTools.geo2coordinates("dd", avx, oZone=oZone)[::-1])
 
             if len(g) == 0:
                 self.oCtrl.oLog.error("Empty geometry of {0}\n{1}".format(oZone["nameV"], oBorder.prettify()), outConsole=True)

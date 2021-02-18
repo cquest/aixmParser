@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 from datetime import datetime as dt2
+from dateutil.relativedelta import *
+from dateutil.rrule import *
 import os, sys, re, traceback, logging, calendar, datetime
 import json, unicodedata
 
@@ -53,14 +55,23 @@ def initEvent(sFile:str, oLog:logging=None, isSilent:bool=False) -> None:
     return
 
 #Extract data, samples:
+#   getContentOf("{"1":"Value}", "{", "}", bRetSep=True) -> {"1":"Value}
 #   getContentOf("*AActiv [HX]  ...", "[", "]") -> "HX"
 #   getContentOf("UTC(01/01->31/12)", "(", ")") -> "01/01->31/12"
 #   getContentOf("tyty et toto sur ", "(", ")") -> None
-def getContentOf(sSrc:str, sSepLeft:str, sSepRight:str, retSep:bool=False) -> str:
-    lIdxLeft  = sSrc.find(sSepLeft)
-    lIdxRight = sSrc.find(sSepRight)
+#   getContentOf("FFVP-Prot RMZ Selestat App(120.700) (GLIDER)", "(", ")")            -> 120.700
+#   getContentOf("FFVP-Prot RMZ Selestat App(120.700) (GLIDER)", "(", ")", iNoInst=1) -> 120.700
+#   getContentOf("FFVP-Prot RMZ Selestat App(120.700) (GLIDER)", "(", ")", iNoInst=2) -> GLIDER
+#   getContentOf("FFVP-Prot RMZ Selestat App(120.700) (GLIDER)", "(", ")", iNoInst=3) -> None
+def getContentOf(sSrc:str, sSepLeft:str, sSepRight:str, iNoInst:int=1, bRetSep:bool=False) -> str:
+    lIdxLeft:int = -1
+    lIdxRight:int = -1
+    for idx in range(0, iNoInst):
+        lIdxLeft  = sSrc.find(sSepLeft, lIdxLeft+1)
+        lIdxRight = sSrc.find(sSepRight, lIdxLeft+1)
+        if lIdxLeft<0 or lIdxRight<0:   break
     if lIdxLeft>=0 and lIdxRight>=0:
-        if retSep:
+        if bRetSep:
             return sSrc[lIdxLeft:lIdxRight+len(sSepRight)]
         else:
             return sSrc[lIdxLeft+len(sSepLeft):lIdxRight]
@@ -147,16 +158,41 @@ def getDate(date:datetime, sep:str="", frmt="ymd") -> str:
         sFrmt = frmt            #Specific format
     return date.strftime(sFrmt)
 
+
 #Samples
-#   addMonths(datetime.date.today(), 1)
-#   addMonths(datetime.date.today(), 12)
-#   addMonths(datetime.date.today(), 25)
-def addMonths(sourcedate:datetime, months:int):
-    month = sourcedate.month - 1 + months
-    year = sourcedate.year + month // 12
-    month = month % 12 + 1
-    day = min(sourcedate.day, calendar.monthrange(year,month)[1])
-    return datetime.date(year, month, day)
+#    theDate = datetime.datetime.now()   #or datetime.date.today()  or datetime(2021,2,16)
+#    print("Now        ", addDatetime(theDate))
+#    print("minutes= -1", addDatetime(theDate, minutes=-1))
+#    print("minutes=+10", addDatetime(theDate, minutes=+10))
+#    print("  hours= -1", addDatetime(theDate, hours=-1))
+#    print("  hours= +2", addDatetime(theDate, hours=+2))
+#    print("   days= -1", addDatetime(theDate, days=-1))
+#    print("   days= +2", addDatetime(theDate, days=+2))
+#    print("   days=+31", addDatetime(theDate, days=+31))
+#    print("  weeks= -1", addDatetime(theDate, weeks=-1))
+#    print("  weeks= +2", addDatetime(theDate, weeks=+2))
+#    print(" months= -1", addDatetime(theDate, months=-1))
+#    print(" months= +2", addDatetime(theDate, months=+2))
+#    print(" months=+12", addDatetime(theDate, months=+12))
+#    print(" months=+24", addDatetime(theDate, months=+24))
+#    print("  years= -1" , addDatetime(theDate, years=-1))
+#    print("  years= +2" , addDatetime(theDate, years=+2))
+#    print("last day of month         " , addDatetime(theDate, day=31))
+#    print("last day of last month    " , addDatetime(addDatetime(theDate, months=-1), day=31))
+#    print("last day of next month    " , addDatetime(addDatetime(theDate, months=+1), day=31))
+#    print("previous day of next month" , addDatetime(addDatetime(theDate, months=+1), days=-1))
+#    #Use datetime.strftime("%Y/%d/%m") -> datetime.datetime(2021, 1, 28).strftime("%Y/%m/%d")
+def addDatetime(srcdate:datetime, minutes:int=0, hours:int=0, day:int=0, days:int=0, weeks:int=0, months:int=0, years:int=0) -> datetime:
+    ret:datetime = srcdate
+    if minutes:     ret += datetime.timedelta(minutes=minutes)
+    if hours:       ret += datetime.timedelta(hours=hours)
+    if day:         ret += relativedelta(day=day)
+    if days:        ret += datetime.timedelta(days=days)
+    if weeks:       ret += datetime.timedelta(weeks=weeks)
+    if months:      ret += relativedelta(months=months)
+    if years:       ret += relativedelta(years=years)
+    return ret
+
 
 def getVersionFile(versionPath:str="", versionFile:str="_version.py") -> str:
     fileContent = open(versionPath + versionFile, "rt").read()
@@ -258,9 +294,80 @@ def getCommandLineOptions(argv) -> dict:
     #print(opts)
     return opts
 
+
 if __name__ == '__main__':
-    sFile = __file__
-    dCre = getFileCreationDate(sFile)
-    dMod = getFileModificationDate(sFile)
-    print(sFile, "\n", dCre, "\n", dMod, "\n", getDate(dMod))
+    #sFile = __file__
+    #dCre = getFileCreationDate(sFile)
+    #dMod = getFileModificationDate(sFile)
+    #print(sFile, "\n", dCre, "\n", dMod, "\n", getDate(dMod))
+
+    """
+    print(addMonths(datetime.date.today(), -1))
+    print(addMonths(datetime.date.today(), +0))
+    print(addMonths(datetime.date.today(), +1))
+    print(addMonths(datetime.date.today(), +2))
+    print(addMonths(datetime.date.today(), +3))
+    print(addMonths(datetime.date.today(), 12))
+    print(addMonths(datetime.date.today(), 25))
+
+    print(datetime.date.today() + datetime.timedelta(days=-1))
+    print(datetime.date.today() + datetime.timedelta(days=0))
+    print(datetime.date.today() + datetime.timedelta(days=1))
+    print(datetime.date.today() + datetime.timedelta(days=10))
+    print(datetime.date.today() + datetime.timedelta(days=20))
+    print(datetime.date.today() + datetime.timedelta(days=31))
+    """
+
+
+    theDate = datetime.datetime.now()   #or datetime.date.today()  or datetime(2021,2,16)
+    print("Now        ", addDatetime(theDate))
+    print("minutes= -1", addDatetime(theDate, minutes=-1))
+    print("minutes=+10", addDatetime(theDate, minutes=+10))
+    print("  hours= -1", addDatetime(theDate, hours=-1))
+    print("  hours= +2", addDatetime(theDate, hours=+2))
+    print("   days= -1", addDatetime(theDate, days=-1))
+    print("   days= +2", addDatetime(theDate, days=+2))
+    print("   days=+31", addDatetime(theDate, days=+31))
+    print("  weeks= -1", addDatetime(theDate, weeks=-1))
+    print("  weeks= +2", addDatetime(theDate, weeks=+2))
+    print(" months= -1", addDatetime(theDate, months=-1))
+    print(" months= +2", addDatetime(theDate, months=+2))
+    print(" months=+12", addDatetime(theDate, months=+12))
+    print(" months=+24", addDatetime(theDate, months=+24))
+    print("  years= -1" , addDatetime(theDate, years=-1))
+    print("  years= +2" , addDatetime(theDate, years=+2))
+    print("last day of month         " , addDatetime(theDate, day=31))
+    print("last day of last month    " , addDatetime(addDatetime(theDate, months=-1), day=31))
+    print("last day of next month    " , addDatetime(addDatetime(theDate, months=+1), day=31))
+    print("previous day of next month" , addDatetime(addDatetime(theDate, months=+1), days=-1))
+    print()
+
+    #Calculate the last day of last month
+    theDate = theDate + relativedelta(months=-1)
+    theDate = theDate + relativedelta(day=31)
+
+    #Generate a list of the last day for 9 months from the calculated date
+    x = list(rrule(freq=MONTHLY, count=9, dtstart=theDate, bymonthday=(-1,)))
+    print("Last day")
+    for ld in x:
+        print(ld)
+
+    #Generate a list of the 2nd Tuesday in each of the next 9 months from the calculated date
+    print("\n2nd Tuesday")
+    x = list(rrule(freq=MONTHLY, count=9, dtstart=theDate, byweekday=TU(2)))
+    for tuesday in x:
+        print(tuesday)
+
+
+    """
+    print(getContentOf('{"1":"Value"}', "{", "}", bRetSep=True))
+    print(getContentOf("FFVP-Prot RMZ Selestat App(120.700) (GLIDER)", "(", ")"))
+    print(getContentOf("FFVP-Prot RMZ Selestat App(120.700) (GLIDER)", " (", ")"))
+    print(getContentOf("FFVP-Prot RMZ Selestat App(120.700) (GLIDER)", "(", ")", iNoInst=1))
+    print(getContentOf("FFVP-Prot RMZ Selestat App(120.700) (GLIDER)", "(", ")", iNoInst=2))
+    print(getContentOf("FFVP-Prot RMZ Selestat App(120.700) (GLIDER)", "(", ")", iNoInst=3))
+    print(getContentOf("FFVP-Prot RMZ Selestat App(120.700) (GLIDER)", "(", ")", iNoInst=5))
+    print(getContentOf("FFVP-Prot RMZ Selestat App(120.700) (GLIDER)", "(", ")", iNoInst=10))
+    """
+
 

@@ -70,7 +70,7 @@ def makeOpenair(oAirspace:dict, gpsType:str) -> list:
     if "desc" in oZone:     openair.append("*ADescr {0}".format(oZone["desc"]))
     if "Mhz" in oZone:
         if isinstance(oZone["Mhz"], str):
-            sDict:str = bpaTools.getContentOf(oZone["Mhz"], "{", "}", True)
+            sDict:str = bpaTools.getContentOf(oZone["Mhz"], "{", "}", bRetSep=True)
             oAMhz:dict = json.loads(sDict)
         elif isinstance(oZone["Mhz"], dict):
             oAMhz:dict = oZone["Mhz"]
@@ -137,6 +137,7 @@ class Aixm2openair:
         self.oAirspacesCatalog = None
         self.geoBorders = None                    #Geographic borders dictionary
         self.geoAirspaces = None                  #Geographic airspaces dictionary
+        self.sOutFrmt = "D:M:S.ssX" if self.oCtrl.bOpenairOptimizePoint else "DD:MM:SS.ssX"
         return
 
     def parseGeographicBorders(self) -> None:
@@ -174,9 +175,9 @@ class Aixm2openair:
         for gbv in gbr.find_all("Gbv", recursive=False):
             if gbv.codeType.string not in ("GRC", "END"):
                 self.oCtrl.oLog.critical("codetype non reconnu\n{0}".format(gbv), outConsole=True)
-            lon, lat = self.oCtrl.oAixmTools.geo2coordinates(gbv)
+            lat, lon = self.oCtrl.oAixmTools.geo2coordinates("dd", gbv)
             l.append((lon, lat))
-            lat1, lon1 = bpaTools.GeoCoordinates.geoDd2dms(lat,"lat", lon,"lon", ":"," ")
+            lat1, lon1 = self.oCtrl.oAixmTools.geo2coordinates(self.sOutFrmt, gbv)
             openair.append("DP {0} {1}".format(lat1, lon1))
         return openair, l
 
@@ -236,7 +237,6 @@ class Aixm2openair:
         return
 
     def parseAirspaceBorder(self, oZone, oBorder) -> None:
-        g = []          #in memory
         openair = []    #geometry
 
         #Init
@@ -255,13 +255,13 @@ class Aixm2openair:
             #V X=48:55:37 N 002:50:02 E
             #DC 2
 
-            lon_c, lat_c = self.oCtrl.oAixmTools.geo2coordinates(oBorder.Circle,
-                                           latitude=oBorder.Circle.geoLatCen.string,
-                                           longitude=oBorder.Circle.geoLongCen.string,
-                                           oZone=oZone)
+            sLat_c, sLon_c = self.oCtrl.oAixmTools.geo2coordinates(self.sOutFrmt,
+                                                                   oBorder.Circle,
+                                                                   latitude=oBorder.Circle.geoLatCen.string,
+                                                                   longitude=oBorder.Circle.geoLongCen.string,
+                                                                   oZone=oZone)
 
-            lat1, lon1 = bpaTools.GeoCoordinates.geoDd2dms(lat_c,"lat", lon_c,"lon", ":"," ")
-            openair.append("V X={0} {1}".format(lat1, lon1))
+            openair.append("V X={0} {1}".format(sLat_c, sLon_c))
             radius:float = float(oBorder.Circle.valRadius.string)
             radius = self.oCtrl.oAixmTools.convertLength(radius, oBorder.uomRadius.string, "NM")    #Convert radius in Nautical Mile for Openair format
             #Rappel: 'Bulle de quiétude' - La FFVL a négocié avec les LPO un espace protégé de 150m (0.081 MN - Milles Nautics) autour et au dessus des nids d'oiseaux. De mon coté, je retiens 0.1 MN = 185m
@@ -282,9 +282,8 @@ class Aixm2openair:
 
         #Construction spécifique d'un cercle sur la base d'un Point unique
         elif bIsSpecCircle:
-            lon_c, lat_c = self.oCtrl.oAixmTools.geo2coordinates(avx_list[0], oZone=oZone)
-            lat1, lon1 = bpaTools.GeoCoordinates.geoDd2dms(lat_c,"lat", lon_c,"lon", ":"," ")
-            openair.append("V X={0} {1}".format(lat1, lon1))
+            sLat_c, sLon_c = self.oCtrl.oAixmTools.geo2coordinates(self.sOutFrmt, avx_list[0], oZone=oZone)
+            openair.append("V X={0} {1}".format(sLat_c, sLon_c))
 
             #radius in Nautical Mile for Openair format / Depend of area type
             radius:float = float(0.54)              #Fixe un rayon de 1000m par défaut
@@ -293,15 +292,16 @@ class Aixm2openair:
             elif oZone["type"] in ["TRPLA"]:        #TRPLA Treuil Planeurs
                 radius = float(2.7)                 #Fixe un rayon de 5000m
             elif oZone["type"] in ["PJE"]:          #PJE=Parachute Jumping Exercise
-                radius = float(0.54)                #Fixe un rayon de 1000s
+                radius = float(0.54)                #Fixe un rayon de 1000m
 
             openair.append("DC {0}".format(radius))
             self.geoAirspaces.append({"type":"Openair", "properties":oZone, "geometry":openair})
             return
 
+
         #Construction d'un tracé sur la base d'une suite de Points et/ou Arcs
-        #else:
-        firstPoint = lastPoint = None
+        firstCoords = {}                        #Mémorisation des coordonees du premier point (en dd et DMS.d)
+        firstPoint = lastPoint = None           #Mémorisation des lignes: premier et dernier point
         for avx_cur in range(0,len(avx_list)):
             avx = avx_list[avx_cur]
             codeType = avx.codeType.string
@@ -311,10 +311,11 @@ class Aixm2openair:
                 #Openair sample
                 #DP 48:51:25 N 002:33:26 E
 
-                lon, lat = self.oCtrl.oAixmTools.geo2coordinates(avx, oZone=oZone)
-                g.append([lon, lat])
-                lat1, lon1 = bpaTools.GeoCoordinates.geoDd2dms(lat,"lat", lon,"lon", ":"," ")
-                sPoint = "DP {0} {1}".format(lat1, lon1)
+                ptDD = self.oCtrl.oAixmTools.geo2coordinates("dd", avx, oZone=oZone)
+                if not "dd" in firstCoords:         firstCoords.update({"dd":ptDD})
+                ptDMS = self.oCtrl.oAixmTools.geo2coordinates(self.sOutFrmt, avx, oZone=oZone)
+                if not "dms" in firstCoords:        firstCoords.update({"dms":ptDMS})
+                sPoint = "DP {0} {1}".format(ptDMS[0], ptDMS[1])
                 if sPoint != lastPoint:
                     openair.append(sPoint)
                 firstPoint = self.pointMemory(firstPoint, sPoint)
@@ -324,84 +325,81 @@ class Aixm2openair:
             #Nota: 'ABE' = 'Arc By Edge' ne semble pas utilisé dans les fichiers SIA-France et Eurocontrol-Europe
             elif codeType in ["CCA", "CWA"]:
                 #Openair sample
-                #DP 48:24:15 N 002:07:55 E
-                #V D=-
+                #DP 48:24:15 N 002:07:55 E          --> Point de début d'arc, souvent précisé mais optionnel dans l'Openair
                 #V X=48:22:52 N 002:04:26 E
+                #V D=-
                 #DB 48:24:15 N 002:07:55 E,48:21:26 N 002:00:59 E
-                #DP 48:21:26 N 002:00:59 E
+                #DP 48:21:26 N 002:00:59 E          --> Point de fin d'arc, souvent précisé mais optionnel dans l'Openair
 
-                start = self.oCtrl.oAixmTools.geo2coordinates(avx, oZone=oZone)
-                g.append(start)
+                startDD = self.oCtrl.oAixmTools.geo2coordinates("dd", avx, oZone=oZone)
+                if not "dd" in firstCoords:         firstCoords.update({"dd":startDD})
+                startDMS = self.oCtrl.oAixmTools.geo2coordinates(self.sOutFrmt, avx, oZone=oZone)
+                if not "dms" in firstCoords:        firstCoords.update({"dms":startDMS})
 
                 if avx_cur+1 == len(avx_list):
-                    stop = g[0]
+                    stopDMS  = firstCoords["dms"]
                 else:
-                    stop = self.oCtrl.oAixmTools.geo2coordinates(avx_list[avx_cur+1], oZone=oZone)
+                    stopDMS = self.oCtrl.oAixmTools.geo2coordinates(self.sOutFrmt, avx_list[avx_cur+1], oZone=oZone)
 
-                center = self.oCtrl.oAixmTools.geo2coordinates(avx,
+                centerDMS = self.oCtrl.oAixmTools.geo2coordinates(self.sOutFrmt, avx,
                                          latitude=avx.geoLatArc.string,
                                          longitude=avx.geoLongArc.string,
                                          oZone=oZone)
 
-                lonc, latc = center
-                lons, lats = start
-                lone, late = stop
-                lat1c, lon1c = bpaTools.GeoCoordinates.geoDd2dms(latc,"lat", lonc,"lon", ":"," ")
-                lat1s, lon1s = bpaTools.GeoCoordinates.geoDd2dms(lats,"lat", lons,"lon", ":"," ")
-                lat1e, lon1e = bpaTools.GeoCoordinates.geoDd2dms(late,"lat", lone,"lon", ":"," ")
-
-                sPoint = "DP {0} {1}".format(lat1s, lon1s)
+                #BPa 14/02/2021 - Optimisation possible par flag 'bOpenairOptimizeArc' car duplication du point de départ d'arc optionnel
+                sPoint = "DP {0} {1}".format(startDMS[0], startDMS[1])
                 firstPoint = self.pointMemory(firstPoint, sPoint)
-                if sPoint != lastPoint:
+                if sPoint != lastPoint and not self.oCtrl.bOpenairOptimizeArc:
                     openair.append(sPoint)
 
-                openair.append("V X={0} {1}".format(lat1c, lon1c))
+                openair.append("V X={0} {1}".format(centerDMS[0], centerDMS[1]))
                 if codeType=="CCA":             #'Counter clockWise Arc'
                     openair.append("V D=-")
                 else:
                     openair.append("V D=+")
-                openair.append("DB {0} {1}, {2} {3}".format(lat1s, lon1s, lat1e, lon1e))
+                openair.append("DB {0} {1}, {2} {3}".format(startDMS[0], startDMS[1], stopDMS[0], stopDMS[1]))
 
-                sPoint = "DP {0} {1}".format(lat1e, lon1e)
+                #BPa 14/02/2021 - Optimisation possible par flag 'bOpenairOptimizeArc' car duplication du point de sortie d'arc optionnel
+                sPoint = "DP {0} {1}".format(stopDMS[0], stopDMS[1])
                 lastPoint = sPoint
-                if sPoint != firstPoint:
+                if sPoint != firstPoint and not self.oCtrl.bOpenairOptimizeArc:
                     openair.append(sPoint)
 
             # 'Sequence of geographical (political) border vertexes'
             elif codeType == "FNT":
                 # geographic borders
-                start = self.oCtrl.oAixmTools.geo2coordinates(avx, oZone=oZone)
-                if avx_cur+1 == len(avx_list):
-                    stop = g[0]
-                else:
-                    stop = self.oCtrl.oAixmTools.geo2coordinates(avx_list[avx_cur+1], oZone=oZone)
-
                 if avx.GbrUid["mid"] in self.geoBorders:
+                    startDD = self.oCtrl.oAixmTools.geo2coordinates("dd", avx, oZone=oZone)
+                    if avx_cur+1 == len(avx_list):
+                        stopDD  = firstCoords["dd"]
+                    else:
+                        stopDD = self.oCtrl.oAixmTools.geo2coordinates("dd", avx_list[avx_cur+1], oZone=oZone)
                     fnt = self.geoBorders[avx.GbrUid["mid"]]
-                    start_d = fnt.project(Point(start[0], start[1]), normalized=True)
-                    stop_d = fnt.project(Point(stop[0], stop[1]), normalized=True)
+                    start_d = fnt.project(Point(startDD[::-1]), normalized=True)        #Invertion des coordonnees
+                    stop_d = fnt.project(Point(stopDD[::-1]), normalized=True)          #Invertion des coordonnees
                     geom = self.oCtrl.oAixmTools.substring(fnt, start_d, stop_d, normalized=True)
-                    for c in geom.coords:
-                        lon, lat = c
-                        g.append([lon, lat])
-                        lat1, lon1 = bpaTools.GeoCoordinates.geoDd2dms(lat,"lat", lon,"lon", ":"," ")
-                        sPoint = "DP {0} {1}".format(lat1, lon1)
+                    for ptDD in geom.coords:
+                        lon, lat = ptDD
+                        if not "dd" in firstCoords:         firstCoords.update({"dd":(lat, lon)})
+                        ptDMS = bpaTools.GeoCoordinates.geoStr2coords(lat, lon, "dms", sep1=":", sep2="")
+                        if not "dms" in firstCoords:        firstCoords.update({"dms":ptDMS})
+                        sPoint = "DP {0} {1}".format(ptDMS[0], ptDMS[1])
                         lastPoint = sPoint
                         openair.append(sPoint)
                 else:
                     self.oCtrl.oLog.warning("Missing geoBorder GbrUid='{0}' Name={1} of {2}".format(avx.GbrUid["mid"], avx.GbrUid.txtName.string, oZone["nameV"]), outConsole=False)
-                    g.append(start)
-                    lon, lat = start
-                    lat1, lon1 = bpaTools.GeoCoordinates.geoDd2dms(lat,"lat", lon,"lon", ":"," ")
-                    sPoint = "DP {0} {1}".format(lat1, lon1)
+                    startDMS = self.oCtrl.oAixmTools.geo2coordinates(self.sOutFrmt, avx, oZone=oZone)
+                    if not "dms" in firstCoords:      firstCoords.update({"dms":startDMS})
+                    sPoint = "DP {0} {1}".format(startDMS[0], startDMS[1])
                     lastPoint = sPoint
                     openair.append(sPoint)
             else:
                 self.oCtrl.oLog.warning("Default case - GbrUid='{0}' Name={1} of {2}".format(avx.GbrUid["mid"], avx.GbrUid.txtName.string, oZone["nameV"]), outConsole=False)
-                lon, lat = self.oCtrl.oAixmTools.geo2coordinates(avx, oZone=oZone)
-                g.append([lon, lat])
-                lat1, lon1 = bpaTools.GeoCoordinates.geoDd2dms(lat,"lat", lon,"lon", ":"," ")
-                sPoint = "DP {0} {1}".format(lat1, lon1)
+                ptDD = self.oCtrl.oAixmTools.geo2coordinates("dd", avx, oZone=oZone)
+                if not "dd" in firstCoords:      firstCoords.update({"dd":ptDD})
+                ptDMS = self.oCtrl.oAixmTools.geo2coordinates(self.sOutFrmt, avx, oZone=oZone)
+                if not "dms" in firstCoords:      firstCoords.update({"dms":ptDMS})
+                sPoint = "DP {0} {1}".format(ptDMS[0], ptDMS[1])
                 if sPoint != lastPoint:
                     openair.append(sPoint)
                 firstPoint = self.pointMemory(firstPoint, sPoint)

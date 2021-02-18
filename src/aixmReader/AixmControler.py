@@ -65,6 +65,8 @@ class AixmControler:
 
         self.digit4roundArc = 6                         #Précision du nombre de digit pour les arrondis des Arcs/Cercles
         self.digit4roundPoint = self.digit4roundArc     #Précision du nombre de digit pour les arrondis des Points
+        self.bOpenairOptimizeArc   = False              #Ne pas optimiser l'Arc car l'alignement du 1er point de l'arc de cercle ne coincide souvent pas avec le point théorique du départ de l'arc !? - Optimisation des sorties d'Arc en Openair (suppression des Point de début et de Fin d'arc (DP) en doublon avec la description de l'arc)
+        self.bOpenairOptimizePoint = True               #Optimisation des sorties des Points (DP). Exp src="DP 46:03:04.000 N 000:31:01.1200 W" optimize="DP 46:3:4N 0:31:1.12W"
         return
 
 
