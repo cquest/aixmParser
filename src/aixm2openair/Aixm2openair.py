@@ -91,6 +91,7 @@ def makeOpenair(oAirspace:dict, gpsType:str) -> list:
     openair.append("AL {0}".format(parseAlt("AL", gpsType, oZone)))
     if oZone.get("ordinalLowerMinM", False):        openair.append("*AL2 {0}".format(oZone["lowerMin"]))
     if "geometry" in oAirspace:
+        #openair.append("*** {0} Segments ***".format(len(oAirspace["geometry"])))
         openair += oAirspace["geometry"]
     return openair
 
@@ -414,7 +415,8 @@ class Aixm2openair:
         else:
             return memory
 
-    def saveAirspacesFilter(self, aContext:list) -> None:
+    #Use epsilonReduce for compress shape in file   (Nota. epsilonReduce=0 for no compression)
+    def saveAirspacesFilter(self, aContext:list, epsilonReduce:float=0) -> None:
         context = aContext[0]
         if context=="ff":
             self.saveAirspacesFilter2(aContext, "-gpsWithTopo")

@@ -288,9 +288,13 @@ def getCommandLineOptions(argv) -> dict:
     #print(argv)
     opts = dict()
     while argv:
-        if argv[0][0]=='-':             #Found a "-name value" pair
-            opts[argv[0]] = argv[0]     #Add key and value to the dictionary
-        argv = argv[1:]                 #Reduce the argument list
+        if argv[0][0]=='-':                 #Found a "-name value" pair
+            aSplit = argv[0].split("=")     #find combined attribute
+            if len(aSplit)==2:
+                opts[aSplit[0]] = aSplit[1]
+            else:
+                opts[argv[0]] = argv[0]     #Add key and value to the dictionary
+        argv = argv[1:]                     #Reduce the argument list
     #print(opts)
     return opts
 

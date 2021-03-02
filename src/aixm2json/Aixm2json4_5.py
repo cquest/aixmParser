@@ -2,6 +2,7 @@
 
 import bpaTools
 from shapely.geometry import LineString, Point
+from rdp import rdp
 
 errLocalisationPoint:list = [-5,45]
 
@@ -425,7 +426,7 @@ class Aixm2json4_5:
             if self.oCtrl.MakePoints4map:
                 points4map.append(self.oCtrl.oAixmTools.make_point(Pcenter, "Circle Center of {0}".format(oZone["nameV"])))
             g = self.oCtrl.oAixmTools.make_arc(Pcenter, radius)
-            oZone.update({"name":str(len(g)) + " Segments - " + oZone.get("name")})
+            #oZone.update({"name":str(len(g)) + " Segments - " + oZone.get("name")})
             geom = {"type":"Polygon", "coordinates":[g]}
 
         #Construction spécifique d'un cercle sur la base d'un Point unique
@@ -539,7 +540,29 @@ class Aixm2json4_5:
         self.geoAirspaces.append({"type":"Feature", "properties":oZone, "geometry":geom})
         return
 
-    def saveAirspacesFilter(self, aContext) -> None:
+    def reduceAirspaces(self, epsilon:float=0.005) -> None:
+        if not self.geoAirspaces:                                   #Contrôle si le fichier est vide
+            return
+        sMsg = "Reduce number of points in a curve - epsilon={0}".format(epsilon)
+        self.oCtrl.oLog.info(sMsg)
+        barre = bpaTools.ProgressBar(len(self.oAirspacesCatalog.oAirspaces), 20, title=sMsg, isSilent=self.oCtrl.oLog.isSilent)
+        idx = 0
+        geojson = []       #Initialisation avant filtrage spécifique
+        for o in self.geoAirspaces:
+            oZone = o["properties"]
+            idx+=1
+            include = not oZone["groupZone"]                         				#Ne pas traiter les zones de type 'Regroupement'
+            if include:
+                oCoordsSrc:list = o["geometry"]["coordinates"]
+                oCoordsDst:list = rdp(oCoordsSrc[0], epsilon=epsilon)
+                self.oCtrl.oLog.info("RDP Optimisation: {0} - {1}->{2}".format(oZone["name"], len(oCoordsSrc[0]), len(oCoordsDst)))
+                o["geometry"].update({"coordinates":[oCoordsDst]})
+            barre.update(idx)
+        barre.reset()
+        return
+
+    #Use epsilonReduce for compress shape in file   (Nota. epsilonReduce=0 for no-doubling with no-compression, =0.0001 for good compression)
+    def saveAirspacesFilter(self, aContext, epsilonReduce:float=0) -> None:
         if not self.geoAirspaces:                                   #Contrôle si le fichier est vide
             return
         context = aContext[0]
@@ -579,9 +602,33 @@ class Aixm2json4_5:
                     value = o["properties"].get(sProp, None)
                     if value!=None:
                         oSingleCat.update({sProp:value})
-                addColorProperties(o["properties"], oSingleCat, self.oCtrl.oLog)      #Ajout des propriétés pour colorisation de la zone
-                oAs = o["geometry"]
-                oArea:dict = {"type":"Feature", "properties":oSingleCat, "geometry":oAs}
+                addColorProperties(o["properties"], oSingleCat, self.oCtrl.oLog)    #Ajout des propriétés pour colorisation de la zone
+                oAsGeo = o["geometry"]
+
+                #Optimisation du tracé
+                #Extraction des coordonnées
+                if oAsGeo["type"].lower()==("Point").lower():
+                    oCoords:list = oAsGeo["coordinates"]                        #get coordinates of geometry
+                elif oAsGeo["type"].lower()==("LineString").lower():
+                    oCoords:list = oAsGeo["coordinates"]                        #get coordinates of geometry
+                elif oAsGeo["type"].lower()==("Polygon").lower():
+                    oCoords:list = oAsGeo["coordinates"][0]                     #get coordinates of geometry
+
+                oCoordsDst:list = []
+                if epsilonReduce==0 or (epsilonReduce>0 and len(oCoords)>40):   #Ne pas optimiser le tracé des zones ayant moins de 40 segments (préservation des tracés de cercle minimaliste)
+                    oCoordsDst = rdp(oCoords, epsilon=epsilonReduce)            #Optimisation du tracé des coordonnées
+                if len(oCoordsDst)>0 and len(oCoords)!=len(oCoordsDst):
+                    self.oCtrl.oLog.info("RDP Optimisation: {0} - {1}->{2}".format(o["properties"].get("nameV"), len(oCoords), len(oCoordsDst)))
+                    self.oCtrl.oLog.debug("RDP Src: {0}".format(oCoords))
+                    self.oCtrl.oLog.debug("RDP Dst: {0}".format(oCoordsDst))
+                    if oAsGeo["type"].lower()==("Point").lower():
+                        oAsGeo.update({"coordinates":oCoordsDst})
+                    elif oAsGeo["type"].lower()==("LineString").lower():
+                        oAsGeo.update({"coordinates":oCoordsDst})
+                    elif oAsGeo["type"].lower()==("Polygon").lower():
+                        oAsGeo.update({"coordinates":[oCoordsDst]})
+
+                oArea:dict = {"type":"Feature", "properties":oSingleCat, "geometry":oAsGeo}
                 geojson.append(oArea)
             barre.update(idx)
         barre.reset()

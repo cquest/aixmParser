@@ -91,13 +91,24 @@ class AixmTools:
             else:
                 sRet += "*" + " "*lLeftMargin + "(i)Information - 'ALL Map' - Cartographie complète de l'espace aérien (IFR + VFR)\n"
 
+            aToken = ["geoFrenchNorth", "geoFrenchSouth", "geoFrenchNESW", "geoFrenchVosgesJura", "geoFrenchPyrenees", "geoFrenchAlps"]
             if gpsType=="-gpsWithTopo":
-                gpsSample = "XCsoar / LK8000 / XCTrack / FlyMe / Compass / Syride ; et tout autres appareils/logiciels AVEC Carte-Topographique (en capacité de connaître les altitudes terrain)"
+                if sAreaKey in aToken:
+                    gpsTypeDesc = "Openair limitedMemory withTopo"
+                    gpsExplain = "Flymaster (GPS-SD, NAV-SD et LIVE-SD) Pour appareils/logiciels AVEC Limitation-Mémoire et AVEC Carte-Topographique (en capacité de connaître les altitudes terrain)"
+                else:
+                    gpsTypeDesc = "Openair withTopo"
+                    gpsExplain = "XCsoar / LK8000 / XCTrack / FlyMe / Compass / Naviter / Syride / Skytraxx ; et tout autres appareils/logiciels AVEC Carte-Topographique (en capacité de connaître les altitudes terrain)"
             elif gpsType=="-gpsWithoutTopo":
-                gpsSample = "Flytec ou Brauniger ; et tout autres appareils/logiciels SANS Carte-Topographique (n'ayant pas la capacité de connaître les altitudes terrain)"
+                if sAreaKey in aToken:
+                    gpsTypeDesc = "Openair limitedMemory withoutTopo"
+                    gpsExplain = "Flymaster (GPS, NAV ou LIVE) Pour appareils/logiciels AVEC Limitation-Mémoire et SANS Carte-Topographique (sans connaissance des altitudes terrain)"
+                else:
+                    gpsTypeDesc = "Openair withoutTopo"
+                    gpsExplain = "Flytec / Brauniger et tout autres appareils/logiciels SANS Carte-Topographique (n'ayant pas la capacité de connaître les altitudes terrain)"
             else:
                 gpsSample = "???"
-            sRet += "*" + " "*lLeftMargin + "/!\Warning - '{0}' - Cartographie pour {1}\n".format(gpsType[1:], gpsSample)
+            sRet += "*" + " "*lLeftMargin + "/!\Warning - '{0}' - Cartographie pour {1}\n".format(gpsTypeDesc, gpsExplain)
 
             if exceptDay:
                 if exceptDay=="exceptSAT":
@@ -289,7 +300,7 @@ class AixmTools:
                 sLat2, sLon2 = bpaTools.GeoCoordinates.geoStr2coords(sLat, sLon, outFrmt="dms", sep1=":", sep2="", bOptimize=True)
                 return [sLat2, sLon2]
             elif outputFormat=="DD:MM:SS.ssX":
-                sLat2, sLon2 = bpaTools.GeoCoordinates.geoStr2coords(sLat, sLon, outFrmt="dms", sep1=":", sep2=" ", bOptimize=False)
+                sLat2, sLon2 = bpaTools.GeoCoordinates.geoStr2coords(sLat, sLon, outFrmt="dms", sep1=":", sep2="", bOptimize=False)
                 return [sLat2, sLon2]
             else:
                 if self.oCtrl:

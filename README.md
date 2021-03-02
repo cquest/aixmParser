@@ -16,7 +16,6 @@ b/ Description des zones aériennes, disponibles selon deux formats : GeoJSON (f
 	- airspaces-vfr             Cartographie de l'espace aérien VFR (zones situées en dessous le niveau FL115)  
 	- airspaces-freeflight      Cartographie de l'espace aérien dédiée Vol-Libre (dessous FL115 +filtre +compl.)  
 	Nota. 
-		- Ces fichiers seront bientôts disponibles aux formats FAF (Flytec and Brauniger format) et KML (GoogleEarth format) 
 		- La sortie 'airspaces-freeflight' est accompagnée de deux fichiers Openair pour s'adapter aux types de GPS suivants: 
 			- gpsWithTopo - Cartographie pour: XCsoar / LK8000 / XCTrack / FlyMe / Compass / Syride ../.. et tout autres appareils/logiciels AVEC Carte-Topographique (en capacité de connaître les altitudes terrain)
 			- gpsWithoutTopo - Cartographie pour: Flytec / Brauniger ../.. et tout autres appareils/logiciels SANS Carte-Topographique (n'ayant pas la capacité de connaître les altitudes terrain)
@@ -39,8 +38,6 @@ Les données GeoJSON sont visualisables par des outils tels que : http://geojson
 
 (*) Openair - Open airspace and terrain description language - Un format ouvert d'encodage de données aéronautiques. Basé sur un format simplifié (TEXT file format) et utilisé par  de nombreux logiciels - http://www.winpilot.com/UsersGuide/UserAirspace.asp  
 Les données Openair sont visualisables par des outils tels que : http://xcglobe.com/cloudapi/browser  -or-  http://cunimb.net/openair2map.php  
-
-(*) GoogleEarth - Le globe terrestre en 3D le plus détaillé au monde - Un format d'encodage données géospatiales. Basé sur la technologie XML - https://www.google.com/earth/  
 ```
 
 ## Installation
@@ -53,7 +50,7 @@ pip install -r requirements.txt
 Selon le choix des options de génération; le programme produira un log et les fichiers dans le dossier ./out/  
 Les options d'utilisations s'auto décrivent avec l'aide en ligne "aixmParser -h":  
 ```
-aixmParser v2.12.1  
+aixmParser v2.24.0  
 -----------------  
 Aeronautical Information Exchange Model (AIXM) Converter  
 Call: aixmParser <[drive:][path]filename> <Format> <Type> [<Type2> ... <TypeN>] [<Option(s)>]  
@@ -61,8 +58,7 @@ With:
   <[drive:][path]filename>       AIXM source file  
 
   <Format> - Output formats:  
-    -Fgeojson        GeoJSON for GoogleMap  
-    -Fkml            KML for GoogleEatrh  
+    -Fgeojson        GeoJSON for GoogleMap   
     -Fopenair        OpenAir for aeronautical software  
     -Fall            All output formats (simultaneously)  
 
@@ -85,10 +81,11 @@ With:
     -VFR            Specific lower vues of aeronautic maps (only IFR areas, without IFR areas)  
     -FreeFlight     Specific Paragliding/Hanggliding maps (out E,F,G,W areas and others...)  
     -Draft          Size limitation for geojson output  
+	-epsilonReduce  Float parameter of Ramer-Douglas-Peucker Algorithm (https://github.com/fhirschmann/rdp) for optimize output (Default=0 no-optimize, sample=0.0001)
 
-  Samples: aixmParser ../tst/aixm4.5_SIA-FR_2019-12-05.xml -Fall -Tall -ALL -CleanLog  
+  Samples: aixmParser ../tst/aixm4.5_SIA-FR_2019-12-05.xml -Fall -Tall -ALL -CleanLog
            aixmParser ../tst/aixm4.5_SIA-FR_2019-12-05.xml -Fgeojson -Obstacles -ControlTowers -Airspaces -ALL -CleanLog  
-           aixmParser ../tst/aixm4.5_SIA-FR_2019-12-05.xml -Fall -Airspaces -FreeFlight -CleanLog  
+           aixmParser ../tst/aixm4.5_SIA-FR_2019-12-05.xml -Fall -Airspaces -FreeFlight -CleanLog -epsilonReduce=0.0001
 
   Resources  
      GeoJSON test format: http://geojson.tools/  -or-  http://geojson.io  
