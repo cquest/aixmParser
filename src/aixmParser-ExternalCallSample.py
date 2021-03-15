@@ -23,11 +23,12 @@ if __name__ == '__main__':
     #srcFile = "../../poaff/input/Tests/99999999_BPa_TestBORDERs_aixm45.xml"
     #srcFile = "../../poaff/input/Tests/99999999_BPa_Test4Circles_Arcs_aixm45.xml"
     #srcFile = "../../poaff/input/Tests/99999999_BPa_Test4ZonesWithArc.xml"
+    #srcFile = "../../poaff/input/Tests/99999999_BPa_TestGroundEstimatedHeight_aixm45.xml"
     #srcFile = "../../poaff/output/Tests/map/99999999_ComplexArea_aixm45.xml"
     #srcFile = "../../poaff/input/FFVP/20201204_FFVP_ParcsNat_BPa_aixm45.xml"
     #srcFile = "../../poaff/input/FFVL/20210104_FFVL_ParcBauges_BPa_aixm45.xml"
     #srcFile = "../../poaff/input/FFVL/20210122_FFVL_ZonesComplementaires_aixm45.xml"
-    srcFile = "../../poaff/input/BPa/20210114_LTA-French1-HR_BPa_aixm45.xml"
+    #srcFile = "../../poaff/input/BPa/20210114_LTA-French1-HR_BPa_aixm45.xml"
     #srcFile = "../../poaff/input/BPa/20201210_BPa_ZonesComplementaires_aixm45.xml"
     #srcFile = "../../poaff/input/BPa/20210228_BPa_FR-ZSM_Protection-des-rapaces_aixm45.xml"
     #srcFile = "../../poaff/input/FFVL/20210214_FFVL_ProtocolesParticuliers_BPa_aixm45.xml"
@@ -61,15 +62,15 @@ if __name__ == '__main__':
 
 
     ####  Ajout d'options d'appel  ####
-    aArgv += [aixmReader.CONST.optCleanLog]                     #Mode classique avec log et afficages sur console système
-    #aArgv += [aixmReader.CONST.optDraft]                       #Mode Draft sur les tracés d'arcs ou de cercles
-    #aArgv += [aixmReader.CONST.optSilent]                      #Mode silencieux sans utilisation du fichier log et sans retour d'affichage
-    aArgv += [aixmReader.CONST.optEpsilonReduce + "=0.0001"]    #Optimisation des tracés =0.0001
-
+    aArgv += [aixmReader.CONST.optCleanLog]                         #Mode classique avec log et afficages sur console système
+    #aArgv += [aixmReader.CONST.optDraft]                           #Mode Draft sur les tracés d'arcs ou de cercles
+    #aArgv += [aixmReader.CONST.optSilent]                          #Mode silencieux sans utilisation du fichier log et sans retour d'affichage
+    #aArgv += [aixmReader.CONST.optGeojsonDigitOptimize + "=10"]    #Optimisation par arrondi des coordonnées Geojson (default=6)
+    aArgv += [aixmReader.CONST.optOpenairDigitOptimize + "=0"]      #Optimisation par arrondi des coordonnées Openair (default=-1)
+    aArgv += [aixmReader.CONST.optEpsilonReduce + "=0.002"]          #Optimisation des tracés Default=0 removal-duplicates-values and no-optimize, <0 for no-optimize or >0 for optimize, sample=0.0001 / 0.001 / 0.002
 
     ####  Préparation d'appel ####
     oOpts = bpaTools.getCommandLineOptions(aArgv)       #Arguments en dictionnaire
-
 
     oLog = bpaTools.Logger(appId, logFile, callingContext, linkContext, isDebug=False, isSilent=bool(aixmReader.CONST.optSilent in oOpts))
     if aixmReader.CONST.optCleanLog in oOpts:

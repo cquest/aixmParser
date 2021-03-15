@@ -30,7 +30,9 @@ class CONST:
     optVFR = "-VFR"
     optFreeFlight = "-FreeFlight"
     optDraft = "-Draft"
-    optEpsilonReduce = "-epsilonReduce"     #parameter for Ramer-Douglas-Peucker Algorithm (https://github.com/fhirschmann/rdp)
+    optOpenairDigitOptimize = "-OpenairDigitOptimize"     #parameter for optimize Openair output geometry coordinates
+    optGeojsonDigitOptimize = "-GeojsonDigitOptimize"     #parameter for optimize Geojson output geometry coordinates
+    optEpsilonReduce = "-EpsilonReduce"     #parameter for Ramer-Douglas-Peucker Algorithm (https://github.com/fhirschmann/rdp)
     optTstGeojson = "-TstGeojson"
     optMakePoints4map = "-MakePoints4map"
     fileSuffixAndMsg = {
@@ -46,28 +48,27 @@ class AixmControler:
 
     def __init__(self, sSrcFile, sOutPath, sOutHeadFile="", oLog=None):
         bpaTools.initEvent(__file__, oLog)
-        self.srcFile = sSrcFile             #Source file
-        self.sOutPath = sOutPath            #Destination folder
-        self.sOutHeadFile = sOutHeadFile    #File name header for outputs files
+        self.srcFile:str        = sSrcFile          #Source file
+        self.sOutPath:str       = sOutPath          #Destination folder
+        self.sOutHeadFile:str   = sOutHeadFile      #File name header for outputs files
         if sOutHeadFile!="":
             self.sOutHeadFile += "@"
-        self.oLog = oLog                    #Log file
+        self.oLog:bpaTools.Logger = oLog            #Log file
+        self.oAixm = None                           #Lecteur xml du fichier source
+        self.oAixmTools = None                      #Utilitaire pour geojson
+        self.sEncoding:str      = "utf-8"           #Encoding du fichier source
+        self.__ALL:bool         = False             #Generation de toutes zones cartographie IFR+VFR
+        self.__IFR:bool         = False             #Generation spécifique pour cartographie IFR (au dessus de FL115)
+        self.__VFR:false        = False             #Generation spécifique pour cartographie VFR (en dessous FL115)
+        self.__FreeFlight:bool  = False             #Generation spécifique pour le Vol Libre avec différents filtrages (E, F, G...)
+        self.__Draft:bool       = False             #Limitation du nombre de segmentation des arcs et cercles en geojson
+        self.__MakePoints4map:bool = False          #Construction de points complémentaires pour mise au point de la sorties geojson
 
-        self.oAixm = None                   #Lecteur xml du fichier source
-        self.oAixmTools = None              #Utilitaire pour geojson
-        self.sEncoding = "utf-8"            #Encoding du fichier source
-        self.__ALL = False                  #Generation de toutes zones cartographie IFR+VFR
-        self.__IFR = False                  #Generation spécifique pour cartographie IFR (au dessus de FL115)
-        self.__VFR = False                  #Generation spécifique pour cartographie VFR (en dessous FL115)
-        self.__FreeFlight = False           #Generation spécifique pour le Vol Libre avec différents filtrages (E, F, G...)
-        self.__Draft = False                #Limitation du nombre de segmentation des arcs et cercles en geojson
-        self.__MakePoints4map = False       #Construction de points complémentaires pour mise au point de la sorties geojson
-
-        self.digit4roundArc = 6                         #Précision du nombre de digit pour les arrondis des Arcs/Cercles
-        self.digit4roundPoint = self.digit4roundArc     #Précision du nombre de digit pour les arrondis des Points
-        self.bOpenairOptimizeArc   = False              #Ne pas optimiser l'Arc car l'alignement du 1er point de l'arc de cercle ne coincide souvent pas avec le point théorique du départ de l'arc !? - Optimisation des sorties d'Arc en Openair (suppression des Point de début et de Fin d'arc (DP) en doublon avec la description de l'arc)
-        self.bOpenairOptimizePoint = True               #Optimisation des sorties des Points (DP). Exp src="DP 46:03:04.000 N 000:31:01.1200 W" optimize="DP 46:3:4N 0:31:1.12W"
-        self.epsilonReduce:float = 0.0                  #parameter for Ramer-Douglas-Peucker Algorithm (https://github.com/fhirschmann/rdp)
+        self.bOpenairOptimizeArc:bool = False       #Openair - Ne pas optimiser l'Arc car l'alignement du 1er point de l'arc de cercle ne coincide souvent pas avec le point théorique du départ de l'arc !? - Optimisation des sorties d'Arc en Openair (suppression des Point de début et de Fin d'arc (DP) en doublon avec la description de l'arc)
+        self.bOpenairOptimizePoint:bool = True      #Openair - Optimisation des sorties des Points (DP). Exp src="DP 46:03:04.000 N 000:31:01.1200 W" optimize="DP 46:3:4N 0:31:1.12W"
+        self.geojsonDigitOptimize:int =  6          #parameter for optimize output geometry coordinates (default=6 digits)
+        self.openairDigitOptimize:int = -1          #parameter for optimize output geometry coordinates (default=-1 no-optimize)
+        self.epsilonReduce:float = -1               #parameter for Ramer-Douglas-Peucker Algorithm (https://github.com/fhirschmann/rdp) (default=-1 no-optimize)
         return
 
 
@@ -90,7 +91,6 @@ class AixmControler:
     def MakePoints4map(self, bValue):
         assert(isinstance(bValue, bool))
         self.__MakePoints4map = bValue
-        self.digit4roundPoint = 15 if self.__MakePoints4map else self.digit4roundArc
         if bValue:
             self.oLog.warning("/!\ Complementary points for Map", outConsole=True)
         return
@@ -170,24 +170,26 @@ class AixmControler:
 
     def saveAirspaces(self, parser, criticalErrCatalog=0):
         if self.ALL:    # and criticalErrCatalog==0:
-            parser.saveAirspacesFilter(aixmReader.CONST.fileSuffixAndMsg[aixmReader.CONST.optALL], epsilonReduce=self.epsilonReduce)
+            parser.saveAirspacesFilter(aixmReader.CONST.fileSuffixAndMsg[aixmReader.CONST.optALL])
         if self.IFR:    # and criticalErrCatalog==0:
-            parser.saveAirspacesFilter(aixmReader.CONST.fileSuffixAndMsg[aixmReader.CONST.optIFR], epsilonReduce=self.epsilonReduce)
+            parser.saveAirspacesFilter(aixmReader.CONST.fileSuffixAndMsg[aixmReader.CONST.optIFR])
         if self.VFR:
-            parser.saveAirspacesFilter(aixmReader.CONST.fileSuffixAndMsg[aixmReader.CONST.optVFR], epsilonReduce=self.epsilonReduce)
+            parser.saveAirspacesFilter(aixmReader.CONST.fileSuffixAndMsg[aixmReader.CONST.optVFR])
         if self.FreeFlight:
-            parser.saveAirspacesFilter(aixmReader.CONST.fileSuffixAndMsg[aixmReader.CONST.optFreeFlight], epsilonReduce=self.epsilonReduce)
+            parser.saveAirspacesFilter(aixmReader.CONST.fileSuffixAndMsg[aixmReader.CONST.optFreeFlight])
         return
 
 
     def execParser(self, oOpts, bOnlyCatalogConstruct:bool=False):
-        self.ALL = bool(CONST.optALL in oOpts)
-        self.IFR = bool(CONST.optIFR in oOpts)
-        self.VFR = bool(CONST.optVFR in oOpts)
-        self.FreeFlight = bool(CONST.optFreeFlight in oOpts)
-        self.Draft = bool(CONST.optDraft in oOpts)
-        self.MakePoints4map = bool(CONST.optMakePoints4map in oOpts)
-        self.epsilonReduce = float(oOpts.get(aixmReader.CONST.optEpsilonReduce, 0))
+        self.ALL:bool                   = bool(CONST.optALL in oOpts)
+        self.IFR:bool                   = bool(CONST.optIFR in oOpts)
+        self.VFR:bool                   = bool(CONST.optVFR in oOpts)
+        self.FreeFlight:bool            = bool(CONST.optFreeFlight in oOpts)
+        self.Draft:bool                 = bool(CONST.optDraft in oOpts)
+        self.MakePoints4map:bool        = bool(CONST.optMakePoints4map in oOpts)
+        self.geojsonDigitOptimize:int   = int(oOpts.get(aixmReader.CONST.optGeojsonDigitOptimize, 6))       #Default=6 digits for Decimal.Degrees calculation/outputs
+        self.openairDigitOptimize:int   = int(oOpts.get(aixmReader.CONST.optOpenairDigitOptimize, -1))      #Default=-1 not optimized
+        self.epsilonReduce:float        = float(oOpts.get(aixmReader.CONST.optEpsilonReduce, -1))           #Defualt=-1 not optimized
 
         bExec = False
 

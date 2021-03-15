@@ -267,6 +267,17 @@ class AixmTools:
                 self.oCtrl.oLog.critical("geo2coordinates() geoLong not found ! {0}".format(o), outConsole=True)
             sLon = sLon.string
 
+        if outputFormat=="dd":
+            if self.oCtrl:
+                iDigit:int = self.oCtrl.geojsonDigitOptimize
+            else:
+                iDigit:int = 6      #Default value
+        else:
+            if self.oCtrl:
+                iDigit:int = self.oCtrl.openairDigitOptimize
+            else:
+                iDigit:int = -1     #Default value
+
         """ # Aixm LATITUDE native format:
                 •DDMMSS.ssX: ‘000000.00N’, ‘131415.5S’, ’455959.9988S’, ‘900000.00N’.
                 •DDMMSSX: ‘000000S’, ’261356N’, ‘900000S’.
@@ -284,23 +295,19 @@ class AixmTools:
             if outputFormat=="":
                 return [sLat, sLon]
             elif outputFormat=="dd":
-                if self.oCtrl:
-                    iDigit:int = self.oCtrl.digit4roundPoint
-                else:
-                    iDigit:int = 6
-                lat, lon = bpaTools.GeoCoordinates.geoStr2coords(sLat, sLon, outFrmt=outputFormat)
-                return [round(lat, iDigit), round(lon, iDigit)]
+                lat, lon = bpaTools.GeoCoordinates.geoStr2coords(sLat, sLon, outFrmt=outputFormat, digit=iDigit)
+                return [lat, lon]
             elif outputFormat=="dmd":
-                sLat2, sLon2 = bpaTools.GeoCoordinates.geoStr2coords(sLat, sLon, outFrmt=outputFormat)
+                sLat2, sLon2 = bpaTools.GeoCoordinates.geoStr2coords(sLat, sLon, outFrmt=outputFormat, digit=iDigit)
                 return [sLon2, sLat2]
-            elif outputFormat in ["dms", "DDMMSS.ssX",]:
-                sLat2, sLon2 = bpaTools.GeoCoordinates.geoStr2coords(sLat, sLon, outFrmt="dms")
+            elif outputFormat in ["dms", "DDMMSS.ssX"]:
+                sLat2, sLon2 = bpaTools.GeoCoordinates.geoStr2coords(sLat, sLon, outFrmt="dms", digit=iDigit)
                 return [sLat2, sLon2]
             elif outputFormat=="D:M:S.ssX":
-                sLat2, sLon2 = bpaTools.GeoCoordinates.geoStr2coords(sLat, sLon, outFrmt="dms", sep1=":", sep2="", bOptimize=True)
+                sLat2, sLon2 = bpaTools.GeoCoordinates.geoStr2coords(sLat, sLon, outFrmt="dms", sep1=":", sep2="", bOptimize=True, digit=iDigit)
                 return [sLat2, sLon2]
             elif outputFormat=="DD:MM:SS.ssX":
-                sLat2, sLon2 = bpaTools.GeoCoordinates.geoStr2coords(sLat, sLon, outFrmt="dms", sep1=":", sep2="", bOptimize=False)
+                sLat2, sLon2 = bpaTools.GeoCoordinates.geoStr2coords(sLat, sLon, outFrmt="dms", sep1=":", sep2="", bOptimize=False, digit=iDigit)
                 return [sLat2, sLon2]
             else:
                 if self.oCtrl:
@@ -446,7 +453,7 @@ class AixmTools:
         ##   #print(json.dumps(mapping(Polygon(polygon))))
         ##   #print(json.dumps(mapping(LineString(polygon))))
         for o in polygon:
-            g.append([round(o[0],self.oCtrl.digit4roundArc), round(o[1],self.oCtrl.digit4roundArc)])
+            g.append([round(o[0],self.oCtrl.geojsonDigitOptimize), round(o[1],self.oCtrl.geojsonDigitOptimize)])
 
         #Other function - https://stackoverflow.com/questions/30762329/how-to-create-polygons-with-arcs-in-shapely-or-a-better-library
         #theta = np.radians(angles)
@@ -454,7 +461,7 @@ class AixmTools:
         #y = Pcenter.y + (radius * np.sin(theta))
         #polygon = LineString(np.column_stack([x, y]))
         #for o in polygon.coords:
-        #    g.append([round(o[0],self.oCtrl.digit4roundArc), round(o[1],self.oCtrl.digit4roundArc)])
+        #    g.append([round(o[0],self.oCtrl.geojsonDigitOptimize), round(o[1],self.oCtrl.geojsonDigitOptimize)])
 
         return g
 

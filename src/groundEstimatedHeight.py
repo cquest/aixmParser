@@ -27,7 +27,7 @@ oLog = bpaTools.Logger(appId,logFile)
 
 
 #srtm library documentation - https://pypi.org/project/SRTM.py/
-#elevation_data = srtm.get_data()            # srtm.get_data(local_cache_dir="tmp_cache")
+#elevation_data = srtm.get_data()            # srtm.get_data(local_cache_dir="tmp_cache")  // Default cache - D:\Users\BPascal\.cache\srtm
 #SRTM.py tests
 #print('Home (meters):', elevation_data.get_elevation(48.694548, 2.333953))
 #print('Place de l avenir (meters):', elevation_data.get_elevation(48.700191, 2.325597))
@@ -129,11 +129,18 @@ class GroundEstimatedHeight:
         for o in line:
             #sample: elevation_data.get_elevation(48.694548, 2.333953)
             lElevation = self.elevation_data.get_elevation(o[1], o[0])
+
+            #Problème durant l'évaluation de la hauteur terrain !?
+            if lElevation==None:
+                #Bug non référencé sur le net ; contournement pour tentative de récupération d'une 'altitude valide'
+                for digit in range(8, 1, -1):
+                    lElevation = self.elevation_data.get_elevation(round(o[1],digit), round(o[0],digit))
+                    if lElevation: break
+
             if lElevation==None:
                 lCptError += 1
                 lElevation = lastElevation
-
-            if lElevation>0:
+            elif lElevation>0:
                 lastElevation = lElevation
                 aElevation.append(lElevation)
             elif lElevation==0 and lCptNullValue==0:
@@ -141,7 +148,7 @@ class GroundEstimatedHeight:
                 aElevation.append(lElevation)
 
         #self.oLog.info("aElevation={}".format(aElevation), outConsole=False)
-        if lCptError > 60:
+        if lCptError > 50:
              print("{0} errors in call elevation_data.get_elevation() - name={1}".format(lCptError, oZone[self.sProp]["nameV"]))
              self.oLog.warning("{0} errors in call elevation_data.get_elevation()\nProperties={1}\naElevation{2}".format(lCptError, oZone[self.sProp], aElevation), outConsole=False)
 
@@ -150,7 +157,7 @@ class GroundEstimatedHeight:
         idxMedium = int(len(eSortedElevation)/2)
         idxRetain = int(idxMedium+(idxMedium*(2/3)))
         lAltMin = eSortedElevation[0]
-        lAltMax = eSortedElevation[len(eSortedElevation)-1]
+        lAltMax = eSortedElevation[-1]
         lAltMed = eSortedElevation[idxMedium]
         lAltRet = eSortedElevation[idxRetain]          #Valeur retenue pour l'estimation globale de la hauteur sol
 
@@ -164,8 +171,8 @@ class GroundEstimatedHeight:
         prop.update({"lAltMax":lAltMax})
         prop.update({"lAltMed":lAltMed})
         prop.update({"lAltRet":lAltRet})
-        prop.update({"elevationArray":aElevation})
-        prop.update({"sortedElevationArray":eSortedElevation})
+        #prop.update({"elevationArray":aElevation})
+        #prop.update({"sortedElevationArray":eSortedElevation})
         geoJSON.append({"type":"Feature", "properties":prop, "geometry":{"type":"LineString", "coordinates":line}})
         #self.oLog.info("geoJSON=\n{}".format(str(geoJSON).replace(chr(39),chr(34))), outConsole=False)
 

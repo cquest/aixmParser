@@ -2,12 +2,20 @@
 import json
 import decimal
 from decimal import Decimal
+from shapely.geometry import LineString, Point
+from rdp import rdp
 
 import bpaTools
-from shapely.geometry import LineString, Point
 import aixmReader
+#import numpy as np   #Matrix sample: arr = np.array([["2","xx"], ["3","yy"], ["4","zz"]]); print(arr[:, 0]) ; print(arr[:, 1])
 
 
+cstGeometry:str         = "geometry"         #Stockage historique de l'Openair (préservé par principe de comptatibilité ascendante pour appels-externes)
+cstOpenairGeometry:str  = "openairGeometry"  #Nouveau stockage selon son format natif Openair (sans optimisation de tracé)
+cstDdGeometry:str       = "ddGeometry"       #Nouveau stockage des 'Point DP' selon son format natif Degré.Décimal (sans optimisation de tracé)
+
+
+cstArc:str = "arc"
 errLocalisationPoint:list = ["DP 45:00:00 N 005:00:00 W"]
 
 
@@ -31,8 +39,10 @@ errLocalisationPoint:list = ["DP 45:00:00 N 005:00:00 W"]
 #*		RMZ	Radio Mandatory Zone
 #*		TMZ	Transponder Mandatory Zone
 #*		ZSM	Zone de Sensibilité Majeure (Protection Rapaces, Urubus, etc...)
-def makeOpenair(oAirspace:dict, gpsType:str) -> list:
-    openair = []
+#   digit = Integer parameter for optimize Openair output geometry coordinates (Default=-1 no-change source, n for round(coords, n, sample=0)
+#   epsilonReduce = Float parameter of Ramer-Douglas-Peucker Algorithm (https://github.com/fhirschmann/rdp) for optimize output (Default=0 removal-duplicates-values and no-optimize, <0 for no-optimize or >0 for optimize, sample=0.0001)
+def makeOpenair(oAirspace:dict, gpsType:str, digit:float=-1, epsilonReduce:float=-1, oLog:bpaTools.Logger=None) -> list:
+    openair:list = []
     oZone = oAirspace.get("properties", oAirspace)
     theClass = oZone["class"]
 
@@ -90,10 +100,79 @@ def makeOpenair(oAirspace:dict, gpsType:str) -> list:
     if oZone.get("ordinalUpperMaxM", False):        openair.append("*AH2 {0}".format(oZone["upperMax"]))
     openair.append("AL {0}".format(parseAlt("AL", gpsType, oZone)))
     if oZone.get("ordinalLowerMinM", False):        openair.append("*AL2 {0}".format(oZone["lowerMin"]))
-    if "geometry" in oAirspace:
-        #openair.append("*** {0} Segments ***".format(len(oAirspace["geometry"])))
-        openair += oAirspace["geometry"]
+
+    #Récupération des tracés de base
+    oaMap:list = []
+    if cstOpenairGeometry in oAirspace:
+        oaMap = oAirspace[cstOpenairGeometry]
+    elif cstGeometry in oAirspace:
+        oaMap = oAirspace[cstGeometry]
+    ddMap = oAirspace.get(cstDdGeometry, None)
+    #iOrgSize:int = len(oaMap)
+
+    #if epsilonReduce<0: --> do not change oaMap !
+    if epsilonReduce>=0 and ddMap:
+        oaMap = __optimizeMap(oaMap, ddMap, digit, epsilonReduce, oLog)
+    #    openair.append("*** Segments optimisés {0}->{1} ***".format(iOrgSize, len(oaMap)))
+    #else:
+    #    openair.append("*** {0} Segments ***".format(len(oaMap)))
+
+    openair += oaMap
     return openair
+
+#Optimisation de la sortie Openair selon l'algo 'Ramer-Douglas-Peucker'
+#Optimise les coordonnées Openair sur la base des Degrees.Decimaux puis retourne le nouveau tableau Openair
+def __optimizeMap(oaMap:list, ddMap:list, digit:float, epsilonReduce:float, oLog:bpaTools.Logger=None) -> list:
+    newMap:list = []
+    oIdx:dict = {}
+
+    def optimize(oIdx:dict) -> list:
+        retMap:list = []
+        ddDeb:int = oIdx["ddDeb"]
+        oaDeb:int = oIdx["oaDeb"]
+        if iNbPt<3:     #1 ou 2 points, aucune optimisation réalisée
+            retMap = oaMap[oaDeb:oaDeb+iNbPt]
+        else:
+            ddTmpMap:list = ddMap[ddDeb:ddDeb+iNbPt]
+            ddTmpMap = rdp(ddTmpMap, epsilon=epsilonReduce)          #Optimisation du tracé des coordonnées
+            for ddPt in ddTmpMap:
+                lon, lat = ddPt
+                ptDMS = bpaTools.GeoCoordinates.geoStr2coords(lat, lon, "dms", sep1=":", sep2="", bOptimize=True, digit=digit)
+                sPoint:str = "DP {0} {1}".format(ptDMS[0], ptDMS[1])
+                retMap.append(sPoint)
+                if oLog:
+                    aTocken:list=["60","61"]
+                    if any(sTocken in sPoint for sTocken in aTocken):
+                        sMsg:str = "Convertion error - ddPt={0} ptDMS={1}".format(ddPt, ptDMS)
+                        oLog.error(sMsg, outConsole=False)
+
+        ddDeb += iNbPt
+        oaDeb += iNbPt
+        if ddDeb<len(ddMap) and ddMap[ddDeb]==cstArc:
+            ddDeb += 1
+            for iIdx in range(0, 3):
+                oaPt = oaMap[oaDeb]
+                if oaPt[:3] in ["V X","V D","DB "]:
+                    retMap.append(oaPt)
+                    oaDeb += 1
+
+        oIdx.update({"ddDeb":ddDeb})
+        oIdx.update({"oaDeb":oaDeb})
+        return retMap
+
+    iNbPt:int = 0
+    oIdx.update({"ddDeb":iNbPt})
+    oIdx.update({"oaDeb":iNbPt})
+    for iIdx in range(0, len(ddMap)):
+        ddPt = ddMap[iIdx]
+        if ddPt!=cstArc:
+            iNbPt += 1
+        elif ddPt==cstArc:
+            newMap += optimize(oIdx)
+            iNbPt:int = 0
+    newMap += optimize(oIdx)
+    return newMap
+
 
 def parseAlt(altRef:str, gpsType:str, oZone:dict) -> str:
     if altRef=="AH":
@@ -136,8 +215,10 @@ class Aixm2openair:
         bpaTools.initEvent(__file__, oCtrl.oLog)
         self.oCtrl = oCtrl
         self.oAirspacesCatalog = None
-        self.geoBorders = None                    #Geographic borders dictionary
-        self.geoAirspaces = None                  #Geographic airspaces dictionary
+        self.geoBorders = None                  #Geographic borders dictionary
+        self.geoAirspaces = None                #Geographic airspaces dictionary
+        self.openairDigitOptimize:int = -1      #Parameter for optimize output geometry coordinates (default=-1 no-optimize)
+        self.epsilonReduce:float = -1           #Default value=-1 for no-compression
         self.sOutFrmt = "D:M:S.ssX" if self.oCtrl.bOpenairOptimizePoint else "DD:MM:SS.ssX"
         return
 
@@ -185,7 +266,7 @@ class Aixm2openair:
     def findOpenairObjectAirspacesBorders(self, sAseUid) -> dict:
         for o in self.geoAirspaces:
             if o["properties"]["UId"]==sAseUid:
-                return o["geometry"]
+                return o
         return None
 
     def parseAirspacesBorders(self, airspacesCatalog) -> None:
@@ -220,16 +301,21 @@ class Aixm2openair:
                     sAseUidBase = self.oAirspacesCatalog.findZoneUIdBase(sAseUid)           #Identifier la zone de base (de référence)
                     if sAseUidBase==None:
                         self.oCtrl.oLog.warning("Missing Airspaces Borders AseUid={0} of {1}".format(sAseUid, oZone["nameV"]), outConsole=False)
-                        self.geoAirspaces.append({"type":"Openair", "properties":oZone, "geometry":errLocalisationPoint})
+                        self.geoAirspaces.append({"type":"Openair", "properties":oZone, cstOpenairGeometry:errLocalisationPoint})
                     else:
-                        openair = self.findOpenairObjectAirspacesBorders(sAseUidBase)       #Recherche si la zone de base a déjà été parsé
-                        if openair:
-                            self.geoAirspaces.append({"type":"Openair", "properties":oZone, "geometry":openair})
+                        o:dict = self.findOpenairObjectAirspacesBorders(sAseUidBase)       #Recherche si la zone de base a déjà été parsé
+                        if o:
+                            openair:list    = o.get(cstOpenairGeometry, None)
+                            dd:list         = o.get(cstDdGeometry, None)
+                            if openair and dd:
+                                self.geoAirspaces.append({"type":"Openair", "properties":oZone, cstOpenairGeometry:openair, cstDdGeometry:dd})
+                            elif openair:
+                                self.geoAirspaces.append({"type":"Openair", "properties":oZone, cstOpenairGeometry:openair})
                         else:
                             oBorder = self.oAirspacesCatalog.findAixmObjectAirspacesBorders(sAseUidBase)
                             if oBorder==None:
                                 self.oCtrl.oLog.warning("Missing Airspaces Borders AseUid={0} AseUidBase={1} of {2}".format(sAseUid, sAseUidBase, oZone["nameV"]), outConsole=False)
-                                self.geoAirspaces.append({"type":"Openair", "properties":oZone, "geometry":errLocalisationPoint})
+                                self.geoAirspaces.append({"type":"Openair", "properties":oZone, cstOpenairGeometry:errLocalisationPoint})
                             else:
                                 self.parseAirspaceBorder(oZone, oBorder)
             barre.update(idx)
@@ -238,7 +324,8 @@ class Aixm2openair:
         return
 
     def parseAirspaceBorder(self, oZone, oBorder) -> None:
-        openair = []    #geometry
+        openair:list = []   #geometry Openair
+        dd:list      = []   #geometry GeoJSON - Optional definition (for optimize map with algo Ramer-Douglas-Peucker)
 
         #Init
         bIsSpecCircle:bool = False
@@ -274,11 +361,11 @@ class Aixm2openair:
                     radius2:Decimal = radius        #Pas besoin d'arrondi
             else:
                 if len(nDec)>4:                     #Reste de division du type '0.001'
-                    radius2:Decimal = Decimal(radius).quantize(Decimal('0.01'), decimal.ROUND_05UP)        #Arrondi suppérieur au delà du demi
+                    radius2:Decimal = Decimal(radius).quantize(Decimal('0.01'), decimal.ROUND_05UP)         #Arrondi suppérieur au delà du demi
                 else:
                     radius2:Decimal = radius        #Pas besoin d'arrondi
             openair.append("DC {0}".format(radius2))
-            self.geoAirspaces.append({"type":"Openair", "properties":oZone, "geometry":openair})
+            self.geoAirspaces.append({"type":"Openair", "properties":oZone, cstOpenairGeometry:openair})    #No cstDdGeometry for circle
             return
 
         #Construction spécifique d'un cercle sur la base d'un Point unique
@@ -296,9 +383,8 @@ class Aixm2openair:
                 radius = float(0.54)                #Fixe un rayon de 1000m
 
             openair.append("DC {0}".format(radius))
-            self.geoAirspaces.append({"type":"Openair", "properties":oZone, "geometry":openair})
+            self.geoAirspaces.append({"type":"Openair", "properties":oZone, cstOpenairGeometry:openair})    #No cstDdGeometry for circle
             return
-
 
         #Construction d'un tracé sur la base d'une suite de Points et/ou Arcs
         firstCoords = {}                        #Mémorisation des coordonees du premier point (en dd et DMS.d)
@@ -319,6 +405,7 @@ class Aixm2openair:
                 sPoint = "DP {0} {1}".format(ptDMS[0], ptDMS[1])
                 if sPoint != lastPoint:
                     openair.append(sPoint)
+                    dd.append(ptDD[::-1])              #Invertion lon/lat
                 firstPoint = self.pointMemory(firstPoint, sPoint)
                 lastPoint = sPoint
 
@@ -338,8 +425,10 @@ class Aixm2openair:
                 if not "dms" in firstCoords:        firstCoords.update({"dms":startDMS})
 
                 if avx_cur+1 == len(avx_list):
-                    stopDMS  = firstCoords["dms"]
+                    stopDD  = firstCoords["dd"]
+                    stopDMS = firstCoords["dms"]
                 else:
+                    stopDD  = self.oCtrl.oAixmTools.geo2coordinates("dd", avx_list[avx_cur+1], oZone=oZone)
                     stopDMS = self.oCtrl.oAixmTools.geo2coordinates(self.sOutFrmt, avx_list[avx_cur+1], oZone=oZone)
 
                 centerDMS = self.oCtrl.oAixmTools.geo2coordinates(self.sOutFrmt, avx,
@@ -352,6 +441,8 @@ class Aixm2openair:
                 firstPoint = self.pointMemory(firstPoint, sPoint)
                 if sPoint != lastPoint and not self.oCtrl.bOpenairOptimizeArc:
                     openair.append(sPoint)
+                    dd.append(startDD[::-1])   #Invertion lon/lat
+                    lastPoint = sPoint
 
                 openair.append("V X={0} {1}".format(centerDMS[0], centerDMS[1]))
                 if codeType=="CCA":             #'Counter clockWise Arc'
@@ -359,12 +450,14 @@ class Aixm2openair:
                 else:
                     openair.append("V D=+")
                 openair.append("DB {0} {1}, {2} {3}".format(startDMS[0], startDMS[1], stopDMS[0], stopDMS[1]))
+                dd.append(cstArc)               #Indicateur 'Arc' dans le tracé (pour saut-de-segment dand l'optimisation)
 
                 #BPa 14/02/2021 - Optimisation possible par flag 'bOpenairOptimizeArc' car duplication du point de sortie d'arc optionnel
-                sPoint = "DP {0} {1}".format(stopDMS[0], stopDMS[1])
-                lastPoint = sPoint
-                if sPoint != firstPoint and not self.oCtrl.bOpenairOptimizeArc:
+                if not self.oCtrl.bOpenairOptimizeArc:
+                    sPoint = "DP {0} {1}".format(stopDMS[0], stopDMS[1])
                     openair.append(sPoint)
+                    dd.append(stopDD[::-1])   #Invertion lon/lat
+                    lastPoint = sPoint
 
             # 'Sequence of geographical (political) border vertexes'
             elif codeType == "FNT":
@@ -376,24 +469,34 @@ class Aixm2openair:
                     else:
                         stopDD = self.oCtrl.oAixmTools.geo2coordinates("dd", avx_list[avx_cur+1], oZone=oZone)
                     fnt = self.geoBorders[avx.GbrUid["mid"]]
-                    start_d = fnt.project(Point(startDD[::-1]), normalized=True)        #Invertion des coordonnees
-                    stop_d = fnt.project(Point(stopDD[::-1]), normalized=True)          #Invertion des coordonnees
+                    start_d = fnt.project(Point(startDD[::-1]), normalized=True)                            #Invertion des coordonnees
+                    stop_d = fnt.project(Point(stopDD[::-1]), normalized=True)                              #Invertion des coordonnees
                     geom = self.oCtrl.oAixmTools.substring(fnt, start_d, stop_d, normalized=True)
+                    sPointPrev = None
                     for ptDD in geom.coords:
                         lon, lat = ptDD
-                        if not "dd" in firstCoords:         firstCoords.update({"dd":(lat, lon)})
-                        ptDMS = bpaTools.GeoCoordinates.geoStr2coords(lat, lon, "dms", sep1=":", sep2="")
+                        if not "dd" in firstCoords:         firstCoords.update({"dd":ptDD[::-1]})           #Invertion des coordonnees
+                        ptDMS = bpaTools.GeoCoordinates.geoStr2coords(lat, lon, "dms", sep1=":", sep2="", bOptimize=True, digit=self.oCtrl.openairDigitOptimize)
                         if not "dms" in firstCoords:        firstCoords.update({"dms":ptDMS})
                         sPoint = "DP {0} {1}".format(ptDMS[0], ptDMS[1])
-                        lastPoint = sPoint
-                        openair.append(sPoint)
+                        firstPoint = self.pointMemory(firstPoint, sPoint)
+                        if sPoint != sPointPrev:
+                            lastPoint = sPoint
+                            openair.append(sPoint)
+                            dd.append(ptDD)
+                            sPointPrev = sPoint
                 else:
-                    self.oCtrl.oLog.warning("Missing geoBorder GbrUid='{0}' Name={1} of {2}".format(avx.GbrUid["mid"], avx.GbrUid.txtName.string, oZone["nameV"]), outConsole=False)
+                    sWrn:str = "Missing geoBorder GbrUid='{0}' Name={1} of {2}".format(avx.GbrUid["mid"], avx.GbrUid.txtName.string, oZone["nameV"])
+                    self.oCtrl.oLog.warning(sWrn, outConsole=False)
+                    openair.append("*** Warning " + sWrn)
+                    startDD = self.oCtrl.oAixmTools.geo2coordinates("dd", avx, oZone=oZone)
+                    if not "dd" in firstCoords:         firstCoords.update({"dd":startDD})
                     startDMS = self.oCtrl.oAixmTools.geo2coordinates(self.sOutFrmt, avx, oZone=oZone)
                     if not "dms" in firstCoords:      firstCoords.update({"dms":startDMS})
                     sPoint = "DP {0} {1}".format(startDMS[0], startDMS[1])
-                    lastPoint = sPoint
                     openair.append(sPoint)
+                    dd.append(startDD[::-1])   #Invertion lon/lat
+                    lastPoint = sPoint
             else:
                 self.oCtrl.oLog.warning("Default case - GbrUid='{0}' Name={1} of {2}".format(avx.GbrUid["mid"], avx.GbrUid.txtName.string, oZone["nameV"]), outConsole=False)
                 ptDD = self.oCtrl.oAixmTools.geo2coordinates("dd", avx, oZone=oZone)
@@ -403,10 +506,20 @@ class Aixm2openair:
                 sPoint = "DP {0} {1}".format(ptDMS[0], ptDMS[1])
                 if sPoint != lastPoint:
                     openair.append(sPoint)
+                    dd.append(ptDD[::-1])   #Invertion lon/lat
                 firstPoint = self.pointMemory(firstPoint, sPoint)
                 lastPoint = sPoint
 
-        self.geoAirspaces.append({"type":"Openair", "properties":oZone, "geometry":openair})
+        #Contrôle de fermeture du Polygone
+        if lastPoint != firstPoint:
+            openair.append(firstPoint)
+            dd.append(firstCoords["dd"][::-1])   #Invertion lon/lat
+            lastPoint = firstPoint
+
+        if openair and dd:
+            self.geoAirspaces.append({"type":"Openair", "properties":oZone, cstOpenairGeometry:openair, cstDdGeometry:dd})
+        else:
+            self.geoAirspaces.append({"type":"Openair", "properties":oZone, cstOpenairGeometry:openair})
         return
 
     def pointMemory(self, memory:str, point:str) -> str:
@@ -415,8 +528,16 @@ class Aixm2openair:
         else:
             return memory
 
-    #Use epsilonReduce for compress shape in file   (Nota. epsilonReduce=0 for no compression)
-    def saveAirspacesFilter(self, aContext:list, epsilonReduce:float=0) -> None:
+    #Use epsilonReduce for compress shape in file (Nota. epsilonReduce=0 for no-doubling with no-compression, =0.0001 for good compression)
+    def saveAirspacesFilter(self, aContext:list, digit:float=None, epsilonReduce:float=None) -> None:
+        if digit and digit>0:
+            self.openairDigitOptimize = digit
+        else:
+            self.openairDigitOptimize = self.oCtrl.openairDigitOptimize
+        if epsilonReduce and epsilonReduce>0:
+            self.epsilonReduce = epsilonReduce
+        else:
+            self.epsilonReduce = self.oCtrl.epsilonReduce
         context = aContext[0]
         if context=="ff":
             self.saveAirspacesFilter2(aContext, "-gpsWithTopo")
@@ -447,10 +568,10 @@ class Aixm2openair:
             if include and ("excludeAirspaceNotCoord" in oZone):        #Ne pas traiter les zones qui n'ont pas de coordonnées geometriques
                 include = not oZone["excludeAirspaceNotCoord"]
             if include:
-                if len(o["geometry"])==1:
+                if len(o[cstOpenairGeometry])==1:
                     #Exclure toutes zones en erreur de localisation (oAs.oBorder[0]!=errLocalisationPoint)
                     include = False
-                elif len(o["geometry"])==2 and o["geometry"][0][:4]!="V X=":
+                elif len(o[cstOpenairGeometry])==2 and o[cstOpenairGeometry][0][:4]!="V X=":
                     #Exclure les doubles points fixes (DP.. + DP..) mais autoriser les cercles (V X=.. + DP..)
                    include = False
                 else:
@@ -468,15 +589,15 @@ class Aixm2openair:
                 if include==True and exceptDay!="":
                     if exceptDay in oZone:                              include = False
                 if include==True:
-                    openair.append(makeOpenair(o, gpsType))
+                    openair.append(makeOpenair(o, gpsType, digit=self.openairDigitOptimize, epsilonReduce=self.epsilonReduce, oLog=self.oCtrl.oLog))
             barre.update(idx)
         barre.reset()
         if openair:
             self.oCtrl.oAixmTools.writeOpenairFile("airspaces", openair, context, gpsType, exceptDay)
         return
 
-    #Nétoyage du catalogue de zones pour desactivation des éléments qui ne sont pas valides ; ou constitués que d'un ou deux 'Point' a exclure uniquement pour le freefligth
-    #Ces simples 'Point remarquable' sont supprimés de la cartographie freefligth (ex: un VOR, un émmzteur radio, un centre de piste)
+    #Nétoyage du catalogue de zones pour desactivation d'éléments non-valides; ou constitués que d'un ou de deux 'Point'
+    #Ces simples 'Point remarquable' sont supprimés de la cartographie freefligth (ex: un VOR, un émméteur radio, un centre de piste)
     #Idem, suppression des 'lignes' (ex: Axe d'approche d'un aérodrome ou autres...)
     def cleanAirspacesCalalog(self, airspacesCatalog) -> None:
         if not self.geoAirspaces:                                   #Contrôle si le fichier est vide
@@ -495,12 +616,11 @@ class Aixm2openair:
             idx+=1
 
             #Flag all not valid area
-            oGeom:dict = o["geometry"]                                  #Sample - "geometry": {"type": "Polygon", "coordinates": [[[3.069444, 45.943611], [3.539167, 45.990556], ../..
+            oGeom:dict = o[cstOpenairGeometry]                          #Sample - "penairGeometry": {"type": "Polygon", "coordinates": [[['DP 44:21:02 N 001:28:43 E'], ../..
             if len(oGeom)==0:
                 oZone.update({"excludeAirspaceNotCoord":True})          #Flag this change in catalog
                 lNbChange+=1
 
-            #if oZone["freeFlightZone"]:
             if len(oGeom)==1:                               #Point
                 exclude=True
                 oZone.update({"geometryType":"Point"})        #info for catalog "Point"

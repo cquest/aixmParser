@@ -4,6 +4,7 @@ import bpaTools
 from shapely.geometry import LineString, Point
 from rdp import rdp
 
+cstGeojsonGeometry:str = "geometry"
 errLocalisationPoint:list = [-5,45]
 
 #geojson Colors attributes
@@ -130,8 +131,9 @@ class Aixm2json4_5:
         bpaTools.initEvent(__file__, oCtrl.oLog)
         self.oCtrl = oCtrl
         self.oAirspacesCatalog = None
-        self.geoBorders = None                    #Geographic borders dictionary
-        self.geoAirspaces = None                  #Geographic airspaces dictionary
+        self.geoBorders = None                  #Geographic borders dictionary
+        self.geoAirspaces = None                #Geographic airspaces dictionary
+        self.epsilonReduce:float = -1           #Default value=0 for no-doubling with no-compression, =0.0001 for good compression
         return
 
     def parseControlTowers(self) -> None:
@@ -163,7 +165,7 @@ class Aixm2json4_5:
                 prop = self.oCtrl.oAixmTools.addProperty(prop, uni, "codeType", "codeType")
                 prop = self.oCtrl.oAixmTools.addProperty(prop, uni.UniUid, "txtName", "name")
                 geom = {"type":"Point", "coordinates":self.oCtrl.oAixmTools.geo2coordinates("dd", uni)[::-1]}
-                return {"type":"Feature", "properties":prop, "geometry":geom}
+                return {"type":"Feature", "properties":prop, cstGeojsonGeometry:geom}
             else:
                 self.oCtrl.oLog.warning("Missing TWR coordinates {0}".format(uni.UniUid), outConsole=False)
         return
@@ -203,7 +205,7 @@ class Aixm2json4_5:
         prop = self.oCtrl.oAixmTools.addProperty(prop, ahp, "txtNameAdmin", "nameAdmin", optional=True)
         prop = self.oCtrl.oAixmTools.addProperty(prop, ahp, "txtRmk", "remark", optional=True)
         geom = {"type":"Point", "coordinates":self.oCtrl.oAixmTools.geo2coordinates("dd", ahp)[::-1]}
-        return {"type":"Feature", "properties":prop, "geometry":geom}
+        return {"type":"Feature", "properties":prop, cstGeojsonGeometry:geom}
 
     def parseObstacles(self) -> None:
         sTitle = "Obstacles"
@@ -236,7 +238,7 @@ class Aixm2json4_5:
         prop = self.oCtrl.oAixmTools.addProperty(prop, obs, "uomDistVer", "verticalUnit")
         prop = self.oCtrl.oAixmTools.addProperty(prop, obs, "txtRmk", "remark", optional=True)
         geom = {"type":"Point", "coordinates":self.oCtrl.oAixmTools.geo2coordinates("dd", obs.ObsUid)[::-1]}
-        return {"type":"Feature", "properties":prop, "geometry":geom}
+        return {"type":"Feature", "properties":prop, cstGeojsonGeometry:geom}
 
     def parseRunwayCenterLinePosition(self) -> None:
         sTitle = "Runway Center Line Position"
@@ -264,7 +266,7 @@ class Aixm2json4_5:
         prop = self.oCtrl.oAixmTools.addProperty(prop, rcp, "valElev", "elevation", optional=True)
         prop = self.oCtrl.oAixmTools.addProperty(prop, rcp, "uomDistVer", "verticalUnit", optional=True)
         geom = {"type":"Point", "coordinates":self.oCtrl.oAixmTools.geo2coordinates("dd", rcp.RcpUid)[::-1]}
-        return {"type":"Feature", "properties":prop, "geometry":geom}
+        return {"type":"Feature", "properties":prop, cstGeojsonGeometry:geom}
 
     def parseGateStands(self) -> None:
         sTitle = "Gates and Stands"
@@ -294,7 +296,7 @@ class Aixm2json4_5:
         prop = self.oCtrl.oAixmTools.addProperty(prop, gsd, "txtDescrRestrUse", optional=True)
         prop = self.oCtrl.oAixmTools.addProperty(prop, gsd, "txtRmk", optional=True)
         geom = {"type":"Point", "coordinates":self.oCtrl.oAixmTools.geo2coordinates("dd", gsd)[::-1]}
-        return {"type":"Feature", "properties":prop, "geometry":geom}
+        return {"type":"Feature", "properties":prop, cstGeojsonGeometry:geom}
 
     def parseGeographicBorders(self) -> None:
         sTitle = "Geographic borders"
@@ -327,18 +329,23 @@ class Aixm2json4_5:
         # geometry
         g = []
         l = []
+        ddPrev = None
         for gbv in gbr.find_all("Gbv", recursive=False):
             if gbv.codeType.string not in ("GRC", "END"):
                 self.oCtrl.oLog.critical("Not recognized codetype\n{0}".format(gbv), outConsole=True)
-            g.append(self.oCtrl.oAixmTools.geo2coordinates("dd", gbv)[::-1])
-            l.append((g[-1][0], g[-1][1]))
+            dd = self.oCtrl.oAixmTools.geo2coordinates("dd", gbv)[::-1]
+            #Suppression des doublons (après prise en compte de l'arrondi 'GeojsonDigitOptimize')
+            if dd != ddPrev:
+                g.append(dd)
+                l.append((dd[0], dd[1]))
+                ddPrev = dd
         geom = {"type":"LineString", "coordinates":g}
-        return ({"type":"Feature", "properties":prop, "geometry":geom}, l)
+        return ({"type":"Feature", "properties":prop, cstGeojsonGeometry:geom}, l)
 
     def findJsonObjectAirspacesBorders(self, sAseUid) -> dict:
         for o in self.geoAirspaces:
             if o["properties"]["UId"]==sAseUid:
-                return o["geometry"]
+                return o[cstGeojsonGeometry]
         return None
 
     def parseAirspacesBorders(self, airspacesCatalog) -> None:
@@ -378,18 +385,18 @@ class Aixm2json4_5:
                     sAseUidBase = self.oAirspacesCatalog.findZoneUIdBase(sAseUid)       #Identifier la zone de base (de référence)
                     if sAseUidBase==None:
                         self.oCtrl.oLog.warning("Missing Airspaces Borders AseUid={0} of {1}".format(sAseUid, oZone["nameV"]), outConsole=False)
-                        self.geoAirspaces.append({"type":"Feature", "properties":oZone, "geometry":{"type": "Point", "coordinates": errLocalisationPoint}})
+                        self.geoAirspaces.append({"type":"Feature", "properties":oZone, cstGeojsonGeometry:{"type": "Point", "coordinates": errLocalisationPoint}})
                     else:
                         geom = self.findJsonObjectAirspacesBorders(sAseUidBase)         #Recherche si la zone de base a déjà été parsé
                         if geom:
                             if geom["coordinates"]==errLocalisationPoint:
                                 self.oCtrl.oLog.warning("Missing Airspaces Borders sAseUidBase={0} used by AseUid={1} of {2}".format(sAseUidBase, sAseUid, oZone["nameV"]), outConsole=False)
-                            self.geoAirspaces.append({"type":"Feature", "properties":oZone, "geometry":geom})
+                            self.geoAirspaces.append({"type":"Feature", "properties":oZone, cstGeojsonGeometry:geom})
                         else:
                             oBorder = self.oAirspacesCatalog.findAixmObjectAirspacesBorders(sAseUidBase)
                             if oBorder==None:
                                 self.oCtrl.oLog.warning("Missing Airspaces Borders AseUid={0} AseUidBase={1} of {2}".format(sAseUid, sAseUidBase, oZone["nameV"]), outConsole=False)
-                                self.geoAirspaces.append({"type":"Feature", "properties":oZone, "geometry":{"type": "Point", "coordinates": errLocalisationPoint}})
+                                self.geoAirspaces.append({"type":"Feature", "properties":oZone, cstGeojsonGeometry:{"type": "Point", "coordinates": errLocalisationPoint}})
                             else:
                                 self.parseAirspaceBorder(oZone, oBorder)
             barre.update(idx)
@@ -398,7 +405,7 @@ class Aixm2json4_5:
         return
 
     def parseAirspaceBorder(self, oZone, oBorder) -> None:
-        g = []              #geometry
+        g = []              #geometry GeoJSON
         points4map = []
 
         #Init
@@ -537,7 +544,7 @@ class Aixm2json4_5:
         for g0 in points4map:
             for g1 in g0:
                 self.geoAirspaces.append(g1)
-        self.geoAirspaces.append({"type":"Feature", "properties":oZone, "geometry":geom})
+        self.geoAirspaces.append({"type":"Feature", "properties":oZone, cstGeojsonGeometry:geom})
         return
 
     def reduceAirspaces(self, epsilon:float=0.005) -> None:
@@ -553,16 +560,20 @@ class Aixm2json4_5:
             idx+=1
             include = not oZone["groupZone"]                         				#Ne pas traiter les zones de type 'Regroupement'
             if include:
-                oCoordsSrc:list = o["geometry"]["coordinates"]
+                oCoordsSrc:list = o[cstGeojsonGeometry]["coordinates"]
                 oCoordsDst:list = rdp(oCoordsSrc[0], epsilon=epsilon)
                 self.oCtrl.oLog.info("RDP Optimisation: {0} - {1}->{2}".format(oZone["name"], len(oCoordsSrc[0]), len(oCoordsDst)))
-                o["geometry"].update({"coordinates":[oCoordsDst]})
+                o[cstGeojsonGeometry].update({"coordinates":[oCoordsDst]})
             barre.update(idx)
         barre.reset()
         return
 
-    #Use epsilonReduce for compress shape in file   (Nota. epsilonReduce=0 for no-doubling with no-compression, =0.0001 for good compression)
-    def saveAirspacesFilter(self, aContext, epsilonReduce:float=0) -> None:
+    #Use epsilonReduce for compress shape in file (Default value=0 for no-doubling with no-compression, =0.0001 for good compression)
+    def saveAirspacesFilter(self, aContext, epsilonReduce:float=None) -> None:
+        if epsilonReduce and epsilonReduce>0:
+            self.epsilonReduce = epsilonReduce
+        else:
+            self.epsilonReduce = self.oCtrl.epsilonReduce
         if not self.geoAirspaces:                                   #Contrôle si le fichier est vide
             return
         context = aContext[0]
@@ -589,7 +600,7 @@ class Aixm2json4_5:
                 elif context=="ff":
                     include = oZone["freeFlightZone"]
                     include = include or oZone.get("freeFlightZoneExt", False) 	    #Exporter l'extension de vol possible en VFR de 0m jusqu'au FL195/5944m
-                    include = include and (o["geometry"]["coordinates"]!=errLocalisationPoint)
+                    include = include and (o[cstGeojsonGeometry]["coordinates"]!=errLocalisationPoint)
             if include:
                 #Extract single parts of properties
                 oSingleCat:dict = {}
@@ -603,7 +614,7 @@ class Aixm2json4_5:
                     if value!=None:
                         oSingleCat.update({sProp:value})
                 addColorProperties(o["properties"], oSingleCat, self.oCtrl.oLog)    #Ajout des propriétés pour colorisation de la zone
-                oAsGeo = o["geometry"]
+                oAsGeo = o[cstGeojsonGeometry]
 
                 #Optimisation du tracé
                 #Extraction des coordonnées
@@ -615,8 +626,9 @@ class Aixm2json4_5:
                     oCoords:list = oAsGeo["coordinates"][0]                     #get coordinates of geometry
 
                 oCoordsDst:list = []
-                if epsilonReduce==0 or (epsilonReduce>0 and len(oCoords)>40):   #Ne pas optimiser le tracé des zones ayant moins de 40 segments (préservation des tracés de cercle minimaliste)
-                    oCoordsDst = rdp(oCoords, epsilon=epsilonReduce)            #Optimisation du tracé des coordonnées
+                #if self.epsilonReduce<0: --> do not change oAsGeo !
+                if self.epsilonReduce==0 or (self.epsilonReduce>0 and len(oCoords)>40):     #Ne pas optimiser le tracé des zones ayant moins de 40 segments (préservation des tracés de cercle minimaliste)
+                    oCoordsDst = rdp(oCoords, epsilon=self.epsilonReduce)                   #Optimisation du tracé des coordonnées
                 if len(oCoordsDst)>0 and len(oCoords)!=len(oCoordsDst):
                     self.oCtrl.oLog.info("RDP Optimisation: {0} - {1}->{2}".format(o["properties"].get("nameV"), len(oCoords), len(oCoordsDst)))
                     self.oCtrl.oLog.debug("RDP Src: {0}".format(oCoords))
@@ -628,7 +640,7 @@ class Aixm2json4_5:
                     elif oAsGeo["type"].lower()==("Polygon").lower():
                         oAsGeo.update({"coordinates":[oCoordsDst]})
 
-                oArea:dict = {"type":"Feature", "properties":oSingleCat, "geometry":oAsGeo}
+                oArea:dict = {"type":"Feature", "properties":oSingleCat, cstGeojsonGeometry:oAsGeo}
                 geojson.append(oArea)
             barre.update(idx)
         barre.reset()
@@ -655,7 +667,7 @@ class Aixm2json4_5:
             idx+=1
 
             #Flag all not valid area
-            oGeom:dict = o["geometry"]                              #Sample - "geometry": {"type": "Polygon", "coordinates": [[[3.069444, 45.943611], [3.539167, 45.990556], ../..
+            oGeom:dict = o[cstGeojsonGeometry]                              #Sample - "geometry": {"type": "Polygon", "coordinates": [[[3.069444, 45.943611], [3.539167, 45.990556], ../..
             if oGeom["type"] in ["Point"] and oGeom["coordinates"]==errLocalisationPoint:
                 oZone.update({"excludeAirspaceNotCoord":True})       #Flag this change in catalog
                 lNbChange+=1

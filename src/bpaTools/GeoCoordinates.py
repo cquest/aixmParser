@@ -118,12 +118,29 @@ def dd2dms(dd, ref:str="") -> tuple:
     newDD = abs(dd)
     mnt,sec = divmod(newDD*3600,60)
     deg,mnt = divmod(mnt,60)
+    deg = int(deg)
+    mnt = int(mnt)
+    sec = round(cleanNumber(sec),4)
+    if sec==60 and min==60:
+        deg+=1
+        mnt =1
+        sec =0
+    elif sec==60 and min==59:
+        deg+=1
+        mnt =0
+        sec =0
+    elif sec==60:
+        mnt+=1
+        sec =0
+    if min==60:
+        deg+=1
+        mnt =0
     if ref:
-        return abs(int(deg)), int(mnt), round(cleanNumber(sec),4), getRef(dd, ref)
+        return abs(deg), mnt, sec, getRef(dd, ref)
     else:
         if dd<0:
             deg *= -1
-        return int(deg), int(mnt), round(cleanNumber(sec),4)
+        return deg, mnt, sec
 
 #No use beacause Err in Convert DD (decimal degrees) to DMS (degrees minutes seconds)
 #   dd = 45.0 + 30.0/60 + 1.0/3600
@@ -210,6 +227,8 @@ def dmd2dms(degrees, mindec, ref:str="") -> tuple:
 #       [outFrmt] : Output format parmis les valeurs suivantes: "std"=Standardise l'entrée (sans modification de référence), "dms"=degrees minutes seconds, "dmd"=degrees decimal minutes, "dd"=decimal degrees
 #       [sep1] : Séparateur de valeurs  en sortie                  Ex: "DDMMSS.ssssN" sep1=":" -> "DD:MM:SS.ssssN"
 #       [sep2] : Séparateur de référence géographique en sortie    Ex: "DDMMSS.ssssN" sep2=" " -> "DDMMSS.ssss N"
+#       [bOptimize] : Indicateur pour demande d'optimisation des formats de sortie (DMS / DMS.d) uniquement si [sep1] est précisé. Ex: "0030405.01N" -> (="3:4:5.01N" default=Tue) or (="003:04:05.01N" si=False)
+#       [digit] : Optimisation de la valeur décimale pour les sorties "dms". Default=-1 sans aucune modification; 0=Arrondie à l'entier; n=Arrondi au nombre de décimal précisé
 #   Sorties
 #       Cette fonction retourne les valeurs sous forme d'une liste de str ; conformément au format : (DMS) ou (DMS.d) - latitude: DDMMSS[.ssss] / longitude DDDMMSS[.ssss]
 #       Le format de sortie peut être surchargé par les séparateurs [sep1] et/ou [sep2]
@@ -220,7 +239,7 @@ def dmd2dms(degrees, mindec, ref:str="") -> tuple:
 #   Contrôle de coordonnées
 #       http://family.mayer.free.fr/bateau/conversion_DMS_DMM_DD/Copie%20de%20calculators.htm
 #       https://www.guide-plaisance-mobile.fr/convertisseur-de-coordonnees-gps-degres-minutes-secondes-decimales
-def geoStr2coords(latitude=None, longitude=None, outFrmt:str="std", sep1="", sep2="", bOptimize:bool=True) -> tuple:     #tuple(str)
+def geoStr2coords(latitude=None, longitude=None, outFrmt:str="std", sep1="", sep2="", bOptimize:bool=True, digit:int=-1) -> tuple:     #tuple(str)
     ##############################
     # Aixm Normalisation
     # Aixm LATITUDE native format:
@@ -246,7 +265,7 @@ def geoStr2coords(latitude=None, longitude=None, outFrmt:str="std", sep1="", sep
     if not outFrmt in ["std", "dms", "dmd", "dd"]:
         raise Exception("geoStr2coords() Invalid parameter outFrmt: '" + outFrmt +"'")
 
-    def toDMS(val:str, ref:str) -> str:
+    def toConvert(val:str, ref:str) -> str:
         if val == None:
             return val
 
@@ -291,30 +310,80 @@ def geoStr2coords(latitude=None, longitude=None, outFrmt:str="std", sep1="", sep
         if not len(aCoord) in [1,2,3]:
             raise Exception("geoStr2coords() Invalid delimiter input: " + sCoord)
 
-        #Cleaning pour cas particulier réception d'un '13:14.0000S'
+        #Cleaning pour cas particulier réception d'un format (DM.d ou DM.m) '13:14.0000S'
         if len(aCoord)==2:
             sCoord = sCoord.replace(":","")         #Cleaning
             aCoord = sCoord.split(":")
         bSepInSrc:bool = bool(len(aCoord)>1)
 
-        #Séparateur dans la source, donc exclusivement format DMS ou DMS.d en entrée
+        #Séparateur dans la source, donc exclusivement format (DMS ou DMS.d) en entrée
         if bSepInSrc:
             if outFrmt in ["std","dms"] and bOptimize:
                 #Sortie optimisé en taille. Ex: "07:03:04.0 N" -> "7:3:4N"
-                aCoord[0] = "{0}".format(int(aCoord[0]))
-                aCoord[1] = cleanNumber(aCoord[1], headdigits=0)
                 if len(aCoord)==3:
+                    tmp = round(float(aCoord[2]), 4)
+                    if tmp>=60:
+                        aCoord[1] = str(int(aCoord[1])+1)                   #Ajout des 60 sec
+                        aCoord[2] = str(round(float(aCoord[2])-60,8))       #Suppression des 60 sec
+                        #aCoord[2] = cleanNumber(aCoord[2], headdigits=0)
+                    if "." in aCoord[2] and digit>=0:
+                        aCoord[2] = str(round(float(aCoord[2]), digit))
                     aCoord[2] = cleanNumber(aCoord[2], headdigits=0)
+                    if aCoord[2]=="60" and aCoord[1]=="60":
+                        aCoord[0] = str(int(aCoord[0])+1)   #Ajout des 60 min
+                        aCoord[1] = "1"                     #Ajout des 60 sec
+                        aCoord[2] = "0"
+                    elif aCoord[2]=="60" and aCoord[1]=="59":
+                        aCoord[0] = str(int(aCoord[0])+1)   #Ajout des 60 min
+                        aCoord[1] = "0"
+                        aCoord[2] = "0"
+                    elif aCoord[2]=="60":
+                        aCoord[1] = str(int(aCoord[1])+1)   #Ajout des 60 sec
+                        aCoord[2] = "0"
+                    aCoord[2] = cleanNumber(aCoord[2], headdigits=0)
+                tmp = round(float(aCoord[1]), 4)
+                if tmp>=60:
+                    aCoord[0] = str(int(aCoord[0])+1)                   #Ajout des 60 min
+                    aCoord[1] = str(round(float(aCoord[1])-60,8))       #Suppression des 60 min
+                if "." in aCoord[1] and digit>=0:
+                    aCoord[1] = str(round(float(aCoord[1]), digit))
+                aCoord[1] = cleanNumber(aCoord[1], headdigits=0)
+                aCoord[0] = "{0}".format(int(aCoord[0]))
                 sRet = sep1.join(aCoord) + sep2 + sCoordRef
             elif outFrmt in ["std","dms"] and not bOptimize:
                 #Sortie non-optimisé en taille
+                if len(aCoord)==3:
+                    tmp = round(float(aCoord[2]), 4)
+                    if tmp>=60:
+                        aCoord[1] = str(int(aCoord[1])+1)                   #Ajout des 60 sec
+                        aCoord[2] = str(round(float(aCoord[2])-60,8))       #Suppression des 60 sec
+                        #aCoord[2] = cleanNumber(aCoord[2], headdigits=0)
+                    if "." in aCoord[2] and digit>=0:
+                        aCoord[2] = str(round(float(aCoord[2]), digit))
+                    aCoord[2] = cleanNumber(aCoord[2], headdigits=2)
+                    if aCoord[2]=="60" and aCoord[1]=="60":
+                        aCoord[0] = str(int(aCoord[0])+1)   #Ajout des 60 min
+                        aCoord[1] = "1"                     #Ajout des 60 sec
+                        aCoord[2] = "0"
+                    elif aCoord[2]=="60" and aCoord[1]=="59":
+                        aCoord[0] = str(int(aCoord[0])+1)   #Ajout des 60 min
+                        aCoord[1] = "0"
+                        aCoord[2] = "0"
+                    elif aCoord[2]=="60":
+                        aCoord[1] = str(int(aCoord[1])+1)   #Ajout des 60 sec
+                        aCoord[2] = "0"
+                    aCoord[2] = cleanNumber(aCoord[2], headdigits=2)
+                tmp = round(float(aCoord[1]), 4)
+                if tmp>=60:
+                    aCoord[0] = str(int(aCoord[0])+1)                   #Ajout des 60 min
+                    aCoord[1] = str(round(float(aCoord[1])-60,8))       #Suppression des 60 min
+                if "." in aCoord[1] and digit>=0:
+                    aCoord[1] = str(round(float(aCoord[1]), digit))
+                aCoord[1] = cleanNumber(aCoord[1], headdigits=2)
                 if ref == "lat":
                     if len(aCoord[0]) < 2:      aCoord[0] = "{0:0=2d}".format(int(aCoord[0]))
                 elif ref == "lon":
                     if len(aCoord[0]) < 3:      aCoord[0] = "{0:0=3d}".format(int(aCoord[0]))
-                aCoord[1] = cleanNumber(aCoord[1], headdigits=2)
-                if len(aCoord)==3:
-                    aCoord[2] = cleanNumber(aCoord[2], headdigits=2)
                 sRet = sep1.join(aCoord) + sep2 + sCoordRef
             elif outFrmt=="dmd":
                 degrees, md, direction = dms2dmd(aCoord[0], aCoord[1], aCoord[2], direction=sCoordRef)
@@ -324,10 +393,14 @@ def geoStr2coords(latitude=None, longitude=None, outFrmt:str="std", sep1="", sep
                     degrees = cleanNumber(str(degrees), headdigits=0 if bOptimize else 2)
                 elif ref == "lon":
                     degrees = cleanNumber(str(degrees), headdigits=0 if bOptimize else 3)
+                if digit>=0:
+                    md = round(md, digit)
                 md = cleanNumber(str(md), headdigits=0 if bOptimize else 2)
                 sRet = sep1.join([degrees, md]) + sep2 + sCoordRef
             elif outFrmt=="dd":
                 dd = dms2dd(aCoord[0], aCoord[1], aCoord[2], direction=sCoordRef)
+                if digit>=0:
+                    dd = round(dd, digit)
                 sRet = dd
 
         #Décodage des formats (pas de séparateur dans la source)
@@ -359,15 +432,28 @@ def geoStr2coords(latitude=None, longitude=None, outFrmt:str="std", sep1="", sep
                     else:
                         sRet = sSign + sRet
                 elif outFrmt=="dms":
-                    degrees, minutes, seconds, direction = dd2dms(dd, ref)
+                    degrees, minutes, seconds,  direction = dd2dms(dd, ref)
                     if not sCoordRef:       #Priorisation a la référence réceptionné (donc négligence de la signature nulérique '+/-')
                         sCoordRef = direction
+                    if digit>=0:
+                        seconds = round(seconds, digit)
+                    if seconds==60 and minutes==60:
+                        degrees+= 1
+                        minutes = 1
+                        seconds = 0
+                    elif seconds==60 and minutes==59:
+                        degrees+= 1
+                        minutes = 0
+                        seconds = 0
+                    elif seconds==60:
+                        minutes +=1
+                        seconds = 0
+                    seconds = cleanNumber(str(seconds), headdigits=0 if bOptimize else 2)
                     if ref == "lat":
                         degrees = cleanNumber(str(degrees), headdigits=0 if bOptimize else 2)
                     elif ref == "lon":
                         degrees = cleanNumber(str(degrees), headdigits=0 if bOptimize else 3)
                     minutes = cleanNumber(str(minutes), headdigits=0 if bOptimize else 2)
-                    seconds = cleanNumber(str(seconds), headdigits=0 if bOptimize else 2)
                     sRet = sep1.join([degrees, minutes, seconds]) + sep2 + sCoordRef
                 elif outFrmt=="dmd":
                     degrees, md, direction = dd2dmd(dd, ref)
@@ -377,9 +463,13 @@ def geoStr2coords(latitude=None, longitude=None, outFrmt:str="std", sep1="", sep
                         degrees = cleanNumber(str(degrees), headdigits=0 if bOptimize else 2)
                     elif ref == "lon":
                         degrees = cleanNumber(str(degrees), headdigits=0 if bOptimize else 3)
+                    if digit>=0:
+                        md = round(md, digit)
                     md = cleanNumber(str(md), headdigits=0 if bOptimize else 2)
                     sRet = sep1.join([degrees, md]) + sep2 + sCoordRef
                 elif outFrmt=="dd":
+                    if digit>=0:
+                        dd = round(dd, digit)
                     sRet = dd
             elif bDMdLatFrmt or bDMdLonFrmt:
                 dmd = sCoordRef + str(sSign + sCoord)
@@ -401,6 +491,8 @@ def geoStr2coords(latitude=None, longitude=None, outFrmt:str="std", sep1="", sep
                     elif ref == "lon":
                         degrees = cleanNumber(str(degrees), headdigits=0 if bOptimize else 3)
                     minutes = cleanNumber(str(minutes), headdigits=0 if bOptimize else 2)
+                    if digit>=0:
+                        seconds = round(seconds, digit)
                     seconds = cleanNumber(str(seconds), headdigits=0 if bOptimize else 2)
                     sRet = sep1.join([degrees, minutes, seconds]) + sep2 + sCoordRef
                 elif outFrmt=="dmd":
@@ -411,10 +503,14 @@ def geoStr2coords(latitude=None, longitude=None, outFrmt:str="std", sep1="", sep
                         degrees = cleanNumber(str(degrees), headdigits=0 if bOptimize else 2)
                     elif ref == "lon":
                         degrees = cleanNumber(str(degrees), headdigits=0 if bOptimize else 3)
+                    if digit>=0:
+                        md = round(md, digit)
                     md = cleanNumber(str(md), headdigits=0 if bOptimize else 2)
                     sRet = sep1.join([degrees, md]) + sep2 + sCoordRef
                 elif outFrmt=="dd":
                     dd = dmd2coords(dmd, ref, outFrmt)
+                    if digit>=0:
+                        dd = round(dd, digit)
                     sRet = dd
             elif bDMSdLatFrmt or bDMSdLonFrmt:
                 #Sortie optimisé en taille.     Ex: "070304.0N" -> "7:3:4N"
@@ -428,6 +524,28 @@ def geoStr2coords(latitude=None, longitude=None, outFrmt:str="std", sep1="", sep
                     minutes = cleanNumber(sCoord[3:5], headdigits=0 if bOptimize else 2)
                     seconds = cleanNumber(sCoord[5:] , headdigits=0 if bOptimize else 2)
                 if outFrmt in ["std","dms"]:
+                    if "." in seconds and digit>=0:
+                        seconds = str(round(float(seconds), digit))
+                        seconds = cleanNumber(seconds, headdigits=0 if bOptimize else 2)
+                    if seconds=="60" and minutes in ["59", "60"]:
+                        if ref == "lat":
+                            degrees = cleanNumber(int(degrees)+1, headdigits=0 if bOptimize else 2)     #Ajout des 60 min
+                        elif ref == "lon":
+                            degrees = cleanNumber(int(degrees)+1, headdigits=0 if bOptimize else 3)     #Ajout des 60 min
+                        if minutes=="60":
+                            minutes = cleanNumber(1, headdigits=0 if bOptimize else 2)                  #Ajout des 60 sec
+                        else:
+                            minutes = cleanNumber(0, headdigits=0 if bOptimize else 2)
+                        seconds = "0"
+                    elif seconds=="60":
+                        minutes = cleanNumber(int(minutes)+1, headdigits=0 if bOptimize else 2)         #Ajout des 60 sec
+                        seconds = "0"
+                    elif minutes=="60":
+                        if ref == "lat":
+                            degrees = cleanNumber(int(degrees)+1, headdigits=0 if bOptimize else 2)     #Ajout des 60 min
+                        elif ref == "lon":
+                            degrees = cleanNumber(int(degrees)+1, headdigits=0 if bOptimize else 3)     #Ajout des 60 min
+                        minutes = cleanNumber(0, headdigits=0 if bOptimize else 2)
                     sRet = sep1.join([degrees, minutes, seconds]) + sep2 + sCoordRef
                 elif outFrmt=="dmd":
                     degrees, md, direction = dms2dmd(degrees, minutes, seconds, sCoordRef)
@@ -437,16 +555,20 @@ def geoStr2coords(latitude=None, longitude=None, outFrmt:str="std", sep1="", sep
                         degrees = cleanNumber(str(degrees), headdigits=0 if bOptimize else 2)
                     elif ref == "lon":
                         degrees = cleanNumber(str(degrees), headdigits=0 if bOptimize else 3)
+                    if digit>=0:
+                        md = round(md, digit)
                     md = cleanNumber(str(md), headdigits=0 if bOptimize else 2)
                     sRet = sep1.join([degrees, md]) + sep2 + sCoordRef
                 elif outFrmt=="dd":
                     dd = dms2dd(degrees, minutes, seconds, sCoordRef)
+                    if digit>=0:
+                        dd = round(dd, digit)
                     sRet = dd
             else:
                raise Exception("geoStr2coords() Invalid input: '{0}' [lat:{1} lon:{2}] outFrmt={3}".format(ref, latitude, longitude, outFrmt))
         return sRet
     try:
-        return toDMS(latitude, "lat"), toDMS(longitude, "lon")
+        return toConvert(latitude, "lat"), toConvert(longitude, "lon")
     except:
         raise
 
@@ -483,6 +605,7 @@ if __name__ == '__main__':
                     [("S030405.001200", "W0010203.003400")                  , ("030405.0012S", "0010203.0034W") , ("0304.08335333S", "00102.05005667W")     , (-3.06805589, -1.03416761)],
                     [("S030405.001200", "O0010203.003400")                  , ("030405.0012S", "0010203.0034W") , ("0304.08335333S", "00102.05005667W")     , (-3.06805589, -1.03416761)],
                     [("030405.001200S", "0010203.003400O")                  , ("030405.0012S", "0010203.0034W") , ("0304.08335333S", "00102.05005667W")     , (-3.06805589, -1.03416761)],
+                    [("030405.1200S", "0010203.3400O")                      , ("030405.12S", "0010203.34W")     , ("0304.08533333S", "00102.05566667W")     , (-3.06808889, -1.03426111)],
 
                     #Format DMS et DMS.d avec séparateurs et sous différentes formes (Aixm: DDMMSSX, DDMMSS.ssX and DDDMMSSY, DDDMMSS.ssY)
                     [("13:14:15N", "001:01:01E")                            , ("131415N", "0010101E")           , ("1314.25N", "00101.01666667E")           , (13.2375, 1.01694444)],
@@ -538,8 +661,10 @@ if __name__ == '__main__':
         cible1 = aPt[1]
         cible2 = aPt[2]
         cible3 = aPt[3]
+
         print("Source         ", source)
         print("Standardization", geoStr2coords(source[0], source[1], "std"))      #Clean ans normalyse source
+
         res1 = geoStr2coords(source[0], source[1], "dms")       #Output DMS ou DMS.d
         res2 = geoStr2coords(source[0], source[1], "dmd")       #Output DM.d
         res3 = geoStr2coords(source[0], source[1], "dd" )       #Output D.d
@@ -549,13 +674,76 @@ if __name__ == '__main__':
             raise Exception("/!\Err: {0} - {1}!={2}".format(source, res2, cible2))
         if res3!=cible3:
             raise Exception("/!\Err: {0} - {1}!={2}".format(source, res3, cible3))
+
         print("DMS.d output   ", res1)
         print("DMS.d not-opti ", geoStr2coords(source[0], source[1], "dms", sep1=":", sep2=" ", bOptimize=False))
         print("DMS.d opti     ", geoStr2coords(source[0], source[1], "dms", sep1=":" , sep2=""))
         print("DM.d  output   ", res2)
         print("D.d   output   ", res3)
+
+        #Test d'optimisation des décimaux
+        if any(sRes.find(".")>0 for sRes in res1):
+            print("(digit) DMS.d output   ", res1)
+            print("(digit) DMS.d opti d=3 ", geoStr2coords(source[0], source[1], "dms", digit=3))
+            print("(digit) DMS.d opti d=2 ", geoStr2coords(source[0], source[1], "dms", digit=2))
+            print("(digit) DMS.d opti d=1 ", geoStr2coords(source[0], source[1], "dms", digit=1))
+            print("(digit) DMS.d opti d=0 ", geoStr2coords(source[0], source[1], "dms", digit=0))
+
+            print("(digit) DM.d  output   ", res2)
+            print("(digit) DM.d  opti d=3 ", geoStr2coords(source[0], source[1], "dmd", digit=3))
+            print("(digit) DM.d  opti d=2 ", geoStr2coords(source[0], source[1], "dmd", digit=2))
+            print("(digit) DM.d  opti d=1 ", geoStr2coords(source[0], source[1], "dmd", digit=1))
+            print("(digit) DM.d  opti d=0 ", geoStr2coords(source[0], source[1], "dmd", digit=0))
+
+            print("(digit) D.d   output   ", res3)
+            print("(digit) D.d   opti d=6 ", geoStr2coords(source[0], source[1], "dd", digit=6))
+            print("(digit) D.d   opti d=5 ", geoStr2coords(source[0], source[1], "dd", digit=5))
+            print("(digit) D.d   opti d=4 ", geoStr2coords(source[0], source[1], "dd", digit=4))
+            print("(digit) D.d   opti d=3 ", geoStr2coords(source[0], source[1], "dd", digit=3))
+
         print()
 
-    #print(geoStr2coords("S13:14.0000", "W001:01.0000", "dd") )
 
 
+    aDegs = ["9","1"]
+    aMins = ["60"]                      #["0","59","60","61","62"]
+    aSecs = ["60"]                      #["0","59","60","61","62"]
+    aDecs = [".1",".9"]                 #["",".1",".9"]
+    aRefs = [["N","E"]]                 #[["N","E"], ["S","W"]]
+    for aRef in aRefs:
+        for sMin in aMins:
+            print("--", aRef, "Min="+sMin)
+            for sSec in aSecs:
+                for sDec in aDecs:
+                    sLatSrc:str = "{0}:{1}:{2}{3}{4}".format(aDegs[0], sMin, sSec, sDec, aRef[0])
+                    sLonSrc:str = "{0}:{1}:{2}{3}{4}".format(aDegs[1], sMin, sSec, sDec, aRef[1])
+                    print("---- src", (sLatSrc, sLonSrc))
+                    resDmsSep = geoStr2coords(sLatSrc, sLonSrc, "dms", sep1=":", sep2="")
+                    print(" dms-sep", resDmsSep)
+
+                    resDd0 = geoStr2coords(sLatSrc, sLonSrc, "dd")
+                    #print("  dms2dd", resDd0)
+                    resDd2dms = (dd2dms(resDd0[0], "lat"), dd2dms(resDd0[1], "lon"))
+                    print("  dd2dms", resDd2dms)
+                    tmpLat = ":".join([str(resDd2dms[0][0]), str(resDd2dms[0][1]), str(resDd2dms[0][2])]) + resDd2dms[0][3]
+                    tmpLon = ":".join([str(resDd2dms[1][0]), str(resDd2dms[1][1]), str(resDd2dms[1][2])]) + resDd2dms[1][3]
+                    print("     tmp", (tmpLat, tmpLon))
+                    resDms8 = geoStr2coords(tmpLat, tmpLon, "dms")
+                    print(" dd-dms2", resDms8)
+                    resDms9 = geoStr2coords(tmpLat, tmpLon, "dms", digit=0)
+                    print("     d=0", resDms9)
+
+                    resDmsSepOpt = geoStr2coords(sLatSrc, sLonSrc, "dms", sep1=":", sep2="", bOptimize=False)
+                    print(" no Opti", resDmsSepOpt)
+                    resStd = geoStr2coords(sLatSrc, sLonSrc, "std")      #Clean ans normalyse source
+                    print("     std", resStd)
+                    resDmsUnSep = geoStr2coords(sLatSrc, sLonSrc, "dms")
+                    print("     dms", resDmsUnSep)
+                    resDmsSepOptDig1 = geoStr2coords(sLatSrc, sLonSrc, "dms", sep1=":", sep2="", bOptimize=False, digit=1)
+                    print("     d=1", resDmsSepOptDig1)
+                    resDmsSepOptDig0 = geoStr2coords(sLatSrc, sLonSrc, "dms", sep1=":", sep2="", bOptimize=False, digit=0)
+                    print("     d=0", resDmsSepOptDig0)
+                    resDmsSepOptDig0 = geoStr2coords(sLatSrc, sLonSrc, "dms", sep1=":", sep2="", bOptimize=True, digit=0)
+                    print("opti d=0", resDmsSepOptDig0)
+
+                    print()

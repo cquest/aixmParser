@@ -416,10 +416,7 @@ if __name__ == '__main__':
             self.sOutHeadFile = "tst_"
             self.sEncoding = "utf-8"
             self.oAixm = {}
-            self.digit4roundPoint = 6
-            self.digit4roundArc = 6
             self.Draft = False
-
 
     appName             = "Aixm2jsonTst"
     appPath             = bpaTools.getFilePath(__file__)            #or your app path
