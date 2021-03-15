@@ -83,13 +83,13 @@ With:
     -Draft          Size limitation for geojson output
 	-GeojsonDigitOptimize	Integer parameter for optimize Geojson output geometry coordinates (Default=6 digits, n for round(coords, n), sample=10
 	-OpenairDigitOptimize	Integer parameter for optimize Openair output geometry coordinates (Default=-1 no-change source, n for round(coords, n, sample=0)
-	-EpsilonReduce  Float parameter of Ramer-Douglas-Peucker Algorithm (https://github.com/fhirschmann/rdp) for optimize output (Default=-1: <0 for no-optimize; 0 for removal-duplicates-values and no-optimize; >0 for optimize, sample=0.002)
+	-EpsilonReduce  Float parameter of Ramer-Douglas-Peucker Algorithm (https://github.com/fhirschmann/rdp) for optimize output (Default=-1: <0 for no-optimize; 0 for removal-duplicates-values and no-optimize; >0 for optimize, sample=0.001)
 
   Samples: aixmParser ../tst/aixm4.5_SIA-FR_2019-12-05.xml -Fall -Tall -ALL -CleanLog
            aixmParser ../tst/aixm4.5_SIA-FR_2019-12-05.xml -Fgeojson -Obstacles -ControlTowers -Airspaces -ALL -CleanLog
            aixmParser ../tst/aixm4.5_SIA-FR_2019-12-05.xml -Fgeojson -Airspaces -FreeFlight -GeojsonDigitOptimize=10 -CleanLog
            aixmParser ../tst/aixm4.5_SIA-FR_2019-12-05.xml -Fopenair -Airspaces -FreeFlight -OpenairDigitOptimize=0 -CleanLog
-           aixmParser ../tst/aixm4.5_SIA-FR_2019-12-05.xml -Fall -Airspaces -FreeFlight -OpenairDigitOptimize=0 -EpsilonReduce=0.002 -CleanLog
+           aixmParser ../tst/aixm4.5_SIA-FR_2019-12-05.xml -Fall -Airspaces -FreeFlight -OpenairDigitOptimize=0 -EpsilonReduce=0.001 -CleanLog
 
 
   Resources

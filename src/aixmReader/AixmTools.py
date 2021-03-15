@@ -52,7 +52,7 @@ class AixmTools:
         self.oCtrl.oLog.info("{0} file {1} - {2} areas in map".format(headMsg, sOutFile, sizeMap), outConsole=True)
         return
 
-    def makeHeaderOpenairFile(self, oHeader, oOpenair, context="", gpsType="", exceptDay="", sAreaKey="", sAreaDesc="", sAddHeader="") -> str:
+    def makeHeaderOpenairFile(self, oHeader, oOpenair, context="", gpsType="", exceptDay="", sAreaKey="", sAreaDesc="", sAddHeader="", digit:int=None, epsilonReduce:float=None) -> str:
         lLeftMargin:int=3
         sRet:str=""
         sizeMap = len(oOpenair)
@@ -73,6 +73,10 @@ class AixmTools:
                         #    sRet += "*" + " "*2*lLeftMargin + "../.. and {0} complementary sources files. See Catalog file header for all details.\n".format(len(oHeader)-lFileCnt+1)
                         #    break
                 else:
+                    if oKey=="content" and (digit or epsilonReduce):
+                        if digit!=None and epsilonReduce!=None: oVal = "{0} [digit={1}/rdp={2}]".format(oVal, digit, epsilonReduce)
+                        elif digit!=None:                       oVal = "{0} [digit={1}]".format(oVal, digit)
+                        elif epsilonReduce!=None:               oVal = "{0} [rdp={1}]".format(oVal, epsilonReduce)
                     sRet += "*" + " "*lLeftMargin + "{0} - {1}\n".format(oKey, oVal)
 
             sRet += "*" + " "*lLeftMargin + "-"*44 + "\n"
@@ -126,7 +130,7 @@ class AixmTools:
             sRet += "*"*50 + "\n\n"
         return sRet
 
-    def writeOpenairFile(self, sFileName, oOpenair, context="", gpsType="-gpsWithTopo", exceptDay=""):
+    def writeOpenairFile(self, sFileName, oOpenair, context="", gpsType="-gpsWithTopo", exceptDay="", digit:int=None, epsilonReduce:float=None):
         assert(isinstance(sFileName, str))
         if sFileName=="airspaces":
             if context=="all":              sFileName = sFileName + "-all"            #Suffixe pour fichier toutes zones
@@ -141,7 +145,7 @@ class AixmTools:
             headMsg = "Written"
             with open(self.oCtrl.sOutPath + sOutFile, "w", encoding="cp1252", errors="replace") as output:
                 oHeader = self.getJsonPropHeaderFile(sFileName, context, sizeMap)
-                sHeader:str = self.makeHeaderOpenairFile(oHeader, oOpenair, context, gpsType, exceptDay)
+                sHeader:str = self.makeHeaderOpenairFile(oHeader, oOpenair, context, gpsType, exceptDay, digit=digit, epsilonReduce=epsilonReduce)
                 output.write(sHeader)
                 for airspace in oOpenair:
                     output.write("\n".join(airspace))
