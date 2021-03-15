@@ -16,6 +16,36 @@
 		</Gbv>
 		<Gbv>
 			<codeType>GRC</codeType>
+			<geoLat>473523.89N</geoLat>
+			<geoLong>0073520.77E</geoLong>
+			<codeDatum>WGE</codeDatum>
+		</Gbv>
+		<Gbv>
+			<codeType>GRC</codeType>
+			<geoLat>473523.89N</geoLat>
+			<geoLong>0073520.77E</geoLong>
+			<codeDatum>WGE</codeDatum>
+		</Gbv>
+		<Gbv>
+			<codeType>GRC</codeType>
+			<geoLat>473524N</geoLat>
+			<geoLong>0073521E</geoLong>
+			<codeDatum>WGE</codeDatum>
+		</Gbv>
+		<Gbv>
+			<codeType>GRC</codeType>
+			<geoLat>473524N</geoLat>
+			<geoLong>0073521E</geoLong>
+			<codeDatum>WGE</codeDatum>
+		</Gbv>
+		<Gbv>
+			<codeType>GRC</codeType>
+			<geoLat>473524N</geoLat>
+			<geoLong>0073521E</geoLong>
+			<codeDatum>WGE</codeDatum>
+		</Gbv>
+		<Gbv>
+			<codeType>GRC</codeType>
 			<geoLat>473458.23N</geoLat>
 			<geoLong>0073506.40E</geoLong>
 			<codeDatum>WGE</codeDatum>
@@ -4594,6 +4624,24 @@
 		</Gbv>
 		<Gbv>
 			<codeType>GRC</codeType>
+			<geoLat>473523.89N</geoLat>
+			<geoLong>0073520.77E</geoLong>
+			<codeDatum>WGE</codeDatum>
+		</Gbv>
+		<Gbv>
+			<codeType>GRC</codeType>
+			<geoLat>473523.89N</geoLat>
+			<geoLong>0073520.77E</geoLong>
+			<codeDatum>WGE</codeDatum>
+		</Gbv>
+		<Gbv>
+			<codeType>GRC</codeType>
+			<geoLat>473523.89N</geoLat>
+			<geoLong>0073520.77E</geoLong>
+			<codeDatum>WGE</codeDatum>
+		</Gbv>
+		<Gbv>
+			<codeType>GRC</codeType>
 			<geoLat>473550.01N</geoLat>
 			<geoLong>0073534.36E</geoLong>
 			<codeDatum>WGE</codeDatum>
@@ -4672,6 +4720,24 @@
 		</Gbv>
 		<Gbv>
 			<codeType>GRC</codeType>
+			<geoLat>474148.47N</geoLat>
+			<geoLong>0073042.08E</geoLong>
+			<codeDatum>WGE</codeDatum>
+		</Gbv>
+		<Gbv>
+			<codeType>GRC</codeType>
+			<geoLat>474148.47N</geoLat>
+			<geoLong>0073042.08E</geoLong>
+			<codeDatum>WGE</codeDatum>
+		</Gbv>
+		<Gbv>
+			<codeType>GRC</codeType>
+			<geoLat>474148.47N</geoLat>
+			<geoLong>0073042.08E</geoLong>
+			<codeDatum>WGE</codeDatum>
+		</Gbv>
+		<Gbv>
+			<codeType>GRC</codeType>
 			<geoLat>474202.72N</geoLat>
 			<geoLong>0073045.49E</geoLong>
 			<codeDatum>WGE</codeDatum>
@@ -4740,6 +4806,12 @@
 			<codeType>GRC</codeType>
 			<geoLat>475012.45N</geoLat>
 			<geoLong>0073337.05E</geoLong>
+			<codeDatum>WGE</codeDatum>
+		</Gbv>
+		<Gbv>
+			<codeType>GRC</codeType>
+			<geoLat>475012N</geoLat>
+			<geoLong>0073337E</geoLong>
 			<codeDatum>WGE</codeDatum>
 		</Gbv>
 		<Gbv>
@@ -7044,6 +7116,30 @@
 			<codeType>GRC</codeType>
 			<geoLat>490951.22N</geoLat>
 			<geoLong>0070158.49E</geoLong>
+			<codeDatum>WGE</codeDatum>
+		</Gbv>
+		<Gbv>
+			<codeType>GRC</codeType>
+			<geoLat>491000.63N</geoLat>
+			<geoLong>0070145.39E</geoLong>
+			<codeDatum>WGE</codeDatum>
+		</Gbv>
+		<Gbv>
+			<codeType>GRC</codeType>
+			<geoLat>491000.63N</geoLat>
+			<geoLong>0070145.39E</geoLong>
+			<codeDatum>WGE</codeDatum>
+		</Gbv>
+		<Gbv>
+			<codeType>GRC</codeType>
+			<geoLat>491000.63N</geoLat>
+			<geoLong>0070145.39E</geoLong>
+			<codeDatum>WGE</codeDatum>
+		</Gbv>
+		<Gbv>
+			<codeType>GRC</codeType>
+			<geoLat>491000.63N</geoLat>
+			<geoLong>0070145.39E</geoLong>
 			<codeDatum>WGE</codeDatum>
 		</Gbv>
 		<Gbv>
@@ -15190,22 +15286,23 @@
 		</Gbv>
 	</Gbr>
 	<Ase>
-		<AseUid mid="25091580">
-			<codeType>RAS</codeType>
-			<codeId>LFSTMZ001</codeId>
+		<AseUid mid="1561071">
+			<codeType>TMA</codeType>
+			<codeId>LFLL01</codeId>
 		</AseUid>
-		<txtLocalType>TMZ</txtLocalType>
-		<txtName>SARREBRUCK / (source utf-8) Tests de translation d'accents: à-é-è-î-ô-û</txtName>
-		<codeClass>E</codeClass>
-		<codeDistVerUpper>STD</codeDistVerUpper>
-		<valDistVerUpper>65</valDistVerUpper>
-		<uomDistVerUpper>FL</uomDistVerUpper>
+		<txtName>LYON 01</txtName>
+		<codeClass>C</codeClass>
+		<codeDistVerUpper>ALT</codeDistVerUpper>
+		<valDistVerUpper>4500</valDistVerUpper>
+		<uomDistVerUpper>FT</uomDistVerUpper>
 		<codeDistVerLower>ALT</codeDistVerLower>
 		<valDistVerLower>2500</valDistVerLower>
 		<uomDistVerLower>FT</uomDistVerLower>
-		<txtRmk>0500-2130#
-SUM : - 1HR#
-Excluding the French part of SARREBRUCK CTR.</txtRmk>
+		<Att>
+			<codeWorkHr>H24</codeWorkHr>
+			<txtRmkWorkHr>H24</txtRmkWorkHr>
+		</Att>
+		<txtRmk>Airspace defined excluding :#- LF-R 194 B LA VALBONNE, LF-R 3200 A and LF-R 3201 A when active.#- LF-P 9 BUGEY (entry prohibited, exemption : see AIP ENR 5.1 paragraph 1.2.1)</txtRmk>
 	</Ase>
 	<Ase>
 		<AseUid mid="1560775">
@@ -15253,23 +15350,22 @@ Excluding the French part of SARREBRUCK CTR.</txtRmk>
 		</Att>
 	</Ase>
 	<Ase>
-		<AseUid mid="1561071">
-			<codeType>TMA</codeType>
-			<codeId>LFLL01</codeId>
+		<AseUid mid="25091580">
+			<codeType>RAS</codeType>
+			<codeId>LFSTMZ001</codeId>
 		</AseUid>
-		<txtName>LYON 01</txtName>
-		<codeClass>C</codeClass>
-		<codeDistVerUpper>ALT</codeDistVerUpper>
-		<valDistVerUpper>4500</valDistVerUpper>
-		<uomDistVerUpper>FT</uomDistVerUpper>
+		<txtLocalType>TMZ</txtLocalType>
+		<txtName>SARREBRUCK / (source utf-8) Tests de translation d'accents: à-é-è-î-ô-û</txtName>
+		<codeClass>E</codeClass>
+		<codeDistVerUpper>STD</codeDistVerUpper>
+		<valDistVerUpper>65</valDistVerUpper>
+		<uomDistVerUpper>FL</uomDistVerUpper>
 		<codeDistVerLower>ALT</codeDistVerLower>
 		<valDistVerLower>2500</valDistVerLower>
 		<uomDistVerLower>FT</uomDistVerLower>
-		<Att>
-			<codeWorkHr>H24</codeWorkHr>
-			<txtRmkWorkHr>H24</txtRmkWorkHr>
-		</Att>
-		<txtRmk>Airspace defined excluding :#- LF-R 194 B LA VALBONNE, LF-R 3200 A and LF-R 3201 A when active.#- LF-P 9 BUGEY (entry prohibited, exemption : see AIP ENR 5.1 paragraph 1.2.1)</txtRmk>
+		<txtRmk>0500-2130#
+SUM : - 1HR#
+Excluding the French part of SARREBRUCK CTR.</txtRmk>
 	</Ase>
 	<Ase>
 		<AseUid mid="1562731">
@@ -16378,135 +16474,6 @@ Flying over LUXEUIL SAINT- SAUVEUR AD BLW 1000ft ASFC prohibited H24.</txtRmk>
 		<txtRmk>un test</txtRmk>
 	</Ase>
 	<Abd>
-		<AbdUid mid="25091583">
-			<AseUid mid="25091580">
-				<codeType>RAS</codeType>
-				<codeId>LFSTMZ001</codeId>
-			</AseUid>
-		</AbdUid>
-		<Avx>
-			<GbrUid mid="1545022">
-				<txtName>FRANCE_GERMANY</txtName>
-			</GbrUid>
-			<codeType>FNT</codeType>
-			<geoLat>490946.00N</geoLat>
-			<geoLong>0070158.00E</geoLong>
-			<codeDatum>WGE</codeDatum>
-			<valCrc>8A5A0A9B</valCrc>
-		</Avx>
-		<Avx>
-			<codeType>GRC</codeType>
-			<geoLat>490922.00N</geoLat>
-			<geoLong>0065043.00E</geoLong>
-			<codeDatum>WGE</codeDatum>
-			<valCrc>5F31007E</valCrc>
-		</Avx>
-	</Abd>
-	<Abd>
-		<AbdUid mid="21504881">
-			<AseUid mid="1560775">
-				<codeType>TMA</codeType>
-				<codeId>LFPT</codeId>
-			</AseUid>
-		</AbdUid>
-		<Avx>
-			<codeType>GRC</codeType>
-			<geoLat>492322.00N</geoLat>
-			<geoLong>0015357.00E</geoLong>
-			<codeDatum>WGE</codeDatum>
-			<valCrc>3CBD5F40</valCrc>
-		</Avx>
-		<Avx>
-			<codeType>GRC</codeType>
-			<geoLat>491912.00N</geoLat>
-			<geoLong>0020321.00E</geoLong>
-			<codeDatum>WGE</codeDatum>
-			<valCrc>332D29BC</valCrc>
-		</Avx>
-		<Avx>
-			<codeType>GRC</codeType>
-			<geoLat>491606.00N</geoLat>
-			<geoLong>0021021.00E</geoLong>
-			<codeDatum>WGE</codeDatum>
-			<valCrc>01264125</valCrc>
-		</Avx>
-		<Avx>
-			<codeType>GRC</codeType>
-			<geoLat>491602.00N</geoLat>
-			<geoLong>0021356.00E</geoLong>
-			<codeDatum>WGE</codeDatum>
-			<valCrc>F694215B</valCrc>
-		</Avx>
-		<Avx>
-			<codeType>GRC</codeType>
-			<geoLat>491227.00N</geoLat>
-			<geoLong>0021616.00E</geoLong>
-			<codeDatum>WGE</codeDatum>
-			<valCrc>F55D31A8</valCrc>
-		</Avx>
-		<Avx>
-			<codeType>GRC</codeType>
-			<geoLat>490828.00N</geoLat>
-			<geoLong>0021852.00E</geoLong>
-			<codeDatum>WGE</codeDatum>
-			<valCrc>25DD5B07</valCrc>
-		</Avx>
-		<Avx>
-			<codeType>GRC</codeType>
-			<geoLat>490716.00N</geoLat>
-			<geoLong>0021150.00E</geoLong>
-			<codeDatum>WGE</codeDatum>
-			<valCrc>D6F5485C</valCrc>
-		</Avx>
-		<Avx>
-			<codeType>GRC</codeType>
-			<geoLat>485925.00N</geoLat>
-			<geoLong>0020002.00E</geoLong>
-			<codeDatum>WGE</codeDatum>
-			<valCrc>21614232</valCrc>
-		</Avx>
-		<Avx>
-			<VorUidCen mid="1526844">
-				<codeId>PON</codeId>
-				<geoLat>490545.86N</geoLat>
-				<geoLong>0020209.24E</geoLong>
-			</VorUidCen>
-			<codeType>GRC</codeType>
-			<geoLat>485327.00N</geoLat>
-			<geoLong>0015954.00E</geoLong>
-			<codeDatum>WGE</codeDatum>
-			<valCrc>3A40B48E</valCrc>
-		</Avx>
-		<Avx>
-			<codeType>GRC</codeType>
-			<geoLat>485711N</geoLat>
-			<geoLong>0014524E</geoLong>
-			<codeDatum>WGE</codeDatum>
-			<valCrc>FF4EB814</valCrc>
-		</Avx>
-		<Avx>
-			<codeType>GRC</codeType>
-			<geoLat>490116.00N</geoLat>
-			<geoLong>0014432.00E</geoLong>
-			<codeDatum>WGE</codeDatum>
-			<valCrc>9114F3F1</valCrc>
-		</Avx>
-		<Avx>
-			<codeType>GRC</codeType>
-			<geoLat>490615.00N</geoLat>
-			<geoLong>0014640.00E</geoLong>
-			<codeDatum>WGE</codeDatum>
-			<valCrc>3F3EC817</valCrc>
-		</Avx>
-		<Avx>
-			<codeType>GRC</codeType>
-			<geoLat>492100.00N</geoLat>
-			<geoLong>0015300.0E</geoLong>
-			<codeDatum>WGE</codeDatum>
-			<valCrc>C230156B</valCrc>
-		</Avx>
-	</Abd>
-	<Abd>
 		<AbdUid mid="1570640">
 			<AseUid mid="1561071">
 				<codeType>TMA</codeType>
@@ -16515,17 +16482,39 @@ Flying over LUXEUIL SAINT- SAUVEUR AD BLW 1000ft ASFC prohibited H24.</txtRmk>
 		</AbdUid>
 		<Avx>
 			<codeType>GRC</codeType>
-			<geoLat>460319.00N</geoLat>
-			<geoLong>0051559.00E</geoLong>
+			<geoLat>460319.12N</geoLat>
+			<geoLong>0051558.59E</geoLong>
 			<codeDatum>WGE</codeDatum>
-			<valCrc>9C8039C7</valCrc>
 		</Avx>
 		<Avx>
 			<codeType>GRC</codeType>
-			<geoLat>453725.00N</geoLat>
-			<geoLong>0052353.00E</geoLong>
+			<geoLat>460319.12N</geoLat>
+			<geoLong>0051558.59E</geoLong>
 			<codeDatum>WGE</codeDatum>
-			<valCrc>033CFA13</valCrc>
+		</Avx>
+		<Avx>
+			<codeType>GRC</codeType>
+			<geoLat>460319.12N</geoLat>
+			<geoLong>0051558.59E</geoLong>
+			<codeDatum>WGE</codeDatum>
+		</Avx>
+		<Avx>
+			<codeType>GRC</codeType>
+			<geoLat>453724.59N</geoLat>
+			<geoLong>0052353.45E</geoLong>
+			<codeDatum>WGE</codeDatum>
+		</Avx>
+		<Avx>
+			<codeType>GRC</codeType>
+			<geoLat>453311.00N</geoLat>
+			<geoLong>0052511.00E</geoLong>
+			<codeDatum>WGE</codeDatum>
+		</Avx>
+		<Avx>
+			<codeType>GRC</codeType>
+			<geoLat>453311.00N</geoLat>
+			<geoLong>0052511.00E</geoLong>
+			<codeDatum>WGE</codeDatum>
 		</Avx>
 		<Avx>
 			<VorUidCen mid="1527120">
@@ -16549,6 +16538,18 @@ Flying over LUXEUIL SAINT- SAUVEUR AD BLW 1000ft ASFC prohibited H24.</txtRmk>
 			<geoLong>0051055.00E</geoLong>
 			<codeDatum>WGE</codeDatum>
 			<valCrc>81BBB4C7</valCrc>
+		</Avx>
+		<Avx>
+			<codeType>GRC</codeType>
+			<geoLat>452709.00N</geoLat>
+			<geoLong>0051055.00E</geoLong>
+			<codeDatum>WGE</codeDatum>
+		</Avx>
+		<Avx>
+			<codeType>GRC</codeType>
+			<geoLat>452709.00N</geoLat>
+			<geoLong>0051055.00E</geoLong>
+			<codeDatum>WGE</codeDatum>
 		</Avx>
 		<Avx>
 			<codeType>GRC</codeType>
@@ -16614,6 +16615,141 @@ Flying over LUXEUIL SAINT- SAUVEUR AD BLW 1000ft ASFC prohibited H24.</txtRmk>
 			<valRadiusArc>20</valRadiusArc>
 			<uomRadiusArc>NM</uomRadiusArc>
 			<valCrc>5633B4C5</valCrc>
+		</Avx>
+	</Abd>
+	<Abd>
+		<AbdUid mid="21504881">
+			<AseUid mid="1560775">
+				<codeType>TMA</codeType>
+				<codeId>LFPT</codeId>
+			</AseUid>
+		</AbdUid>
+		<Avx>
+			<codeType>GRC</codeType>
+			<geoLat>492322.00N</geoLat>
+			<geoLong>0015357.00E</geoLong>
+			<codeDatum>WGE</codeDatum>
+			<valCrc>3CBD5F40</valCrc>
+		</Avx>
+		<Avx>
+			<codeType>GRC</codeType>
+			<geoLat>491912.00N</geoLat>
+			<geoLong>0020321.00E</geoLong>
+			<codeDatum>WGE</codeDatum>
+			<valCrc>332D29BC</valCrc>
+		</Avx>
+		<Avx>
+			<codeType>GRC</codeType>
+			<geoLat>491606.00N</geoLat>
+			<geoLong>0021021.00E</geoLong>
+			<codeDatum>WGE</codeDatum>
+			<valCrc>01264125</valCrc>
+		</Avx>
+		<Avx>
+			<codeType>GRC</codeType>
+			<geoLat>491602.00N</geoLat>
+			<geoLong>0021356.00E</geoLong>
+			<codeDatum>WGE</codeDatum>
+			<valCrc>F694215B</valCrc>
+		</Avx>
+		<Avx>
+			<codeType>GRC</codeType>
+			<geoLat>491227.00N</geoLat>
+			<geoLong>0021616.00E</geoLong>
+			<codeDatum>WGE</codeDatum>
+			<valCrc>F55D31A8</valCrc>
+		</Avx>
+		<Avx>
+			<codeType>GRC</codeType>
+			<geoLat>490828.00N</geoLat>
+			<geoLong>0021852.00E</geoLong>
+			<codeDatum>WGE</codeDatum>
+			<valCrc>25DD5B07</valCrc>
+		</Avx>
+		<Avx>
+			<codeType>GRC</codeType>
+			<geoLat>490716.00N</geoLat>
+			<geoLong>0021150.00E</geoLong>
+			<codeDatum>WGE</codeDatum>
+			<valCrc>D6F5485C</valCrc>
+		</Avx>
+		<Avx>
+			<codeType>GRC</codeType>
+			<geoLat>485327.00N</geoLat>
+			<geoLong>0015954.00E</geoLong>
+			<codeDatum>WGE</codeDatum>
+			<valCrc>21614232</valCrc>
+		</Avx>
+		<Avx>
+			<VorUidCen mid="1526844">
+				<codeId>PON</codeId>
+				<geoLat>490545.86N</geoLat>
+				<geoLong>0020209.24E</geoLong>
+			</VorUidCen>
+			<codeType>GRC</codeType>
+			<geoLat>485327.00N</geoLat>
+			<geoLong>0015954.00E</geoLong>
+			<codeDatum>WGE</codeDatum>
+			<valCrc>3A40B48E</valCrc>
+		</Avx>
+		<Avx>
+			<codeType>GRC</codeType>
+			<geoLat>485711N</geoLat>
+			<geoLong>0014524E</geoLong>
+			<codeDatum>WGE</codeDatum>
+			<valCrc>FF4EB814</valCrc>
+		</Avx>
+		<Avx>
+			<codeType>GRC</codeType>
+			<geoLat>490116.00N</geoLat>
+			<geoLong>0014432.00E</geoLong>
+			<codeDatum>WGE</codeDatum>
+			<valCrc>9114F3F1</valCrc>
+		</Avx>
+		<Avx>
+			<codeType>GRC</codeType>
+			<geoLat>490615.00N</geoLat>
+			<geoLong>0014640.00E</geoLong>
+			<codeDatum>WGE</codeDatum>
+			<valCrc>3F3EC817</valCrc>
+		</Avx>
+		<Avx>
+			<codeType>GRC</codeType>
+			<geoLat>492100.00N</geoLat>
+			<geoLong>0015300.0E</geoLong>
+			<codeDatum>WGE</codeDatum>
+			<valCrc>C230156B</valCrc>
+		</Avx>
+		<Avx>
+			<codeType>GRC</codeType>
+			<geoLat>492322.00N</geoLat>
+			<geoLong>0015357.00E</geoLong>
+			<codeDatum>WGE</codeDatum>
+		</Avx>
+	</Abd>
+	<Abd>
+		<AbdUid mid="25091583">
+			<AseUid mid="25091580">
+				<codeType>RAS</codeType>
+				<codeId>LFSTMZ001</codeId>
+			</AseUid>
+		</AbdUid>
+		<Avx>
+			<GbrUid mid="1545022">
+				<txtName>FRANCE_GERMANY</txtName>
+			</GbrUid>
+			<codeType>FNT</codeType>
+			<geoLat>490946.00N</geoLat>
+			<geoLong>0070158.00E</geoLong>
+			<codeDatum>WGE</codeDatum>
+			<valCrc>8A5A0A9B</valCrc>
+		</Avx>
+		<Avx>
+			<codeType>GRC</codeType>
+			<geoLat>490922.00N</geoLat>
+			<geoLong>0065043.00E</geoLong>
+			<codeDatum>WGE</codeDatum>
+			<valCrc>5F31007E</valCrc>
 		</Avx>
 	</Abd>
 	<Abd>
