@@ -2,8 +2,10 @@
 from datetime import datetime as dt2
 from dateutil.relativedelta import *
 from dateutil.rrule import *
-import os, sys, re, traceback, logging, calendar, datetime
+import os, sys, re, traceback, calendar, datetime
 import json, unicodedata
+
+from bpaTools import Logger
 
 def isInteger(s:str) -> bool:
     try:
@@ -46,10 +48,10 @@ def ctrlPythonVersion() -> None:
     return
 
 #Use: bpaTools.initEvent(__file__)
-def initEvent(sFile:str, oLog:logging=None, isSilent:bool=False) -> None:
+def initEvent(sFile:str, oLog:Logger=None, isSilent:bool=False) -> None:
     msg = "({0}) Initialisation".format(getFileName(sFile))
     if oLog:
-        oLog.debug(msg, outConsole=True)
+        oLog.debug(msg, level=9, outConsole=True)
     elif not isSilent:
         print(msg)
     return

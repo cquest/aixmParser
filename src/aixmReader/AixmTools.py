@@ -28,6 +28,9 @@ class AixmTools:
         self.oCtrl = oCtrl
         #self.pLocal = Proj("epsg:2154")         # EPSG:2154 = RGF93 / Lambert-93 - Projected coordinate system for France) :: Deprecated format --> Proj(init="epsg:2154")
         self.pWGS = Proj("epsg:4326")            # EPSG:4326 = WGS84 / Geodetic coordinate system for World  :: Deprecated format --> Proj(init="epsg:4326")
+        self.bSrcFileIsSIAorEur:bool = False
+        if self.oCtrl:
+            self.bSrcFileIsSIAorEur = bool(self.oCtrl.oAixm.srcOrigin.lower() in ["sia-france","ead-sdo"])     #Fichier source issu du SIA ou d'Eurocontrol
         return
 
     def writeGeojsonFile(self, sFileName, oGeojson, context=""):
@@ -52,7 +55,7 @@ class AixmTools:
         self.oCtrl.oLog.info("{0} file {1} - {2} areas in map".format(headMsg, sOutFile, sizeMap), outConsole=True)
         return
 
-    def makeHeaderOpenairFile(self, oHeader, oOpenair, context="", gpsType="", exceptDay="", sAreaKey="", sAreaDesc="", sAddHeader="", digit:int=None, epsilonReduce:float=None) -> str:
+    def makeHeaderOpenairFile(self, oHeader, oOpenair, context="", gpsType="", exceptDay="", sAreaKey="", sAreaDesc="", aAddHeader=[], digit:int=None, epsilonReduce:float=None) -> str:
         lLeftMargin:int=3
         sRet:str=""
         sizeMap = len(oOpenair)
@@ -73,7 +76,7 @@ class AixmTools:
                         #    sRet += "*" + " "*2*lLeftMargin + "../.. and {0} complementary sources files. See Catalog file header for all details.\n".format(len(oHeader)-lFileCnt+1)
                         #    break
                 else:
-                    if oKey=="content" and (digit or epsilonReduce):
+                    if oKey=="content" and (digit!=None or epsilonReduce!=None):
                         if digit!=None and epsilonReduce!=None: oVal = "{0} [digit={1}/rdp={2}]".format(oVal, digit, epsilonReduce)
                         elif digit!=None:                       oVal = "{0} [digit={1}]".format(oVal, digit)
                         elif epsilonReduce!=None:               oVal = "{0} [rdp={1}]".format(oVal, epsilonReduce)
@@ -81,8 +84,11 @@ class AixmTools:
 
             sRet += "*" + " "*lLeftMargin + "-"*44 + "\n"
 
-            if sAddHeader:
-                sRet += "*" + " "*lLeftMargin + "(i)Information - " + sAddHeader + "\n"
+            if digit!=None or epsilonReduce!=None:
+                sRet += "*" + " "*lLeftMargin + "(i)Information - Le tracé de certaines zones est optimisé. Identifiable par: '***(aixmParser) Openair Segments Optimisés'\n"
+            if aAddHeader:
+                for sContent in aAddHeader:
+                    sRet += "*" + " "*lLeftMargin + "(i)Information - " + sContent + "\n"
             if sAreaKey:
                 sRet += "*" + " "*lLeftMargin + "(i)Information - '{0}' - Cartographie avec filtrage géographique des zones aériennes : {1}\n".format(sAreaKey, sAreaDesc)
 
@@ -374,7 +380,8 @@ class AixmTools:
             ret = value.string.replace("\u2009", " ")   #for UnicodeEncodeError: 'charmap' codec can't encode character '\u2009'
             ret = ret.replace("&apos;","'")
             ret = ret.replace("&quot;",'"')
-            ret = ret.replace("#"," ")
+            if self.bSrcFileIsSIAorEur:
+                ret = ret.replace("#"," ")
             ret = ret.replace("\n"," ")
             ret = ret.replace(" :",":")
             ret = ret.replace(" ;",";")

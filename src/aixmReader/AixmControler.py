@@ -283,9 +283,9 @@ class AixmControler:
                 self.saveAirspaces(o2openair, criticalErrCatalog)
                 bExec = True
 
-            if criticalErrCatalog>0:
-                self.oLog.critical("Interrupt process; probably for update referential 'groundEstimatedHeight' - Show Critical errors details in log file", outConsole=True)
-            elif self.oLog.CptCritical>criticalErrCatalog:
+            #if criticalErrCatalog>0:
+            #    self.oLog.critical("Interrupt process; probably for update referential 'groundEstimatedHeight' - Show Critical errors details in log file", outConsole=True)
+            if self.oLog.CptCritical>criticalErrCatalog:
                 self.oLog.error("Show Critical errors items in log file", outConsole=True)
 
         return bExec

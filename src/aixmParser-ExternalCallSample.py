@@ -67,12 +67,12 @@ if __name__ == '__main__':
     #aArgv += [aixmReader.CONST.optSilent]                          #Mode silencieux sans utilisation du fichier log et sans retour d'affichage
     #aArgv += [aixmReader.CONST.optGeojsonDigitOptimize + "=10"]    #Optimisation par arrondi des coordonnées Geojson (default=6)
     aArgv += [aixmReader.CONST.optOpenairDigitOptimize + "=0"]      #Optimisation par arrondi des coordonnées Openair (default=-1)
-    aArgv += [aixmReader.CONST.optEpsilonReduce + "=0.001"]          #Optimisation des tracés Default=0 removal-duplicates-values and no-optimize, <0 for no-optimize or >0 for optimize, sample=0.0001 / 0.001 / 0.002
+    aArgv += [aixmReader.CONST.optEpsilonReduce + "=0.0001"]        #Optimisation des tracés Default=0 removal-duplicates-values and no-optimize, <0 for no-optimize or >0 for optimize, sample=0.0001 / 0.001 / 0.002
 
     ####  Préparation d'appel ####
     oOpts = bpaTools.getCommandLineOptions(aArgv)       #Arguments en dictionnaire
 
-    oLog = bpaTools.Logger(appId, logFile, callingContext, linkContext, isDebug=False, isSilent=bool(aixmReader.CONST.optSilent in oOpts))
+    oLog = bpaTools.Logger(appId, logFile, callingContext, linkContext, debugLevel=1, isSilent=bool(aixmReader.CONST.optSilent in oOpts))
     if aixmReader.CONST.optCleanLog in oOpts:
         oLog.resetFile()                                #Clean du log si demandé
     oLog.writeCommandLine(aArgv)                        #Trace le contexte d'execution

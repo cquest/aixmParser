@@ -10,36 +10,20 @@ import aixmReader
 #import numpy as np   #Matrix sample: arr = np.array([["2","xx"], ["3","yy"], ["4","zz"]]); print(arr[:, 0]) ; print(arr[:, 1])
 
 
-cstGeometry:str         = "geometry"         #Stockage du tracé Openair
-errLocalisationPoint:list = ["DP 45:00:00 N 005:00:00 W"]
+cstGeometry:str             = "geometry"         #Stockage du tracé Openair
+openairAixmHeader:str       = "***(aixmParser) "
+openairAixmSegmnt:str       = openairAixmHeader + "Openair Segments "
+openairAixmWrn:str          = openairAixmHeader + "Warning "
+errLocalisationPoint:list   = ["DP 45:00:00 N 005:00:00 W"]
 
 
-#* Rappel: Syntaxe déclarative des Classes dans le format OpenAir
-#* 	AC <classType>
-#*   	  <ClassType> = Type of airspace class, see below:
-#*     		A	Class A
-#*     		B	Class B
-#*     		C	Class C
-#*     		D	Class D
-#*     		E	Class E
-#*     		F	Class F
-#*     		G	Class G
-#*     		W	Wave Window (espaces réservés aux vélivoles)
-#*     		R 	Restricted
-#*     		Q 	Danger
-#*     		P	Prohibited
-#*     		GP  Glider Prohibited
-#*     		CTR	CONTROL TRAFFIC AREAS
-#*		ZMT	ZONE REGLEMENTE TEMPORAIRE
-#*		RMZ	Radio Mandatory Zone
-#*		TMZ	Transponder Mandatory Zone
-#*		ZSM	Zone de Sensibilité Majeure (Protection Rapaces, Urubus, etc...)
 #   digit = Integer parameter for optimize Openair output geometry coordinates (Default=-1 no-change source, n for round(coords, n, sample=0)
 #   epsilonReduce = Float parameter of Ramer-Douglas-Peucker Algorithm (https://github.com/fhirschmann/rdp) for optimize output (Default=0 removal-duplicates-values and no-optimize, <0 for no-optimize or >0 for optimize, sample=0.0001)
-def makeOpenair(oAirspace:dict, gpsType:str, digit:float=-1, epsilonReduce:float=-1, oLog:bpaTools.Logger=None) -> list:
+def makeOpenair(oAirspace:dict, gpsType:str, digit:float=-1, epsilonReduce:float=-1, nbMaxSegment:int=-1, epsilonrDyn:bool=False, oLog:bpaTools.Logger=None) -> list:
     openair:list = []
-    oZone = oAirspace.get("properties", oAirspace)
-    theClass = oZone["class"]
+    oZone:dict = oAirspace.get("properties", oAirspace)
+    theClass:str = oZone["class"]
+    theName:str  = oZone["nameV"]
 
     #theType = oZone["type"]
     #1/ Specific translations for Openair format
@@ -49,7 +33,7 @@ def makeOpenair(oAirspace:dict, gpsType:str, digit:float=-1, epsilonReduce:float
     #elif theType=="TMZ":                    theClass="TMZ"
 
     openair.append("AC {0}".format(theClass))
-    openair.append("AN {0}".format(oZone["nameV"]))
+    openair.append("AN {0}".format(theName))
     #old openair.append('*AAlt ["{0}", "{1}"]'.format(aixmReader.getSerializeAlt(oZone)[1:-1], aixmReader.getSerializeAltM(oZone)[1:-1]))
     aAlt:list = []
     aAlt.append("{0}".format(aixmReader.getSerializeAlt (oZone)[1:-1]))
@@ -100,17 +84,87 @@ def makeOpenair(oAirspace:dict, gpsType:str, digit:float=-1, epsilonReduce:float
     oaMap:list = []
     if cstGeometry in oAirspace:
         oaMap = oAirspace[cstGeometry]
-    iOrgSize:int = len(oaMap)
+    iOrgSize:int = __getNbSegments(oaMap)
 
+    #if theName in ["R 222 B (SeeNotam)"]:
+    #    print("map")
+
+    #Optimisation contextuelle des tracés
     #if epsilonReduce<0: --> do not change oaMap !
-    if epsilonReduce>=0:
+    if iOrgSize>9 and epsilonReduce>=0:                 #Ne pas optimiser les petites zones (ou cercles n'ayants que 2 segments ex: 'V X=49:16:30N 4:45:20E' + 'DC 1.0')
+        if epsilonReduce==0 and epsilonrDyn and (theClass in ["GP","ZSM","G","E","Q","FFVL","FFVP"] or theName[:10]=="LTA FRANCE"):
+            epsilonReduce=0.0001                        #Imposer une optimisation pour certaines zones
+
+        if   iOrgSize > 6000:
+            epsilonReduce = round(epsilonReduce*16, 6)  #0.0 standard || 0.0001->0.0016 filtre || 0.0004->0.0096 région
+        elif iOrgSize > 4000:
+            epsilonReduce = round(epsilonReduce*14, 6)  #0.0 standard || 0.0001->0.0014 filtre || 0.0004->0.0084 région
+        elif iOrgSize > 3000:
+            epsilonReduce = round(epsilonReduce*12, 6)  #0.0 standard || 0.0001->0.0012 filtre || 0.0004->0.0072 région
+        elif iOrgSize > 2000:
+            epsilonReduce = round(epsilonReduce*10, 6)  #0.0 standard || 0.0001->0.0010 filtre || 0.0004->0.0060 région
+        elif iOrgSize > 1000:
+            epsilonReduce = round(epsilonReduce* 8, 6)  #0.0 standard || 0.0001->0.0008 filtre || 0.0004->0.0048 région
+        elif iOrgSize > 600:
+            epsilonReduce = round(epsilonReduce* 6, 6)  #0.0 standard || 0.0001->0.0006 filtre || 0.0004->0.0036 région
+        elif iOrgSize > 400:
+            epsilonReduce = round(epsilonReduce* 4, 6)  #0.0 standard || 0.0001->0.0004 filtre || 0.0004->0.0024 région
+        elif iOrgSize > 200:
+            epsilonReduce = round(epsilonReduce* 2, 6)  #0.0 standard || 0.0001->0.0002 filtre || 0.0004->0.0012 région
+        elif iOrgSize < 20:
+            epsilonReduce=0.0                           #0.0 imposer la suppression de doublons
+        #else:  #Cas 20 <= iOrgSize < 200
+        #    Ne pas changer le coef 'epsilonReduce'     #0.0 standard || 0.0001 filtre || 0.0006 région
         oaMap = __optimizeMap(oaMap, digit, epsilonReduce, oLog)
-        openair.append("*** Segments optimisés {0}->{1} ***".format(iOrgSize, len(oaMap)))
+
+    iNewSize:int = __getNbSegments(oaMap)
+    iCount:int = 0
+    if nbMaxSegment>0 and iNewSize>nbMaxSegment:
+        #Cas spécifique d'une demande de limitation d'un nombre maximal de segment
+        iDelta:int = iNewSize - nbMaxSegment
+        orgEpsilonReduce:float = epsilonReduce
+        #oLog.debug("RDP Optimisation Delta: {0} - count={1} rdp={2} / orgSize{3} newSize={4} (delta={5})".format(theName, iCount, epsilonReduce, iOrgSize, iNewSize, iDelta), level=1, outConsole=False)
+        while iCount<50 and iDelta>0:
+            iCount += 1                                                             #End While: iCount==50
+            epsilonReduce:float = round(orgEpsilonReduce*(1 + (iCount*0.2)), 6)     #End while: 0.002*(1 + (0.2*50)) = 0.022
+            oaMap = __optimizeMap(oaMap, digit, epsilonReduce, oLog)
+            iNewSize = __getNbSegments(oaMap)
+            iDelta = iNewSize - nbMaxSegment
+            #oLog.debug("RDP Optimisation Delta: {0} - count={1} rdp={2} / orgSize{3} newSize={4} (delta={5})".format(theName, iCount, epsilonReduce, iOrgSize, iNewSize, iDelta), level=1, outConsole=False)
+
+    if iNewSize>0 and iNewSize!=iOrgSize:
+        if oLog:
+            percent:float = round((1-(iNewSize/iOrgSize))*100,1)
+            percent = int(percent) if percent>=1.0 else percent
+            if iCount>0:
+                sOpti:str = "Optimisés à {0}% ({1}->{2}) [rdp={3}, iCount={4}]".format(percent, iOrgSize, iNewSize, epsilonReduce, iCount)
+            else:
+                sOpti:str = "Optimisés à {0}% ({1}->{2}) [rdp={3}]".format(percent, iOrgSize, iNewSize, epsilonReduce)
+            if oaMap[0][:len(openairAixmSegmnt)]==openairAixmSegmnt:
+                sOpti = oaMap[0] + " // " + sOpti
+            #Sortie dans le log uniquement en debug level>0
+            oLog.debug("Openair RDP Optimisation: {0} - {1}".format(theName, sOpti), level=1, outConsole=False)
+            #Sortie dans l'Openair uniquement en debug level>0
+            if oLog.debugLevel>0:
+                if oaMap[0][:len(openairAixmSegmnt)]==openairAixmSegmnt:
+                    oaMap[0] = sOpti
+                else:
+                    openair.append(openairAixmSegmnt+sOpti)
     else:
-        openair.append("*** {0} Segments ***".format(len(oaMap)))
+        #Sortie dans l'Openair uniquement en debug level>1
+        if oLog.debugLevel>1:
+            if oaMap[0][:len(openairAixmSegmnt)]!=openairAixmSegmnt:
+                openair.append(openairAixmSegmnt+"{0}".format(iOrgSize))
 
     openair += oaMap
     return openair
+
+
+def __getNbSegments(oaMap:list) -> int:
+    iSize:int = len(oaMap)
+    if oaMap[0][:len(openairAixmSegmnt)]==openairAixmSegmnt:
+        iSize -= 1
+    return iSize
 
 
 #Optimisation de la sortie Openair selon l'algo 'Ramer-Douglas-Peucker'
@@ -126,6 +180,8 @@ def __optimizeMap(oaMap:list, digit:float, epsilonReduce:float, oLog:bpaTools.Lo
         if iNbPt>3:     #Ne jamais optimiser les tracés de moins de 3 points (car si l'on supprime 1 pt, il ne subsiste qu'1 ligne)
             tmpMap:list = []
             for dmsPt in retMap:
+                if dmsPt[0:len(openairAixmHeader)]==openairAixmHeader:
+                    print("stop")
                 aPtDms = dmsPt.split(" ")
                 ptDD = bpaTools.GeoCoordinates.geoStr2coords(aPtDms[1], aPtDms[2], "dd", 8)
                 tmpMap.append(ptDD[::-1])                           #Invertion des coordonnées
@@ -138,7 +194,7 @@ def __optimizeMap(oaMap:list, digit:float, epsilonReduce:float, oLog:bpaTools.Lo
                     sPoint:str = "DP {0} {1}".format(ptDMS[0], ptDMS[1])
                     newMap.append(sPoint)
                     if oLog:
-                        aTocken:list=["60","61"]
+                        aTocken:list=[":60",":61"]      #Chercher err dans minutes/secondes (les degrees a plus de 60 sont valides '61:28:0W')
                         if any(sTocken in sPoint for sTocken in aTocken):
                             sMsg:str = "Convertion error - ddPt={0} ptDMS={1}".format(ddPt, ptDMS)
                             oLog.error(sMsg, outConsole=False)
@@ -152,7 +208,8 @@ def __optimizeMap(oaMap:list, digit:float, epsilonReduce:float, oLog:bpaTools.Lo
     oIdx.update({"oaDeb":iNbPt})
     for iIdx in range(0, len(oaMap)):
         oaPt = oaMap[iIdx]
-        if oaPt[:3] in ["V X","DC ","V D","DB ","***"]:     #Ne jamais optimiser les Cercles ou Arcs
+        #if oaPt[:3] in ["V X","DC ","V D","DB ","***"]:     #Old - Ne pas optimiser les Cercles ou Arcs ou autres
+        if oaPt[:3]!="DP ":                                  #N'optimiser que les séries de Points (ex:'DP 49:50:0N 0:37:0E')
             if iNbPt>0:
                 newMap += optimize(oIdx)
                 iNbPt:int = 0
@@ -291,8 +348,9 @@ class Aixm2openair:
                 else:
                     sAseUidBase = self.oAirspacesCatalog.findZoneUIdBase(sAseUid)           #Identifier la zone de base (de référence)
                     if sAseUidBase==None:
-                        self.oCtrl.oLog.warning("Missing Airspaces Borders AseUid={0} of {1}".format(sAseUid, oZone["nameV"]), outConsole=False)
-                        self.geoAirspaces.append({"type":"Openair", "properties":oZone, cstGeometry:errLocalisationPoint})
+                        sWrn:str = "Missing Airspaces Borders AseUid={0} of {1}".format(sAseUid, oZone["nameV"])
+                        self.oCtrl.oLog.warning(sWrn, outConsole=False)
+                        self.geoAirspaces.append({"type":"Openair", "properties":oZone, cstGeometry:[openairAixmWrn+sWrn]+errLocalisationPoint})
                     else:
                         o:dict = self.findOpenairObjectAirspacesBorders(sAseUidBase)       #Recherche si la zone de base a déjà été parsé
                         if o:
@@ -301,8 +359,9 @@ class Aixm2openair:
                         else:
                             oBorder = self.oAirspacesCatalog.findAixmObjectAirspacesBorders(sAseUidBase)
                             if oBorder==None:
-                                self.oCtrl.oLog.warning("Missing Airspaces Borders AseUid={0} AseUidBase={1} of {2}".format(sAseUid, sAseUidBase, oZone["nameV"]), outConsole=False)
-                                self.geoAirspaces.append({"type":"Openair", "properties":oZone, cstGeometry:errLocalisationPoint})
+                                sWrn:str = "Missing Airspaces Borders AseUid={0} AseUidBase={1} of {2}".format(sAseUid, sAseUidBase, oZone["nameV"])
+                                self.oCtrl.oLog.warning(sWrn, outConsole=False)
+                                self.geoAirspaces.append({"type":"Openair", "properties":oZone, cstGeometry:[openairAixmWrn+sWrn]+errLocalisationPoint})
                             else:
                                 self.parseAirspaceBorder(oZone, oBorder)
             barre.update(idx)
@@ -469,7 +528,7 @@ class Aixm2openair:
                 else:
                     sWrn:str = "Missing geoBorder GbrUid='{0}' Name={1} of {2}".format(avx.GbrUid["mid"], avx.GbrUid.txtName.string, oZone["nameV"])
                     self.oCtrl.oLog.warning(sWrn, outConsole=False)
-                    openair.append("*** Warning " + sWrn)
+                    openair.append(openairAixmWrn+sWrn)
                     if not "dd" in firstCoords:
                         startDD = self.oCtrl.oAixmTools.geo2coordinates("dd", avx, oZone=oZone)
                         firstCoords.update({"dd":startDD})
@@ -479,7 +538,9 @@ class Aixm2openair:
                     openair.append(sPoint)
                     lastPoint = sPoint
             else:
-                self.oCtrl.oLog.warning("Default case - GbrUid='{0}' Name={1} of {2}".format(avx.GbrUid["mid"], avx.GbrUid.txtName.string, oZone["nameV"]), outConsole=False)
+                sWrn:str = "Default case - GbrUid='{0}' Name={1} of {2}".format(avx.GbrUid["mid"], avx.GbrUid.txtName.string, oZone["nameV"])
+                self.oCtrl.oLog.warning(sWrn, outConsole=False)
+                openair.append(openairAixmWrn+sWrn)
                 if not "dd" in firstCoords:
                     ptDD = self.oCtrl.oAixmTools.geo2coordinates("dd", avx, oZone=oZone)
                     firstCoords.update({"dd":ptDD})

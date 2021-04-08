@@ -9,6 +9,7 @@ try:
 except ImportError:
     xmlSIA = None
 
+defEstimHeight:list = [0, 0, 0, 0]
 
 #Sauvegarde du catalogue de zones sous forme de CSV
 def convertJsonCalalogToCSV(cat:dict) -> str:
@@ -310,16 +311,16 @@ class AixmAirspaces4_5:
 
     def getGroundEstimatedHeight(self, theAirspace:dict) -> list:
         if not theAirspace["vfrZone"]:
-            return [0,0,0,0]
+            return defEstimHeight
         sKey = self.oCtrl.oAixmTools.getAirspaceFunctionalKey(theAirspace)
         aValue:list = None
         if sKey in self.oGroundEstimatedHeight:
             aValue = self.oGroundEstimatedHeight[sKey]                                  #Extract value of Ground Estimated Height
         if aValue==None:
-            aValue = [0,0,0,0]
+            aValue = defEstimHeight
             self.oUnknownGroundHeight.update({theAirspace["UId"]:sKey})                 #Ajoute un point d'entrée attendu
-            if theAirspace["freeFlightZone"]:
-                self.oCtrl.oLog.warning("Missing Ground Estimated Height UId={0} - Key={1}".format(theAirspace["UId"], sKey), outConsole=False)
+            #if theAirspace["freeFlightZone"]:
+            #    self.oCtrl.oLog.warning("Missing Ground Estimated Height UId={0} - Key={1}".format(theAirspace["UId"], sKey), outConsole=False)
         return aValue
 
     def createAirspacesCatalog(self, sFilename:str) -> dict:
@@ -1188,7 +1189,7 @@ class AixmAirspaces4_5:
                         self.oCtrl.oLog.info("Exclude airspace for Free-Flight-Zone {0}".format(sKey), outConsole=False)
                 elif bPotentialFilter:
                     self.oPotentialFilter4FreeFlightZone.update({sKey:False})           #Ajoute une zone potentiellement filtrable
-                    self.oCtrl.oLog.debug("Potential Filter for Free-Flight-Zone {0}".format(sKey), outConsole=False)
+                    self.oCtrl.oLog.debug("Potential Filter for Free-Flight-Zone {0}".format(sKey), level=4, outConsole=False)
 
                 theAirspace.update({"freeFlightZone":bool((not bExclude) and bLowInfFL115)})     #Zone non-exclue et dont le plancher débute en dessous FL115/3505m
 
@@ -1371,7 +1372,7 @@ class AixmAirspaces4_5:
             bExcept = bExcept or bool(activationDesc.find("MON-FRI (EXC HOL)".lower())>=0)
             bExcept = bExcept or bool((activationDesc.find("MON-FRI".lower())>=0) and (activationDesc.find("EXC HOL".lower())>=0))
             if bExcept:
-                self.oCtrl.oLog.debug("except-SDJF: id={0} name={1}".format(sZoneUId, theAirspace["name"]))
+                self.oCtrl.oLog.debug("except-SDJF: id={0} name={1}".format(sZoneUId, theAirspace["name"]), level=3)
                 theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"exceptSAT":True})
                 theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"exceptSUN":True})
                 theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"exceptHOL":True})
@@ -1382,7 +1383,7 @@ class AixmAirspaces4_5:
             bExcept = bExcept or bool(activationDesc.find("except SAT,SUN".lower())>=0)
             bExcept = bExcept or bool(activationDesc.find("except SAT and SUN".lower())>=0)
             if bExcept:
-                self.oCtrl.oLog.debug("except-SD: id={0} name={1}".format(sZoneUId, theAirspace["name"]))
+                self.oCtrl.oLog.debug("except-SD: id={0} name={1}".format(sZoneUId, theAirspace["name"]), level=4)
                 theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"exceptSAT":True})
                 theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"exceptSUN":True})
         if not bExcept:
@@ -1392,7 +1393,7 @@ class AixmAirspaces4_5:
             bExcept = bExcept or bool(activationDesc.find("except SUN and public HOL".lower())>=0)
             bExcept = bExcept or bool(activationDesc.find("MON-SAT except HOL".lower())>=0)
             if bExcept:
-                self.oCtrl.oLog.debug("except-DJF: id={0} name={1}".format(sZoneUId, theAirspace["name"]))
+                self.oCtrl.oLog.debug("except-DJF: id={0} name={1}".format(sZoneUId, theAirspace["name"]), level=3)
                 theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"exceptSUN":True})
                 theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"exceptHOL":True})
         if not bExcept:
@@ -1400,13 +1401,13 @@ class AixmAirspaces4_5:
             bExcept = bool(activationDesc.find("sauf SAM".lower())>=0)
             bExcept = bExcept or bool(activationDesc.find("except SAT".lower())>=0)
             if bExcept:
-                self.oCtrl.oLog.debug("except-S: id={0} name={1}".format(sZoneUId, theAirspace["name"]))
+                self.oCtrl.oLog.debug("except-S: id={0} name={1}".format(sZoneUId, theAirspace["name"]), level=3)
                 theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"exceptSAT":True})
             #Non activation = Sauf DIM // Except SUN
             bExcept = bool(activationDesc.find("sauf DIM".lower())>=0)
             bExcept = bExcept or bool(activationDesc.find("except SUN".lower())>=0)
             if bExcept:
-                self.oCtrl.oLog.debug("except-D: id={0} name={1}".format(sZoneUId, theAirspace["name"]))
+                self.oCtrl.oLog.debug("except-D: id={0} name={1}".format(sZoneUId, theAirspace["name"]), level=3)
                 theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"exceptSUN":True})
             #Non activation = Sauf JF // Except HOL
             bExcept = bool(activationDesc.find("sauf JF".lower())>=0)
@@ -1414,14 +1415,14 @@ class AixmAirspaces4_5:
             bExcept = bExcept or bool(activationDesc.find("except public HOL".lower())>=0)
             bExcept = bExcept or bool(activationDesc.find("EXC HOL".lower())>=0)
             if bExcept:
-                self.oCtrl.oLog.debug("except-JF: id={0} name={1}".format(sZoneUId, theAirspace["name"]))
+                self.oCtrl.oLog.debug("except-JF: id={0} name={1}".format(sZoneUId, theAirspace["name"]), level=3)
                 theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"exceptHOL":True})
 
         #--------------------------------
         #Traitement spécifique pour signaler les zones activable par NOTAM
         bNotam = bool(activationDesc.find("NOTAM".lower())>=0)
         if bNotam:
-            self.oCtrl.oLog.debug("See NOTAM: id={0} name={1}".format(sZoneUId, theAirspace["name"]))
+            self.oCtrl.oLog.debug("See NOTAM: id={0} name={1}".format(sZoneUId, theAirspace["name"]), level=3)
             theAirspace = self.oCtrl.oAixmTools.addField(theAirspace, {"seeNOTAM":True})
 
         #--------------------------------
@@ -1550,7 +1551,7 @@ class AixmAirspaces4_5:
         return [orgAltM, altM]
 
 
-    def setAltitudeZone(self, sZoneUId, ase, theAirspace, aGroundEstimatedHeight=[0,0,0,0]) -> list:
+    def setAltitudeZone(self, sZoneUId, ase, theAirspace, aGroundEstimatedHeight=defEstimHeight) -> list:
         sOrdinalLower:str = "ordinalLower"    #samples: 'ordinalLowerM' or 'ordinalLowerMinM'
         aFinalLower:list
         aAltLower    = self.getAltitude(theAirspace, "Lower", "",    ase.valDistVerLower, ase.codeDistVerLower, ase.uomDistVerLower, aGroundEstimatedHeight)
