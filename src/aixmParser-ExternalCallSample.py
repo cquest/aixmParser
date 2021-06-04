@@ -18,6 +18,7 @@ if __name__ == '__main__':
 
     ####  Source test file  ####
     srcFile = "../tst/aixm4.5_SIA-FR_map-Airspaces.xml"
+    #srcFile = "../tst/aixm4.5_SIA-FR_ctrl-Airspaces.xml"
     #srcFile = "../../poaff/input/Tests/99999999_BPa_Test4CleaningCatalog_aixm45.xml"
     #srcFile = "../../poaff/input/Tests/99999999_BPa_Test4AppendDelta1_aixm45.xml"
     #srcFile = "../../poaff/input/Tests/99999999_BPa_TestBORDERs_aixm45.xml"
@@ -30,9 +31,9 @@ if __name__ == '__main__':
     #srcFile = "../../poaff/input/FFVL/20210122_FFVL_ZonesComplementaires_aixm45.xml"
     #srcFile = "../../poaff/input/BPa/20210114_LTA-French1-HR_BPa_aixm45.xml"
     #srcFile = "../../poaff/input/BPa/20201210_BPa_ZonesComplementaires_aixm45.xml"
-    #srcFile = "../../poaff/input/BPa/20210228_BPa_FR-ZSM_Protection-des-rapaces_aixm45.xml"
-    #srcFile = "../../poaff/input/FFVL/20210214_FFVL_ProtocolesParticuliers_BPa_aixm45.xml"
-    #srcFile = "../../poaff/input/BPa/20210301_BPa_FR-SIA-SUPAIP_aixm45.xml"
+    #srcFile = "../../poaff/input/BPa/20210528_BPa_FR-ZSM_Protection-des-rapaces_aixm45.xml"
+    #srcFile = "../../poaff/input/FFVL/20210518_FFVL_ProtocolesParticuliers_BPa_aixm45.xml"
+    srcFile = "../../poaff/input/BPa/20210603_BPa_FR-SIA-SUPAIP_aixm45.xml"
 
 
     ####  quelques options d'appels  ####

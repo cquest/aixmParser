@@ -68,8 +68,11 @@ class Xml:
     def dump(self):
         return ET.dump(self.oRoot)
 
-    def toString(self):
-        ET.tostring(self.oRoot, method='xml')
+    def toString(self, indent="") -> str:
+        if indent:
+            return minidom.parseString(ET.tostring(self.oRoot)).toprettyxml(indent=indent)
+        else:
+            return ET.tostring(self.oRoot, method='xml')
 
     def createRoot(self, sTagName:str, sXmlns:str=None, sId:str=None, sValue:str=None):
         self.oRoot = ET.Element(sTagName)
@@ -100,13 +103,20 @@ class Xml:
             oTag.text = sValue
         return oTag
 
+    def addComment(self, oParent, sValue:str=None):
+        if sValue:
+            oTag = ET.Comment(sValue)
+            #oParent.insert(1, oTag)
+            oParent.append(oTag)
+        return
+
     def write(self, sFileName:str, sEncoding:str="utf-8", bExpand=0):
-        oTree = ET.ElementTree(self.oRoot)
         if bExpand:
-            oXmlStr = minidom.parseString(ET.tostring(self.oRoot)).toprettyxml(indent="  ")
+            oXmlStr:str = self.toString("\t")
             with open(sFileName, "w", encoding=sEncoding) as file:
                 file.write(oXmlStr)
         else:
+            oTree = ET.ElementTree(self.oRoot)
             oTree.write(sFileName, encoding=sEncoding, xml_declaration=True)
         return
 

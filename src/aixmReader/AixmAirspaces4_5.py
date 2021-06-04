@@ -504,7 +504,7 @@ class AixmAirspaces4_5:
 
         elif typeZone=="CBA":                   #CBA [Cross Border Area (FUA).]
             #typeZone="CBA"                     #No change
-            if not classZone:   classZone="G"   #G - Espace a caractère particulier
+            if not classZone:   classZone="R"   #R - Restricted in Openair format (25/05/2021: Changement de 'G' to 'R')
 
         elif typeZone=="RTBA":                  ##RTBA = Réseau Très Basse Altitude
             #typeZone="RTBA"                    #No change
