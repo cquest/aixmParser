@@ -135,3 +135,57 @@
     0:02:27.744849 Temps d'execution (hh:mm:ss.ms)
 2021-06-25 14:09:58,561 aixmParser v2.26.4 INFO /!\Show log file for details - /bigpool/data/dgac/aip/aixmParser/src/../out/_aixmParser.log
 2021-06-25 14:09:58,561 aixmParser v2.26.4 INFO Logger closed - [bpaTools.Logger.Logger]aixmParser v2.26.4
+2021-06-25 14:14:48,848 aixmParser v2.26.4 INFO Logger started - [bpaTools.Logger.Logger]aixmParser v2.26.4
+2021-06-25 14:14:48,848 aixmParser v2.26.4 INFO Command line:
+2021-06-25 14:14:48,848 aixmParser v2.26.4 INFO     argv[0] ./aixmParser.py
+2021-06-25 14:14:48,848 aixmParser v2.26.4 INFO     argv[1] AIXM4.5_all_FR_OM_2021-07-15.xml
+2021-06-25 14:14:48,848 aixmParser v2.26.4 INFO     argv[2] -Fgeojson
+2021-06-25 14:14:48,849 aixmParser v2.26.4 INFO     argv[3] -Tall
+2021-06-25 14:14:48,849 aixmParser v2.26.4 INFO Reading source file: AIXM4.5_all_FR_OM_2021-07-15.xml
+2021-06-25 14:15:11,847 aixmParser v2.26.4 INFO Logger started - [bpaTools.Logger.Logger]aixmParser v2.26.4
+2021-06-25 14:15:11,848 aixmParser v2.26.4 INFO Command line:
+2021-06-25 14:15:11,848 aixmParser v2.26.4 INFO     argv[0] ./aixmParser.py
+2021-06-25 14:15:11,848 aixmParser v2.26.4 INFO     argv[1] ../AIXM4.5_all_FR_OM_2021-07-15.xml
+2021-06-25 14:15:11,848 aixmParser v2.26.4 INFO     argv[2] -Fgeojson
+2021-06-25 14:15:11,848 aixmParser v2.26.4 INFO     argv[3] -Tall
+2021-06-25 14:15:11,848 aixmParser v2.26.4 INFO Reading source file: ../AIXM4.5_all_FR_OM_2021-07-15.xml
+2021-06-25 14:15:39,557 aixmParser v2.26.4 INFO Parsing Obs to GeoJSON - Obstacles
+2021-06-25 14:15:44,592 aixmParser v2.26.4 INFO Write file obstacles.geojson - 11770 areas in map
+2021-06-25 14:15:44,600 aixmParser v2.26.4 INFO Parsing Ahp to GeoJSON - Aerodromes / Heliports
+2021-06-25 14:15:45,159 aixmParser v2.26.4 INFO Write file aerodromes.geojson - 854 areas in map
+2021-06-25 14:15:45,159 aixmParser v2.26.4 INFO Parsing Rcp to GeoJSON - Runway Center Line Position
+2021-06-25 14:15:45,672 aixmParser v2.26.4 INFO Write file runwaysCenter.geojson - 1907 areas in map
+2021-06-25 14:15:45,673 aixmParser v2.26.4 INFO Parsing Uni to GeoJSON - Aerodrome control towers
+2021-06-25 14:15:45,778 aixmParser v2.26.4 INFO Write file towers.geojson - 171 areas in map
+2021-06-25 14:15:45,778 aixmParser v2.26.4 INFO Parsing Gsd to GeoJSON - Gates and Stands
+2021-06-25 14:15:46,182 aixmParser v2.26.4 INFO Write file gates-stands.geojson - 1361 areas in map
+2021-06-25 14:15:46,182 aixmParser v2.26.4 INFO Parsing Gbr to GeoJSON - Geographic borders
+2021-06-25 14:15:47,953 aixmParser v2.26.4 INFO Write file borders.geojson - 40 areas in map
+2021-06-25 14:15:48,039 aixmParser v2.26.4 INFO Indexing Adg - Airspaces Groups
+2021-06-25 14:15:48,389 aixmParser v2.26.4 INFO Indexing Sae - Airspaces Services
+2021-06-25 14:15:48,501 aixmParser v2.26.4 INFO Indexing Uni - Organizations
+2021-06-25 14:15:48,639 aixmParser v2.26.4 INFO Indexing Abd - Airspaces Borders
+2021-06-25 14:15:48,804 aixmParser v2.26.4 INFO Loading Ase - Airspaces Catalog
+2021-06-25 14:16:01,532 aixmParser v2.26.4 CRITICAL Missing Ground Estimated Height: 1868 Unknown heights in file /bigpool/data/dgac/aip/aixmParser/src/../out/referentials/refUnknownGroundHeight.json
+2021-06-25 14:16:01,536 aixmParser v2.26.4 INFO Potential Filter for Free Flight Zone: 3241 in file /bigpool/data/dgac/aip/aixmParser/src/../out/referentials/refPotentialFilter4FreeFlightZone.json
+2021-06-25 14:16:01,536 aixmParser v2.26.4 INFO Written file airspacesCatalog.json
+2021-06-25 14:16:01,738 aixmParser v2.26.4 INFO Written file airspacesCatalog.csv
+2021-06-25 14:16:01,826 aixmParser v2.26.4 INFO Parsing Abd to GeoJSON - Airspaces Borders
+2021-06-25 14:16:02,993 aixmParser v2.26.4 WARNING Missing Airspaces Borders AseUid=1562743 of OCA NANDI
+2021-06-25 14:16:02,998 aixmParser v2.26.4 WARNING Missing Airspaces Borders sAseUidBase=1562743 used by AseUid=1562747 of OCA NANDI.20
+2021-06-25 14:16:09,028 aixmParser v2.26.4 WARNING Missing Airspaces Borders AseUid=10437886 of R 68B (SeeNotam)
+2021-06-25 14:16:21,938 aixmParser v2.26.4 WARNING Missing Airspaces Borders AseUid=1562735 of FIR NANDI
+2021-06-25 14:17:39,974 aixmParser v2.26.4 INFO Clean catalog
+2021-06-25 14:17:40,002 aixmParser v2.26.4 CRITICAL Missing Ground Estimated Height: 1868 Unknown heights in file /bigpool/data/dgac/aip/aixmParser/src/../out/referentials/refUnknownGroundHeight.json
+2021-06-25 14:17:40,006 aixmParser v2.26.4 INFO Potential Filter for Free Flight Zone: 3241 in file /bigpool/data/dgac/aip/aixmParser/src/../out/referentials/refPotentialFilter4FreeFlightZone.json
+2021-06-25 14:17:40,006 aixmParser v2.26.4 INFO Written file airspacesCatalog.json
+2021-06-25 14:17:40,215 aixmParser v2.26.4 INFO Written file airspacesCatalog.csv
+2021-06-25 14:17:40,231 aixmParser v2.26.4 ERROR Show Critical errors items in log file
+2021-06-25 14:17:40,254 aixmParser v2.26.4 INFO [bpaTools.Logger.Logger]aixmParser v2.26.4 - Report
+      32 (i)Info
+       4 (!)Warning
+       1 /!\Error
+       2 /!\Critical
+    0:02:28.407072 Temps d'execution (hh:mm:ss.ms)
+2021-06-25 14:17:40,255 aixmParser v2.26.4 INFO /!\Show log file for details - /bigpool/data/dgac/aip/aixmParser/src/../out/_aixmParser.log
+2021-06-25 14:17:40,255 aixmParser v2.26.4 INFO Logger closed - [bpaTools.Logger.Logger]aixmParser v2.26.4
