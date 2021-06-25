@@ -9,4 +9,5 @@ geog==0.0.2
 SRTM.py==0.3.7
 rdp==0.8
 Shapely==1.6.4
+python-dateutil==2.8.1
 ###Sous Windows, 'Shapely' peut ne pas s'installer, si besoin le télécharger --> https://www.lfd.uci.edu/~gohlke/pythonlibs/#shapely
