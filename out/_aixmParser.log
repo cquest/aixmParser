@@ -1,0 +1,90 @@
+2020-07-26 22:00:42,943 aixmParser v2.12.0 INFO Logger started - [bpaTools.Logger.Logger]aixmParser v2.12.0
+2020-07-26 22:00:42,943 aixmParser v2.12.0 INFO Command line:
+2020-07-26 22:00:42,943 aixmParser v2.12.0 INFO     argv[0] aixmParser
+2020-07-26 22:00:42,943 aixmParser v2.12.0 INFO     argv[1] ../tst/aixm4.5_SIA-FR_map-Airspaces.xml
+2020-07-26 22:00:42,943 aixmParser v2.12.0 INFO     argv[2] -Fall
+2020-07-26 22:00:42,943 aixmParser v2.12.0 INFO     argv[3] -Tall
+2020-07-26 22:00:42,943 aixmParser v2.12.0 INFO     argv[4] -ALL
+2020-07-26 22:00:42,943 aixmParser v2.12.0 INFO     argv[5] -IFR
+2020-07-26 22:00:42,943 aixmParser v2.12.0 INFO     argv[6] -VFR
+2020-07-26 22:00:42,943 aixmParser v2.12.0 INFO     argv[7] -FreeFlight
+2020-07-26 22:00:42,943 aixmParser v2.12.0 INFO     argv[8] -CleanLog
+2020-07-26 22:00:42,943 aixmParser v2.12.0 INFO Reading source file: ../tst/aixm4.5_SIA-FR_map-Airspaces.xml
+2020-07-26 22:00:43,279 aixmParser v2.12.0 INFO Parsing Obs to GeoJSON - Obstacles
+2020-07-26 22:00:43,307 aixmParser v2.12.0 INFO Write file obstacles.geojson - 2 areas in map
+2020-07-26 22:00:43,307 aixmParser v2.12.0 INFO Parsing Ahp to GeoJSON - Aerodromes / Heliports
+2020-07-26 22:00:43,317 aixmParser v2.12.0 INFO Write file aerodromes.geojson - 2 areas in map
+2020-07-26 22:00:43,317 aixmParser v2.12.0 INFO Parsing Rcp to GeoJSON - Runway Center Line Position
+2020-07-26 22:00:43,333 aixmParser v2.12.0 INFO Write file runwaysCenter.geojson - 2 areas in map
+2020-07-26 22:00:43,333 aixmParser v2.12.0 INFO Parsing Uni to GeoJSON - Aerodrome control towers
+2020-07-26 22:00:43,349 aixmParser v2.12.0 INFO Write file towers.geojson - 1 areas in map
+2020-07-26 22:00:43,349 aixmParser v2.12.0 INFO Parsing Gsd to GeoJSON - Gates and Stands
+2020-07-26 22:00:43,364 aixmParser v2.12.0 INFO Write file gates-stands.geojson - 2 areas in map
+2020-07-26 22:00:43,364 aixmParser v2.12.0 INFO Parsing Gbr to GeoJSON - Geographic borders
+2020-07-26 22:00:43,596 aixmParser v2.12.0 INFO Write file borders.geojson - 5 areas in map
+2020-07-26 22:00:43,596 aixmParser v2.12.0 INFO Loading referential: 19 datas in file - D:/_Users_/BPascal/_4_Src/Src_Python/git/aixmParser/src/../out/referentials/_BPa_refGroundEstimatedHeight.json
+2020-07-26 22:00:43,596 aixmParser v2.12.0 INFO Loading referential: 5 datas in file - D:/_Users_/BPascal/_4_Src/Src_Python/git/aixmParser/src/../out/referentials/_BPa_refExcludeFilter4FreeFlightZone.json
+2020-07-26 22:00:43,665 aixmParser v2.12.0 INFO Indexing Adg - Airspaces Groups
+2020-07-26 22:00:43,750 aixmParser v2.12.0 INFO Indexing Sae - Airspaces Services
+2020-07-26 22:00:43,819 aixmParser v2.12.0 INFO Indexing Uni - Organizations
+2020-07-26 22:00:43,897 aixmParser v2.12.0 INFO Indexing Abd - Airspaces Borders
+2020-07-26 22:00:43,919 aixmParser v2.12.0 INFO Loading Ase - Airspaces Catalog
+2020-07-26 22:00:43,934 aixmParser v2.12.0 INFO except-SDJF: id=1613148-tst name=506 A
+2020-07-26 22:00:43,950 aixmParser v2.12.0 INFO except-SDJF: id=1613148-1 name=506 A
+2020-07-26 22:00:43,950 aixmParser v2.12.0 WARNING Missing Ground Estimated Height UId=1613148-2 - Key=.R.506 A@[3500FT ASFC/FL75]
+2020-07-26 22:00:43,950 aixmParser v2.12.0 INFO except-JF: id=1613148-2 name=506 A
+2020-07-26 22:00:43,950 aixmParser v2.12.0 WARNING Missing Ground Estimated Height UId=17782506 - Key=.R.239@[500FT ASFC/5000FT AMSL]
+2020-07-26 22:00:43,950 aixmParser v2.12.0 INFO except-SD: id=17782506 name=239
+2020-07-26 22:00:43,950 aixmParser v2.12.0 INFO See NOTAM: id=17782506 name=239
+2020-07-26 22:00:43,950 aixmParser v2.12.0 WARNING Missing Ground Estimated Height UId=13555652 - Key=.R.278@[SFC/2500FT ASFC]
+2020-07-26 22:00:43,966 aixmParser v2.12.0 INFO See NOTAM: id=1562265 name=214
+2020-07-26 22:00:43,981 aixmParser v2.12.0 INFO except-SDJF: id=1563013 name=164 A2
+2020-07-26 22:00:44,013 aixmParser v2.12.0 INFO See NOTAM: id=1564511 name=222 B
+2020-07-26 22:00:44,035 aixmParser v2.12.0 CRITICAL Missing Ground Estimated Height: 3 Unknown heights in file D:/_Users_/BPascal/_4_Src/Src_Python/git/aixmParser/src/../out/referentials/refUnknownGroundHeight.json
+2020-07-26 22:00:44,050 aixmParser v2.12.0 INFO Potential Filter for Free Flight Zone: 2 in file D:/_Users_/BPascal/_4_Src/Src_Python/git/aixmParser/src/../out/referentials/refPotentialFilter4FreeFlightZone.json
+2020-07-26 22:00:44,050 aixmParser v2.12.0 INFO Written file airspacesCatalog.json
+2020-07-26 22:00:44,050 aixmParser v2.12.0 INFO Written file airspacesCatalog.csv
+2020-07-26 22:00:44,097 aixmParser v2.12.0 INFO Parsing Abd to GeoJSON - Airspaces Borders
+2020-07-26 22:00:45,137 aixmParser v2.12.0 WARNING Missing geoBorder GbrUid='19012205' Name=ITALY_SWITZERLAND of [PART] LISFRAM01A (id=LISFRAM01A)
+2020-07-26 22:00:47,214 aixmParser v2.12.0 INFO Clean catalog
+2020-07-26 22:00:47,224 aixmParser v2.12.0 INFO Prepare GeoJSON file - All Airspaces map
+2020-07-26 22:00:47,265 aixmParser v2.12.0 INFO Write file airspaces-all.geojson - 35 areas in map
+2020-07-26 22:00:47,265 aixmParser v2.12.0 INFO Prepare GeoJSON file - IFR map (Instrument Flihgt Rules
+2020-07-26 22:00:47,281 aixmParser v2.12.0 INFO Write file airspaces-ifr.geojson - 2 areas in map
+2020-07-26 22:00:47,281 aixmParser v2.12.0 INFO Prepare GeoJSON file - VFR map (Visual Flihgt Rules
+2020-07-26 22:00:47,334 aixmParser v2.12.0 INFO Write file airspaces-vfr.geojson - 33 areas in map
+2020-07-26 22:00:47,334 aixmParser v2.12.0 INFO Prepare GeoJSON file - FreeFlight map (Paragliding / Hanggliding)
+2020-07-26 22:00:47,381 aixmParser v2.12.0 INFO Write file airspaces-freeflight.geojson - 31 areas in map
+2020-07-26 22:00:47,381 aixmParser v2.12.0 INFO Parsing Gbr to OpenAir - Geographic borders
+2020-07-26 22:00:47,613 aixmParser v2.12.0 INFO Written file borders.txt - 5 areas in map
+2020-07-26 22:00:47,667 aixmParser v2.12.0 INFO Parsing Abd to OpenAir - Airspaces Borders
+2020-07-26 22:00:47,713 aixmParser v2.12.0 WARNING Missing geoBorder GbrUid='19012205' Name=ITALY_SWITZERLAND of [PART] LISFRAM01A (id=LISFRAM01A)
+2020-07-26 22:00:47,814 aixmParser v2.12.0 INFO Prepare Openair file - All Airspaces map / -gpsWithTopo / 
+2020-07-26 22:00:47,836 aixmParser v2.12.0 INFO Written file airspaces-all-gpsWithTopo.txt - 35 areas in map
+2020-07-26 22:00:47,836 aixmParser v2.12.0 INFO Prepare Openair file - IFR map (Instrument Flihgt Rules / -gpsWithTopo / 
+2020-07-26 22:00:47,851 aixmParser v2.12.0 INFO Written file airspaces-ifr-gpsWithTopo.txt - 2 areas in map
+2020-07-26 22:00:47,851 aixmParser v2.12.0 INFO Prepare Openair file - VFR map (Visual Flihgt Rules / -gpsWithTopo / 
+2020-07-26 22:00:47,867 aixmParser v2.12.0 INFO Written file airspaces-vfr-gpsWithTopo.txt - 33 areas in map
+2020-07-26 22:00:47,867 aixmParser v2.12.0 INFO Prepare Openair file - FreeFlight map (Paragliding / Hanggliding) / -gpsWithTopo / 
+2020-07-26 22:00:47,883 aixmParser v2.12.0 INFO Written file airspaces-freeflight-gpsWithTopo.txt - 31 areas in map
+2020-07-26 22:00:47,883 aixmParser v2.12.0 INFO Prepare Openair file - FreeFlight map (Paragliding / Hanggliding) / -gpsWithTopo / exceptSAT
+2020-07-26 22:00:47,898 aixmParser v2.12.0 INFO Written file airspaces-freeflight-gpsWithTopo-forSAT.txt - 27 areas in map
+2020-07-26 22:00:47,898 aixmParser v2.12.0 INFO Prepare Openair file - FreeFlight map (Paragliding / Hanggliding) / -gpsWithTopo / exceptSUN
+2020-07-26 22:00:47,914 aixmParser v2.12.0 INFO Written file airspaces-freeflight-gpsWithTopo-forSUN.txt - 27 areas in map
+2020-07-26 22:00:47,914 aixmParser v2.12.0 INFO Prepare Openair file - FreeFlight map (Paragliding / Hanggliding) / -gpsWithTopo / exceptHOL
+2020-07-26 22:00:47,936 aixmParser v2.12.0 INFO Written file airspaces-freeflight-gpsWithTopo-forHOL.txt - 27 areas in map
+2020-07-26 22:00:47,936 aixmParser v2.12.0 INFO Prepare Openair file - FreeFlight map (Paragliding / Hanggliding) / -gpsWithoutTopo / 
+2020-07-26 22:00:47,952 aixmParser v2.12.0 INFO Written file airspaces-freeflight-gpsWithoutTopo.txt - 31 areas in map
+2020-07-26 22:00:47,952 aixmParser v2.12.0 INFO Prepare Openair file - FreeFlight map (Paragliding / Hanggliding) / -gpsWithoutTopo / exceptSAT
+2020-07-26 22:00:47,967 aixmParser v2.12.0 INFO Written file airspaces-freeflight-gpsWithoutTopo-forSAT.txt - 27 areas in map
+2020-07-26 22:00:47,967 aixmParser v2.12.0 INFO Prepare Openair file - FreeFlight map (Paragliding / Hanggliding) / -gpsWithoutTopo / exceptSUN
+2020-07-26 22:00:47,983 aixmParser v2.12.0 INFO Written file airspaces-freeflight-gpsWithoutTopo-forSUN.txt - 27 areas in map
+2020-07-26 22:00:47,983 aixmParser v2.12.0 INFO Prepare Openair file - FreeFlight map (Paragliding / Hanggliding) / -gpsWithoutTopo / exceptHOL
+2020-07-26 22:00:47,999 aixmParser v2.12.0 INFO Written file airspaces-freeflight-gpsWithoutTopo-forHOL.txt - 27 areas in map
+2020-07-26 22:00:47,999 aixmParser v2.12.0 CRITICAL Interrupt process; probably for update referential 'groundEstimatedHeight' - Show Critical errors details in log file
+2020-07-26 22:00:47,999 aixmParser v2.12.0 INFO [bpaTools.Logger.Logger]aixmParser v2.12.0 - Report
+    77 (i)Info
+     5 (!)Warning
+     2 /!\Critical
+2020-07-26 22:00:47,999 aixmParser v2.12.0 INFO /!\Show log file for details - D:/_Users_/BPascal/_4_Src/Src_Python/git/aixmParser/src/../out/_aixmParser.log
+2020-07-26 22:00:47,999 aixmParser v2.12.0 INFO Logger closed - [bpaTools.Logger.Logger]aixmParser v2.12.0

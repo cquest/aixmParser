@@ -1,0 +1,282 @@
+########################## Main structure ##################
+<xsd:element name="AIXM-Snapshot"> ../..
+	<xsd:element name="Aas" type="AirspaceAssociationType"/>
+Use	<xsd:element name="Abd" type="AirspaceBorderType"/>
+	<xsd:element name="Acr" type="AirspaceCorridorType"/>
+Use	<xsd:element name="Adg" type="AirspaceDerivedGeometryType"/>
+	<xsd:element name="Aga" type="GroundServiceAddressType"/>
+	<xsd:element name="Agl" type="AeronauticalGroundLightType"/>
+	<xsd:element name="Aha" type="AerodromeHeliportAddressType"/>
+	<xsd:element name="Ahc" type="AerodromeHeliportCollocationType"/>
+	<xsd:element name="Aho" type="AerodromeHeliportObstacleType"/>
+Use	<xsd:element name="Ahp" type="AerodromeHeliportType"/>
+	<xsd:element name="Ahs" type="GroundServiceType"/>
+	<xsd:element name="Ahu" type="AerodromeHeliportUsageType"/>
+	<xsd:element name="Ain" type="NavaidAngularReferenceType"/>
+	<xsd:element name="Als" type="ApronLightingSystemType"/>
+	<xsd:element name="Ana" type="AerodromeHeliportNavaidType"/>
+	<xsd:element name="Apg" type="ApronGeometryType"/>
+	<xsd:element name="Apn" type="ApronType"/>
+Use	<xsd:element name="Ase" type="AirspaceType"/>
+	<xsd:element name="Din" type="NavaidDistanceIndicationType"/>
+	<xsd:element name="Dli" type="DmeUsageLimitationType"/>
+	<xsd:element name="Dme" type="DmeType"/>
+	<xsd:element name="Dpn" type="DesignatedPointType"/>
+	<xsd:element name="Fao" type="FatoOldType">
+	<xsd:element name="Fto" type="FatoType"/>
+	<xsd:element name="Fcp" type="FatoCentreLinePositionType"/>
+	<xsd:element name="Fda" type="FatoDirectionApproachLightingType"/>
+	<xsd:element name="Fdd" type="FatoDirectionDeclaredDistanceType"/>
+	<xsd:element name="Fdn" type="FatoDirectionType"/>
+	<xsd:element name="Fdo" type="FatoDirectionObstacleType"/>
+	<xsd:element name="Fds" type="FatoDirectionStarType"/>
+	<xsd:element name="Fls" type="FatoLightingSystemType"/>
+	<xsd:element name="Fpa" type="FatoProtectionAreaType"/>
+	<xsd:element name="Fpg" type="FatoProtectionAreaGeometryType"/>
+	<xsd:element name="Fqy" type="FrequencyType"/>
+	<xsd:element name="Ful" type="FuelType"/>
+Use	<xsd:element name="Gbr" type="GeographicalBorderType"/>
+Use	<xsd:element name="Gsd" type="GateStandType"/>
+	<xsd:element name="Hpe" type="HoldingProcedureType"/>
+	<xsd:element name="Iap" type="InstrumentApproachType"/>
+	<xsd:element name="Ils" type="IlsType"/>
+	<xsd:element name="Iue" type="InstrumentApproachUsageConditionType"/>
+	<xsd:element name="Mgp" type="MsaGroupType"/>
+	<xsd:element name="Mkr" type="MkrType"/>
+	<xsd:element name="Mls" type="MlsType"/>
+	<xsd:element name="Ndb" type="NdbType"/>
+	<xsd:element name="Nli" type="NdbUsageLimitationType"/>
+	<xsd:element name="Nsc" type="CheckpointType"/>
+	<xsd:element name="Ntg" type="NitrogenType"/>
+	<xsd:element name="Oaa" type="OrganisationAuthorityAddressType"/>
+	<xsd:element name="Oae" type="AirspaceObstacleType"/>
+	<xsd:element name="Oas" type="OrganisationAuthorityAssociationType"/>
+Use	<xsd:element name="Obs" type="ObstacleType"/>
+	<xsd:element name="Ofa" type="AirspaceAuthorityType"/>
+	<xsd:element name="Oil" type="OilType"/>
+	<xsd:element name="Org" type="OrganisationAuthorityType"/>
+	<xsd:element name="Oxg" type="OxygenType"/>
+	<xsd:element name="Pfy" type="PassengerFacilityType"/>
+	<xsd:element name="Plb" type="CruisingLevelsTableType"/>
+	<xsd:element name="Plc" type="CruisingLevelsColumnType"/>
+Use	<xsd:element name="Rcp" type="RunwayCentreLinePositionType"/>
+	<xsd:element name="Rda" type="RunwayDirectionApproachLightingSystemType"/>
+	<xsd:element name="Rdd" type="RunwayDirectionDeclaredDistanceType"/>
+	<xsd:element name="Rdn" type="RunwayDirectionType"/>
+	<xsd:element name="Rdo" type="RunwayDirectionObstacleType"/>
+	<xsd:element name="Rds" type="RunwayDirectionStarType"/>
+	<xsd:element name="Rls" type="RunwayDirectionLightingSystemType"/>
+	<xsd:element name="Rpa" type="RunwayProtectionAreaType"/>
+	<xsd:element name="Rpg" type="RunwayProtectionAreaGeometryType"/>
+	<xsd:element name="Rsg" type="RouteSegmentType"/>
+	<xsd:element name="Rsu" type="RouteSegmentUsageType"/>
+	<xsd:element name="Rte" type="EnrouteRouteType"/>
+	<xsd:element name="Rwy" type="RunwayType"/>
+	<xsd:element name="Sae" type="AirspaceServiceType"/>
+	<xsd:element name="Sah" type="AerodromeHeliportServiceType"/>
+	<xsd:element name="Ser" type="ServiceType"/>
+	<xsd:element name="Shp" type="HoldingProcedureServiceType"/>
+	<xsd:element name="Sia" type="StarType"/>
+	<xsd:element name="Sid" type="SidType"/>
+	<xsd:element name="Sip" type="InstrumentApproachServiceType"/>
+	<xsd:element name="Sns" type="SpecialNavigationSystemStationType"/>
+	<xsd:element name="Sny" type="SpecialNavigationSystemType"/>
+	<xsd:element name="Spa" type="SignificantPointAirspaceType"/>
+	<xsd:element name="Spd" type="SpecialDateType"/>
+	<xsd:element name="Srs" type="RouteSegmentServiceType"/>
+	<xsd:element name="Ssd" type="SidServiceType"/>
+	<xsd:element name="Sse" type="StarUsageType"/>
+	<xsd:element name="Ssr" type="StarServiceType"/>
+	<xsd:element name="Sue" type="SidUsageType"/>
+	<xsd:element name="Swy" type="StopwayType"/>
+	<xsd:element name="Tcn" type="TacanType"/>
+	<xsd:element name="Tcp" type="TaxiwayCentreLinePositionType"/>
+	<xsd:element name="Tfr" type="TrafficFlowRestrictionType"/>
+	<xsd:element name="Thp" type="TaxiwayHoldingPositionType"/>
+	<xsd:element name="Tla" type="TlofType"/>
+	<xsd:element name="Tlg" type="TlofGeometryType"/>
+	<xsd:element name="Tli" type="TacanUsageLimitationType"/>
+	<xsd:element name="Tls" type="TlofLightingSystemType"/>
+	<xsd:element name="Tly" type="TaxiwayLightingSystemType"/>
+	<xsd:element name="Tsa" type="TlofSafeAreaType"/>
+	<xsd:element name="Tsg" type="TlofSafeAreaGeometryType"/>
+	<xsd:element name="Twy" type="TaxiwayType"/>
+	<xsd:element name="Uac" type="UnitAssociationType"/>
+	<xsd:element name="Uas" type="UnitContactAddressType"/>
+Use	<xsd:element name="Uni" type="UnitType"/>
+	<xsd:element name="Vli" type="VorUsageLimitationType"/>
+	<xsd:element name="Vor" type="VorType"/>
+	<xsd:element name="Aac" type="AirspaceAssocType">
+	<xsd:element name="Dln" type="DmeLimitationType">
+	<xsd:element name="Nln" type="NdbLimitationType">
+	<xsd:element name="Tln" type="TacanLimitationType">
+	<xsd:element name="Vln" type="VorLimitationType">
+
+
+
+########################## Use in AixmParser ##################
+<xsd:element name="Uni" type="UnitType"/>
+	Ase.AseUid.codeType or CODE_TYPE_AS
+	
+	ICAO DEPRECATED-4.0  [ICAO Region (for example, EUR, NAT, etc).]  
+	ECAC DEPRECATED-4.0  [ECAC Region.]  
+	CFMU DEPRECATED-4.0  [CFMU Area.]  
+	IFPS DEPRECATED-4.0  [IFPS Area.]  
+	TACT DEPRECATED-4.0  [TACT Area.]  
+	NAS [National Airspace System.]  
+	[note:The airspace within which a State provides Air Traffic Services is usually composed of:1) the territories over which the State has jurisdiction;2) those portions of the airspace over the high seas or in airspace of undetermined sovereignty where the provision of ATS are provided as determined by regional agreements.It can usually be determined by the UNION of FIRs (including, where appropriate, NO-FIRs) of the UNION of NAS-P..]  
+	NAS-P DEPRECATED-4.0  [A part of a National Airspace System.]  
+	[note:It might be necessary to define 'parts' of NAS. An example might be the division of the conterminous US into smaller 'airspaces' (K1, K2...) for a number of reasons..]  
+	FIR [Flight Information Region.]  
+	FIR-P [Part of an FIR.]  
+	[note:Might, for example, be used if service provided by more than one unit..]  
+	UIR [Upper Flight Information Region.]  
+	UIR-P [Part of a UIR.]  
+	[note:Might, for example, be used if more than one unites provide service in different parts of a UIR.]  
+	CTA [Control Area.]  
+	CTA-P [Part of a CTA.]  
+	OCA [Oceanic Control Area.]  
+	OCA-P [Partial OTA.]  
+	UTA [Upper Control Area.]  
+	UTA-P [Part of UTA.]  
+	TMA [Terminal Control Area.]  
+	TMA-P [Part of TMA.]  
+	CTR [Control Zone.]  
+	CTR-P [Part of CTR.]  
+	CLASS [Airspace having a specified class.]  
+	ATZ DEPRECATED-4.0  [Aerodrome Traffic Zone.]  
+	ATZ-P DEPRECATED-4.0  [Part of ATZ.]  
+	MNPSA DEPRECATED-4.0  [Minimum Navigation Performance Specifications Area.]  
+	MNPSA-P DEPRECATED-4.0  [Part of MNPSA.]  
+	OTA [Oceanic Transition Area.]  
+	SECTOR [Control Sector.]  
+	SECTOR-C [Temporarily Consolidated (Collapsed ) Sector.]  
+	TSA [Temporary Segregated Area (FUA).]  
+	TRA [Temporary Reserved Area (FUA).]  
+	CBA [Cross Border Area (FUA).]  
+	RCA [Reduced Co-ordination Airspace Procedure (FUA).]  
+	RAS [Regulated Airspace (not otherwise covered).]  
+	CDA DEPRECATED-4.0  [Client Defined Airspace.]  
+	AWY [Airway (corridor)..]  
+	[note:(ICAO) A control area or portion thereof established in the form of a corridor equipped with radio navigation aids..]  
+	RTECL DEPRECATED-4.0  [Route Centreline.]  
+	[note:(EURO) A route segment that is not in the form of a corridor but a centreline yet is controlled and is equipped with a series of radio navigation aids..]  
+	P [Prohibited Area.]  
+	R [Restricted Area.]  
+	R-AMC [AMC Manageable Restricted Area.]  
+	D [Danger Area.]  
+	D-AMC [AMC Manageable Danger Area.]  
+	D-OTHER [Activities of dangerous nature (other than a Danger Area).]  
+	MIL DEPRECATED-4.0  [Military Training/Exercise Area.]  
+	ADIZ [Air Defense Identification Zone.]  
+	HTZ DEPRECATED-4.0  [Helicopter Traffic Zone.]  
+	OIL DEPRECATED-4.0  [Oil Field.]  
+	BIRD DEPRECATED-4.0  [Bird Migration Area.]  
+	SPORT DEPRECATED-4.0  [Aerial Sporting/Recreational Area.]  
+	LMA DEPRECATED-4.0  [Limited Airspace (in general).]  
+	A [Alert Area.]  
+	W [Warning Area.]  
+	PROTECT [Airspace protected from specific air traffic.]  
+	AMA [Minimum Altitude Area.]  
+	ASR [Altimeter Setting Region.]  
+	NO-FIR [Airspace for which not even an FIR is defined.]  
+	[note:There are parts in the world for which there is neither an FIR nor any other airspace-type is defined. These airspaces will be marked as NO-FIR.]  
+	POLITICAL [Political/administrative area.]  
+	PART [Part of an airspace (used in airspace aggregations).]  
+	
+	
+	
+	
+	
+	
+
+<xsd:element name="Uni" type="UnitType"/>
+	Uni.codeType or CODE_TYPE_UNIT:
+Use-->	TWR [Aerodrome Control Tower.] 						Use by --> (AixmParser)"Control towers"
+Use-->  OTHER [... ??? ...]									Use by --> (AixmParser)"Control towers"
+		ACC [Area Control Centre.] 
+		ADSU [Automatic Dependent Surveillance Unit.] 
+		ADVC [Advisory Centre.] 
+		ALPS [Alerting Post.] 
+		AOF [Aeronautical Information Services Office.] 
+		APP [Approach Control office.] 
+		APP-ARR [Arrivals Approach Control office.] 
+		APP-DEP [Departures Approach Control office.] 
+		ARO [Aerodrome Reporting Office/ATS Reporting Office.] 
+		ATCC [Air Traffic Control Centre.] 
+		ATFMU [Air Traffic Flow Management Unit.] 
+		ATMU [Air Traffic Management Unit.] 
+		ATSU [Air Traffic Services Unit.] 
+		BOF [Briefing Office.] 
+		BS [Commercial Broadcasting Station.] 
+		COM [Communications office/centre.] 
+		FCST [Forecasting office.] 
+		FIC [Flight Information Centre.] 
+		GCA [Ground Controlled Approach Systems office.] 
+		MET [Meteorological office.] 
+		MWO [Meteorological Watch Office.] 
+		NOF [International NOTAM Office.] 
+		OAC [Oceanic Control Centre.] 
+		PAR [Precision Approach Radar centre.] 
+		RAD [Radar unit/office.] 
+		RAFC [Regional Area Forecast Centre.] 
+		RCC [Rescue Co-ordination Centre.] 
+		RSC [Rescue Sub-Centre.] 
+		SAR [Search And Rescue centre.] 
+		SMC [Surface Movement Control office.] 
+		SMR [Surface Movement Radar office.] 
+		SRA [Surveillance Radar Approach office/centre.] 
+		SSR [Secondary Surveillance Radar centre.] 
+		TAR [Terminal Area surveillance Radar office/centre.] 
+		UAC [Upper Area Control Centre.] 
+		UDF [UHF Direction-Finding station.] 
+		UIC [Upper Information Centre.] 
+		VDF [VHF Direction-Finding station.] 
+		WAFC [World Area Forecast Centre.] 
+		ARTCC [Air Route Traffic Control Center.] 
+		FSS [Flight Service Station.] 
+		TRACON [Terminal Radar Approach Control.] 
+		MIL [Military station/unit] (or Military office in general).] 
+		MILOPS [Planning/briefing office for military flight operations.]
+	
+<xsd:element name="Ahp" type="AerodromeHeliportType"/>
+	All items use by --> (AixmParser)"Aerodromes / Heliports"
+	Nota. Ahp.codeType or CODE_TYPE
+		A code specifying whether it is an aerodrome or a heliport. Rules: 
+			If CODE_TYPE = 'AH' or 'HP', there must exist at least one related TLOF or FATO.. 
+			If CODE_TYPE = 'AD', then there may not exist any related TLOF or FATO.. 
+			If CODE_TYPE = 'HP', there may not exist any runway specified for the heliport (no relationship to RWY is allowed). 
+			If CODE_TYPE = 'LS', then it may not exist any PASSENGER_FACILITY, AD_HP_GND_SER [Ground service], FUEL or OIL related to the landing site. 
+
+<xsd:element name="Obs" type="ObstacleType"/>
+	All items use by --> (AixmParser)"Obstacles"
+	
+<xsd:element name="Rcp" type="RunwayCentreLinePositionType"/>
+	All items use by --> (AixmParser)"Runway Center Line Position"
+	
+<xsd:element name="Gsd" type="GateStandType"/>
+	All items use by --> (AixmParser)"Gates and Stands"
+	
+<xsd:element name="Gbr" type="GeographicalBorderType"/>
+	All items use by --> (AixmParser)"Geographic borders"
+	Nota. Gbr.codeType or CODE_TYPE_GEO_BDR :
+		ST [State border.] 
+		TW [Territorial waters limit.] 
+		CS [Coastline.] 
+		RW [River centreline.] 
+		RB [River bank.] 
+		OTHER
+	Nota. Gbr.Gbv.codeType or CODE_TYPE_BORDER_VERTEX
+		GRC [Great Circle = line segment for short distances.] 
+		END [The last vertex (open shape).] 
+		OTHER
+
+<xsd:element name="Ase" type="AirspaceType"/>
+	en cours de mise au point...
+	Nécessite l'utilisation combinatoire des éléments suivants:
+		<xsd:element name="Adg" type="AirspaceDerivedGeometryType"/>
+		<xsd:element name="Abd" type="AirspaceBorderType"/>
+		<xsd:element name="Gbr" type="GeographicalBorderType"/>
+	
+
+	
