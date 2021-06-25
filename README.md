@@ -104,6 +104,6 @@ With:
 
 
 ## Credits
-- [Cristian Quest](https://github.com/cquest) for the first version of parser aixm2geojson
+- [Christian Quest](https://github.com/cquest) for the first version of parser aixm2geojson
 - [Pascal Bazile](https://github.com/BPascal-91/) for complete modular rewriting of aixmPaser. For integration of: OpenAir parser and Referential estimated height of grounds
 - the many open source libraries, projects, and data sources used by this software (show file content of 'requirements.txt' for complete components detail)
