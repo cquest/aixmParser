@@ -3,7 +3,7 @@
 ###    Syntaxe4load --> pip install -r requirements.txt
 ###
 beautifulsoup4==4.8.0
-lxml==4.6.3
+lxml==4.6.5
 pyproj==2.4.2
 geog==0.0.2
 SRTM.py==0.3.7
